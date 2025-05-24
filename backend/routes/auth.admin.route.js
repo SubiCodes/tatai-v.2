@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { createUser } from "../controllers/auth.admin.controller.js";
+import { getCookie, signInAdmin } from "../controllers/auth.admin.controller.js";
 
 const authAdminRouter = Router();
 
-authAdminRouter.post("/create", createUser)
+authAdminRouter.get("/cookie", getCookie);
+authAdminRouter.post("/signin", signInAdmin);
 
 export default authAdminRouter;

@@ -1,5 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { connectDB } from './config/db.js';
 import authAdminRouter from './routes/auth.admin.route.js';
 
@@ -7,7 +9,15 @@ dotenv.config();
 
 const app = express();
 
+app.use(cors({
+    origin: (origin, callback) => {
+        callback(null, origin); // Reflect the origin (allow all)
+    },
+    credentials: true
+}));
+
 app.use(express.json()); // Middleware to parse JSON bodies
+app.use(cookieParser());
 
 app.use('/api/v1/authAdmin', authAdminRouter);
 
