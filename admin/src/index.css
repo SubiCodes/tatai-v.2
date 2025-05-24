@@ -3,5 +3,6 @@
 @theme {
   --color-primary: #0818A8;
   --color-secondary: #006FFD;
+  --color-success: #4BB543;
   --color-error: #ff0033;
 } 

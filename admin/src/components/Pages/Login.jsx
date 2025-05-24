@@ -59,7 +59,7 @@ function Login() {
                 navigate('/dashboard');
                 toast.custom((t) => (
                     <div
-                        className="bg-primary text-white px-4 py-3 rounded shadow-md flex justify-between items-center"
+                        className="bg-success text-white px-4 py-3 rounded shadow-md flex justify-between items-center"
                         onClick={() => toast.dismiss(t)}
                     >
                         <div>
@@ -142,7 +142,7 @@ function Login() {
             }
         };
         checkCookie();
-    })
+    }, [])
 
     return (
         <div className="w-screen h-screen grid grid-rows-1 md:grid-rows-1 md:grid-cols-2">

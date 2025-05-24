@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import ProtectedRoute from './components/util/ProtectedRoute.jsx';
+import Layout from './components/util/Layout.jsx';
 import Login from './components/Pages/Login.jsx'
 import Dashboard from './components/Pages/Dashboard.jsx';
 
@@ -35,7 +36,9 @@ function App() {
 
           <Route path='/' element={<Login />} />
           <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route element={<Layout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
           </Route>
 
         </Routes>
