@@ -1,33 +1,53 @@
 import User from '../models/user.model.js';
 import bcrypt from 'bcryptjs';
+import { generateTokenAndSetCookie } from '../utils/generateTokenAndSetCookie.js';
+import JWT from 'jsonwebtoken';
 
-export const createUser = async (req, res) => {
-    const {firstName, lastName, gender, birthday, email, password, role} = req.body;
-    
-    let status = "Unverified";
-    
-    const checkExists = await User.findOne({email: email});
-    
-    if (checkExists) {
-        return res.status(400).json({success: false, message: "Email already exists."});
-    };
-
-    if (!firstName || !lastName || !gender || !birthday || !email || !password || !role) {
-        return res.status(400).json({success: false, message: "There is an empty field."});
-    };
-
-    if (role === "admin" || role === "super admin") {
-        status = "Verified";
-    };
-
-    const verificationToken = Math.random().toString(36).substring(2, 8).toUpperCase();
-    const encryptedPassword = await bcrypt.hash(password, 10);
-
+export const signInAdmin = async (req, res) => {
+    const { email, password } = req.body;
     try {
-        const user = await User.create({firstName: firstName, lastName: lastName, gender: gender, birthday: birthday,email: email, password: encryptedPassword,status: status, role: role, verificationToken: verificationToken});
-        res.status(201).json({success: true, message: "User created successfully.", data: user, verificationToken: verificationToken});
+        const user = await User.findOne({email});
+        if(!user){
+            return res.status(400).json({success: false, message: "Invalid Credentials."})
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if(!isPasswordValid){
+            return res.status(400).json({success: false, message: "Invalid Credentials."})
+        }
+
+        if(user.role !== "admin" && user.role !== 'super admin'){
+            return res.status(400).json({success: false, message: "Your account dont have access to this website."})
+        }
+
+        generateTokenAndSetCookie(res, user._id);
+
+        return res.status(200).json({
+            success: true,
+            message: "Logged in successfully!",
+            user:{
+                ...user._doc,
+                password: undefined,
+            },
+        });
+
     } catch (error) {
-        console.log(error);
-        res.status(500).json({success: false, message: "Cannot create user.", error: error.message});
+        console.error("Error in Login", error);
+        return res.status(500).json({success: false, message: `Error Logging in: ${error}`});
     }
-}
+};
+
+export const getCookie = async (req, res) => {
+    const token = req.cookies.token;
+  
+    if (!token) {
+        return res.status(401).json({ authenticated: false });
+    }
+    
+    try {
+        JWT.verify(token, process.env.JWT_SECRET);
+        return res.status(200).json({ authenticated: true, message: "User is authenticated." });
+    } catch (error) {
+        return res.status(401).json({ authenticated: false, message: error.message });
+    }
+};
