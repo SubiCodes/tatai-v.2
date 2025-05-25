@@ -37,6 +37,33 @@ export const createUser = async (req, res) => {
     }
 };
 
+export const getUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    res.status(200).json({success: true, message: "User fetched successfully.", data: users});
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({success: false, message: "Cannot fetch user.", error: error.message});    
+  }
+};
+
+export const updateStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  try {
+    const user = await User.findOne({_id: id});
+    if (!user) {
+      return res.status(404).json({success: false, message: "User does not exist."});
+    }
+    user.status = status;
+    await user.save();
+    res.status(202).json({success: true, message: "Status updated successfully.", data: user});
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({success: false, message: "Cannot change user status.", error: error.message});    
+  }
+}
+
 export const getAdminData = async (req, res) => {
   try {
     const token = req.cookies.token;
