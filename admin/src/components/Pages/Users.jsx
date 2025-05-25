@@ -2,6 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 
 import AddUserDialog from '../dialogs/AddUserDialog.jsx'
+import UserTable from '../table/UserTable.jsx'
 
 import { Button } from "@/components/ui/button"
 
@@ -20,6 +21,11 @@ function Users() {
                 <Button className="text-white cursor-pointer" onClick={openDialog}>
                     Add User
                 </Button>
+            </div>
+
+            {/* Table */}
+            <div className='flex-1'>
+                <UserTable />
             </div>
 
             <AddUserDialog

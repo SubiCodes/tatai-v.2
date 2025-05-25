@@ -456,7 +456,7 @@ function AddUserDialog({ isOpen, onClose }) {
                                 disabled={addingUser}>
                                 {!addingUser ? (
                                     <span className='text-base font-semibold'>
-                                        Sign in
+                                        Add User
                                     </span>) : (
                                     <PulseLoader color="#ffffff" size={10} />
                                 )}
