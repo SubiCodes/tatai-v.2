@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import useUserStore from '../../../store/user.store.jsx'
 
 import logo from '../../assets/images/monoclewithname.png'
 
@@ -16,6 +17,8 @@ import { PulseLoader } from "react-spinners";
 function Login() {
 
     const navigate = useNavigate();
+
+    const { getAdminData } = useUserStore();
 
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
@@ -56,6 +59,7 @@ function Login() {
 
             if (response.data.success) {
                 console.log("Login successful:", response.data);
+                getAdminData();
                 navigate('/dashboard');
                 toast.custom((t) => (
                     <div
@@ -135,6 +139,7 @@ function Login() {
                     withCredentials: true
                 });
                 if (response.data.authenticated) {
+                    getAdminData();
                     navigate('/dashboard');
                 }
             } catch (error) {
@@ -184,6 +189,7 @@ function Login() {
 
                     <div className='w-3/4 flex flex-col items-center md:items-start'>
                         <Button className={`w-3/4 max-w-md text-white cursor-pointer flex items-center justify-center bg-primary hover:bg-primary/90 transition-colors duration-200 ${loading && "opacity-50 cursor-not-allowed"}`}
+                            disabled={loading}
                             onClick={() => handleSubmit()}>
                             {!loading ? (
                                 <span className='text-base font-semibold'>
