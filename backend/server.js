@@ -3,7 +3,9 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { connectDB } from './config/db.js';
+
 import authAdminRouter from './routes/auth.admin.route.js';
+import userAdminRouter from './routes/user.admin.route.js';
 
 dotenv.config();
 
@@ -20,6 +22,7 @@ app.use(express.json()); // Middleware to parse JSON bodies
 app.use(cookieParser());
 
 app.use('/api/v1/authAdmin', authAdminRouter);
+app.use('/api/v1/userAdmin', userAdminRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello, World!!!');
