@@ -13,7 +13,7 @@ function Users() {
     const closeDialog = () => setIsDialogOpen(false);
 
     return (
-        <div className='w-full h-full px-2 py-4 md:px-6 md:py-6'>
+        <div className='w-full h-screen px-2 py-4 md:px-6 md:py-6 flex flex-col gap-4'>
             {/* Header */}
             <div className='w-full flex flex-row'>
                 <h1 className='text-2xl text-primary font-bold '>Users</h1>
@@ -24,7 +24,7 @@ function Users() {
             </div>
 
             {/* Table */}
-            <div className='flex-1'>
+            <div className='h-full w-full mt-0 md:mt-4'>
                 <UserTable />
             </div>
 

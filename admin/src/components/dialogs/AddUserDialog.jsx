@@ -375,7 +375,7 @@ function AddUserDialog({ isOpen, onClose }) {
                                                 <SelectItem value="Male" className="cursor-pointer">Male</SelectItem>
                                                 <SelectItem value="Female" className="cursor-pointer">Female</SelectItem>
                                                 <SelectItem value="Non-Binary" className="cursor-pointer">Non-Binary</SelectItem>
-                                                <SelectItem value="Prefer-not-to-say" className="cursor-pointer">Prefer not to say</SelectItem>
+                                                <SelectItem value="Prefer not to say" className="cursor-pointer">Prefer not to say</SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
