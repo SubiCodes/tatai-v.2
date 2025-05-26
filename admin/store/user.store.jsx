@@ -8,7 +8,6 @@ import ToastPending from "../src/components/util/ToastPending";
 import { toast } from "sonner";
 
 const useUserStore = create((set) => ({
-  adminData: null,
   fetchingAdminData: false,
   users: [],
   addingUser: false,

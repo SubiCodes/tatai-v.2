@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import useUserStore from '../../../store/user.store.jsx'
+import useAdminStore from '../../../store/admin.store.jsx'
 
 import logo from '../../assets/images/monoclewithname.png'
 
@@ -18,14 +17,13 @@ function Login() {
 
     const navigate = useNavigate();
 
-    const { getAdminData } = useUserStore();
+    const { isLoggingIn, logIn, checkCookie } = useAdminStore();
 
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
     const [password, setPassword] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
 
     const checkFields = () => {
         let isValid = true;
@@ -47,63 +45,8 @@ function Login() {
     };
 
     const handleLogin = async () => {
-        setLoading(true);
-        try {
-            console.log(`${import.meta.env.VITE_URI}/api/v1/authAdmin/signin`)
-            const response = await axios.post(`${import.meta.env.VITE_URI}/api/v1/authAdmin/signin`, {
-                email,
-                password
-            }, {
-                withCredentials: true
-            });
-
-            if (response.data.success) {
-                console.log("Login successful:", response.data);
-                getAdminData();
-                navigate('/dashboard');
-                toast.custom((t) => (
-                    <div
-                        className="bg-success text-white px-4 py-3 rounded shadow-md flex justify-between items-center"
-                        onClick={() => toast.dismiss(t)}
-                    >
-                        <div>
-                            <p className="font-semibold">Welcome Admin!</p>
-                        </div>
-                        <button
-                            className="ml-6 text-gray-200 rounded cursor-pointer"
-                            onClick={() => {
-                                toast.dismiss(t)
-                            }}
-                        >
-                            <X />
-                        </button>
-                    </div>
-                ))
-            }
-        } catch (error) {
-            console.error("Error during login:", error);
-            toast.custom((t) => (
-                <div
-                    className="bg-error text-white px-4 py-3 rounded shadow-md flex justify-between items-center"
-                    onClick={() => toast.dismiss(t)}
-                >
-                    <div>
-                        <p className="font-bold">Unsuccessful Login</p>
-                        <p className="text-white text-sm">{error.response.data.message}</p>
-                    </div>
-                    <button
-                        className="ml-6 text-gray-200 rounded cursor-pointer"
-                        onClick={() => {
-                            toast.dismiss(t)
-                        }}
-                    >
-                        <X />
-                    </button>
-                </div>
-            ))
-        } finally {
-            setLoading(false);
-        }
+        const res = await logIn(email, password, navigate);
+        console.log(res);
     };
 
     const handleSubmit = () => {
@@ -133,20 +76,7 @@ function Login() {
     };
 
     useEffect(() => {
-        const checkCookie = async () => {
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_URI}/api/v1/authAdmin/cookie`, {
-                    withCredentials: true
-                });
-                if (response.data.authenticated) {
-                    getAdminData();
-                    navigate('/dashboard');
-                }
-            } catch (error) {
-                console.error("Error checking cookie:", error);
-            }
-        };
-        checkCookie();
+        checkCookie(navigate);
     }, [])
 
     return (
@@ -188,10 +118,10 @@ function Login() {
                     </div>
 
                     <div className='w-3/4 flex flex-col items-center md:items-start'>
-                        <Button className={`w-3/4 max-w-md text-white cursor-pointer flex items-center justify-center bg-primary hover:bg-primary/90 transition-colors duration-200 ${loading && "opacity-50 cursor-not-allowed"}`}
-                            disabled={loading}
+                        <Button className={`w-3/4 max-w-md text-white cursor-pointer flex items-center justify-center bg-primary hover:bg-primary/90 transition-colors duration-200 ${isLoggingIn && "opacity-50 cursor-not-allowed"}`}
+                            disabled={isLoggingIn}
                             onClick={() => handleSubmit()}>
-                            {!loading ? (
+                            {!isLoggingIn ? (
                                 <span className='text-base font-semibold'>
                                     Sign in
                                 </span>) : (

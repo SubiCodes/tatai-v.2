@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import useUserStore from '../../../store/user.store.jsx';
+import useAdminStore from '../../../store/admin.store.jsx';
 
 import PulseLoader from "react-spinners/PulseLoader";
 import ToastUnsuccessful from '../util/ToastUnsuccessful.jsx';
@@ -30,7 +31,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 function AddUserDialog({ isOpen, onClose }) {
 
-    const { addingUser, addUser, fetchingAdminData, adminData } = useUserStore();
+    const { addingUser, addUser, fetchingAdminData } = useUserStore();
+    const { admin } = useAdminStore();
 
     const [firstName, setFirstName] = useState('');
     const [firstNameError, setFirstNameError] = useState('');
@@ -119,6 +121,10 @@ function AddUserDialog({ isOpen, onClose }) {
             clearForm();
         }
     }, [isOpen]);
+
+    useEffect(() => {
+        console.log(admin);
+    }, [])
 
     if (!isOpen) return null
 
@@ -261,6 +267,7 @@ function AddUserDialog({ isOpen, onClose }) {
         }
     };
 
+
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center"
@@ -378,7 +385,7 @@ function AddUserDialog({ isOpen, onClose }) {
                                     </Select>
                                 </div>
                             </div>
-                            {adminData?.role !== 'super admin' ? (null) : (
+                            {admin?.role === 'super admin' && (
                                 <div className="flex w-full">
                                     <div className="grid w-full items-center gap-1.5">
                                         <Label htmlFor="lastName">Role </Label>
@@ -389,17 +396,15 @@ function AddUserDialog({ isOpen, onClose }) {
                                             <SelectContent className="bg-white">
                                                 <SelectGroup>
                                                     <SelectLabel>Roles</SelectLabel>
-                                                    <SelectItem value="user" className="cursor-pointer">user</SelectItem>
-                                                    <SelectItem value="admin" className="cursor-pointer">admin</SelectItem>
-                                                    <SelectItem value="super admin" className="cursor-pointer">super admin</SelectItem>
+                                                    <SelectItem value="user">user</SelectItem>
+                                                    <SelectItem value="admin">admin</SelectItem>
+                                                    <SelectItem value="super admin">super admin</SelectItem>
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
                                     </div>
                                 </div>
                             )}
-
-
                             <div className="flex w-full">
                                 <div className="grid w-full items-center gap-1.5">
                                     <Label htmlFor="email">Email </Label>
