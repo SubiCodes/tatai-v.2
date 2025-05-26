@@ -122,10 +122,6 @@ function AddUserDialog({ isOpen, onClose }) {
         }
     }, [isOpen]);
 
-    useEffect(() => {
-        console.log(admin);
-    }, [])
-
     if (!isOpen) return null
 
     //check password
