@@ -177,7 +177,7 @@ function UserTable() {
             } else if (width < 1400) {
                 setRowPerPage(5);
             } else {
-                setRowPerPage(10);
+                setRowPerPage(7);
             }
         };
 
