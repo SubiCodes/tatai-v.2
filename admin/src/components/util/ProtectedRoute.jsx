@@ -1,6 +1,7 @@
 // Change your ProtectedRoute to check authentication differently
 import { Navigate, Outlet } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { getAdminData } from '../../../store/admin.store.jsx';
 
 import { MoonLoader } from 'react-spinners';
 
@@ -16,6 +17,7 @@ const ProtectedRoute = () => {
         });
         
         if (response.ok) {
+          await getAdminData();
           setIsAuthenticated(true);
         }
       } catch (error) {

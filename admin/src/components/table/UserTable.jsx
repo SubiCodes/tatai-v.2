@@ -168,7 +168,9 @@ function UserTable() {
 
     if (fetchingUsers) {
         return (
-            <SyncLoader />
+            <div className='flex-1 flex items-center justify-center'>
+                <SyncLoader />
+            </div>
         );
     }
 
@@ -320,7 +322,7 @@ function UserTable() {
                                             <>
                                                 <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuRadioGroup value={user?.status}  onValueChange={(value) => updateUserStatus(user?._id, value, users)}>
+                                                <DropdownMenuRadioGroup value={user?.status} onValueChange={(value) => updateUserStatus(user?._id, value, users)}>
                                                     <DropdownMenuRadioItem value="Unverified">Unverified</DropdownMenuRadioItem>
                                                     <DropdownMenuRadioItem value="Verified">Verified</DropdownMenuRadioItem>
                                                     <DropdownMenuRadioItem value="Restricted">Restricted</DropdownMenuRadioItem>
