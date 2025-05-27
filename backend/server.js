@@ -6,6 +6,7 @@ import { connectDB } from './config/db.js';
 
 import authAdminRouter from './routes/auth.admin.route.js';
 import userAdminRouter from './routes/user.admin.route.js';
+import profileAdminRouter from './routes/profile.admin.route.js';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use(cookieParser());
 
 app.use('/api/v1/authAdmin', authAdminRouter);
 app.use('/api/v1/userAdmin', userAdminRouter);
+app.use('/api/v1/profileAdmin', profileAdminRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello, World!!!');

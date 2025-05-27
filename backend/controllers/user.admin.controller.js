@@ -63,30 +63,3 @@ export const updateStatus = async (req, res) => {
     res.status(500).json({success: false, message: "Cannot change user status.", error: error.message});    
   }
 }
-
-export const getAdminData = async (req, res) => {
-  try {
-    const token = req.cookies.token;
-    if (!token) {
-      return res.status(401).json({ success: false, message: "No token found" });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    const id = decoded.userId;
-
-    console.log(id);
-    
-
-    const user = await User.findById(id).select("-password");
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found." });
-    }
-
-    res.status(200).json({ success: true, data: user });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Error retrieving user data.", error: error.message });
-  }
-};

@@ -175,6 +175,8 @@ function UserTable() {
             if (width < 768) {
                 setRowPerPage(3);
             } else if (width < 1400) {
+                setRowPerPage(4);
+            }else if (width < 1800) {
                 setRowPerPage(5);
             } else {
                 setRowPerPage(7);

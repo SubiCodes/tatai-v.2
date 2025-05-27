@@ -9,6 +9,7 @@ import Layout from './components/util/Layout.jsx';
 import Login from './components/Pages/Login.jsx'
 import Dashboard from './components/Pages/Dashboard.jsx';
 import Users from './components/Pages/Users.jsx';
+import Settings from './components/Pages/Settings.jsx';
 
 function App() {
 
@@ -39,9 +40,8 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />
-            </Route>
-            <Route element={<Layout />}>
               <Route path="/users" element={<Users />} />
+              <Route path="/settings" element={<Settings />} />
             </Route>
           </Route>
 
