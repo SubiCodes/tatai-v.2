@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
+import ForgotPasswordDialog from '../dialogs/ForgotPasswordDialog.jsx'
 import { X } from "lucide-react"
 
 import { PulseLoader } from "react-spinners";
@@ -24,6 +25,10 @@ function Login() {
     const [password, setPassword] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const openDialog = () => setIsDialogOpen(true);
+    const closeDialog = () => setIsDialogOpen(false);
 
     const checkFields = () => {
         let isValid = true;
@@ -106,13 +111,21 @@ function Login() {
                             <Label htmlFor="email" className="text-lg">Password</Label>
                             <Input type={showPassword ? "text" : "password"} id="password" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} className={`${passwordError.trim() ? "border-red-400" : "border-black"}`} />
                         </div>
-                        <div className="w-3/4 flex items-start space-x-2">
+                        <div className="flex  w-3/4 max-w-md items-center gap-1.5">
                             <Checkbox id="terms" className="text-white border border-black data-[state=checked]:bg-secondary" onCheckedChange={(checked) => setShowPassword(!!checked)} />
                             <label
                                 htmlFor="terms"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                             >
                                 Show password
+                            </label>
+                            <div className='flex-1'/>
+                            <label
+                                htmlFor="none"
+                                className="text-sm text-primary cursor-pointer hover:underline"
+                                onClick={openDialog}
+                            >
+                                Forgot Password
                             </label>
                         </div>
                     </div>
@@ -133,6 +146,10 @@ function Login() {
 
                 </div>
             </div>
+            <ForgotPasswordDialog
+                isOpen={isDialogOpen}
+                onClose={closeDialog}
+            />
         </div>
     )
 }

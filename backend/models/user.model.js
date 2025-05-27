@@ -39,6 +39,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    passwordResetId: {
+        type: String,
+        default: undefined
+    },
     status:{
         type: String,
         default: "Unverified",

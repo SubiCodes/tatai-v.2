@@ -6,7 +6,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import ProtectedRoute from './components/util/ProtectedRoute.jsx';
 import Layout from './components/util/Layout.jsx';
-import Login from './components/Pages/Login.jsx'
+import Login from './components/Pages/Login.jsx';
+import ResetPassword from './components/subpages/ResetPassword.jsx';
 import Dashboard from './components/Pages/Dashboard.jsx';
 import Users from './components/Pages/Users.jsx';
 import Settings from './components/Pages/Settings.jsx';
@@ -37,6 +38,7 @@ function App() {
         <Routes>
 
           <Route path='/' element={<Login />} />
+          <Route path='/reset-password/:token' element={<ResetPassword />} />
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />

@@ -166,7 +166,7 @@ function ChangePassword() {
       </div>
 
       <div className="grid w-full max-w-md items-center gap-1.5 mb-6">
-        <Label htmlFor="email">Password</Label>
+        <Label htmlFor="email">Confirm Password</Label>
         <Input type={`${!showConfirmPassword ? 'password' : 'text'}`} placeholder="Confirm your password..." className={`${confirmPasswordError && "border-red-400"}`}
           onChange={(e) => { setConfirmPassword(e.target.value) }} value={confirmPassword}/>
         <div className='w-full max-w-md flex flex-row items-center gap-2'>

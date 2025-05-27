@@ -26,6 +26,9 @@ const useAdminStore = create((set) => ({
     updatingIcon: false,
     updatingProfile: false,
     updatingPassword: false,
+    sendingResetPasswordLink: false,
+    checkingResetTokenValidity: true,
+    resettingPassword: false,
     logIn: async (email, password, navigate) => {
         set({ isLoggingIn: true })
         try {
@@ -67,12 +70,69 @@ const useAdminStore = create((set) => ({
             console.error("Error checking cookie:", error);
         }
     },
+    sendResetPasswordLink: async (email) => {
+        set({ sendingResetPasswordLink: true });
+        const toastId = toast.custom((t) => (
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Sending link"} message="This might take a while..." />));
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_URI}/api/v1/authAdmin/password`, { email });
+            toast.custom((t) => (
+                <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Reset Password Link Sent"} message={response.data.message} />
+            ));
+            return true;
+        } catch (error) {
+            console.error("Error sending reset password link:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Sending link unsuccessful"} message={error.response.data.message} />
+            ));
+            return false;
+        } finally {
+            set({ sendingResetPasswordLink: false });
+            toast.dismiss(toastId);
+        }
+    },
+    checkResetTokenValidity: async (token, navigate) => {
+        set({ checkingResetTokenValidity: true });
+        try {
+            console.log(`${import.meta.env.VITE_URI}/api/v1/authAdmin/password/${token}`);
+            const res = await axios.post(`${import.meta.env.VITE_URI}/api/v1/authAdmin/password/${token}`);
+            console.log(res.data.message);
+            return true;
+        } catch (error) {
+            console.error("Error checking reset token validity:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Invalid reset token!"} message={error.response.data.message} />
+            ));
+            navigate('/');
+        }
+    },
+    resetPassword: async (token, newPassword, navigate) => {
+        set({resettingPassword: true})
+        const toastId = toast.custom((t) => (
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Resetting Password"} message="This might take a while..." />));
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_URI}/api/v1/authAdmin/reset/${token}`, { newPassword });
+            toast.custom((t) => (
+                <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Password Reset Successful"} message={response.data.message} />
+            ));
+            navigate('/');
+            return true;
+        } catch (error) {
+            console.error("Error resetting password:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"An errror has occured!"} message={error.response.data.message} />
+            ));
+        } finally{
+            set({resettingPassword: false});
+            toast.dismiss(toastId);
+        }
+    },
     updateIcon: async (icon, id, admin) => {
         set({ updatingIcon: true });
         const toastId = toast.custom((t) => (
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Changing icon"} message="This might take a while..." />));
         try {
-            const response = await axios.post(`${import.meta.env.VITE_URI}/api/v1/profileAdmin/icon/${id}`, {icon});
+            const response = await axios.post(`${import.meta.env.VITE_URI}/api/v1/profileAdmin/icon/${id}`, { icon });
             admin.profileIcon = icon;
             toast.custom((t) => (
                 <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Icon Update Successful"} message={response.data.message} />
@@ -92,8 +152,8 @@ const useAdminStore = create((set) => ({
         const toastId = toast.custom((t) => (
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Updating profile"} message="This might take a while..." />));
         try {
-            const response = await axios.post(`${import.meta.env.VITE_URI}/api/v1/profileAdmin/admin/${id}`, {data});
-            set({admin: response.data.data});
+            const response = await axios.post(`${import.meta.env.VITE_URI}/api/v1/profileAdmin/admin/${id}`, { data });
+            set({ admin: response.data.data });
             toast.custom((t) => (
                 <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Profile Update Successful"} message={response.data.message} />
             ))

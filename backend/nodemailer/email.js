@@ -191,3 +191,42 @@ export const sendGuideStatusUpdate = (guideTitle, status, recipientEmail) => {
     }
   );
 };
+
+//NEW STUFF
+export const sendPasswordResetEmail = (to, resetLink) => {
+  const htmlTemplate = `
+        <div style="font-family: Arial, sans-serif; background-color: #f0f8ff; padding: 20px; text-align: center;">
+            <div style="max-width: 500px; margin: auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #0818A8;">Reset Your TatAi Password</h2>
+                <p style="font-size: 16px; color: #333;">
+                    We received a request to reset your password. Click the button below to set a new one:
+                </p>
+                <a href="${resetLink}" style="display: inline-block; background-color: #0818A8; color: #ffffff; padding: 12px 24px; margin: 20px 0; border-radius: 5px; text-decoration: none; font-weight: bold;">
+                    Reset Password
+                </a>
+                <p style="font-size: 14px; color: #666;">
+                    If you didn’t request this, you can safely ignore this email.
+                </p>
+                <p style="margin-top: 20px; font-size: 14px; color: #666;">
+                    Get home repairs done with ease – thanks for using TatAi.
+                </p>
+            </div>
+        </div>
+    `;
+
+  transporter.sendMail(
+    {
+      from: "tataihomeassistant@gmail.com",
+      to: to,
+      subject: "Reset your TatAi password",
+      html: htmlTemplate,
+    },
+    (err, info) => {
+      if (err) {
+        console.error("Error sending email:", err);
+      } else {
+        console.log("Password reset email sent:", info.response);
+      }
+    }
+  );
+};
