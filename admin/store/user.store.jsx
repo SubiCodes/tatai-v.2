@@ -16,7 +16,7 @@ const useUserStore = create((set) => ({
   getAdminData: async () => {
     set({ fetchingAdminData: true });
     try {
-      const response = await axios.get(`${import.meta.env.VITE_URI}/api/v1/userAdmin/admin`, {
+      const response = await axios.get(`${import.meta.env.VITE_URI}/api/v1/profileAdmin/admin`, {
         withCredentials: true,
       });
       set({
