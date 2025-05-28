@@ -11,6 +11,8 @@ import ResetPassword from './components/subpages/ResetPassword.jsx';
 import Dashboard from './components/Pages/Dashboard.jsx';
 import Users from './components/Pages/Users.jsx';
 import Settings from './components/Pages/Settings.jsx';
+import Guides from './components/Pages/Guides.jsx';
+import AddGuide from './components/subpages/AddGuide.jsx';
 
 function App() {
 
@@ -43,6 +45,8 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/users" element={<Users />} />
+              <Route path="/guides" element={<Guides />} />
+              <Route path="/guides/add-guide" element={<AddGuide />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
           </Route>
