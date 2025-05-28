@@ -27,7 +27,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         {
             title: 'Guides',
             icon: NotebookPen,
-            link: '/pending-guides'
+            link: '/guides'
         },
         {
             title: 'Settings',

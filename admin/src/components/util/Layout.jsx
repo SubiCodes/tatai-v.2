@@ -9,7 +9,7 @@ const Layout = () => {
   return (
     <div className="flex h-screen w-screen flex-row">
         <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
-        <div className="flex flex-col h-screen w-screen bg-[#F5F7FA]">
+        <div className="flex flex-col h-screen w-screen bg-[#fdfdfd]">
           <Outlet />
         </div>
     </div>
