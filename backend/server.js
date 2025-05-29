@@ -7,6 +7,7 @@ import { connectDB } from './config/db.js';
 import authAdminRouter from './routes/auth.admin.route.js';
 import userAdminRouter from './routes/user.admin.route.js';
 import profileAdminRouter from './routes/profile.admin.route.js';
+import guideAdminRouter from './routes/guide.admin.route.js';
 
 dotenv.config();
 
@@ -14,17 +15,19 @@ const app = express();
 
 app.use(cors({
     origin: (origin, callback) => {
-        callback(null, origin); // Reflect the origin (allow all)
+        callback(null, origin); 
     },
     credentials: true
 }));
 
-app.use(express.json()); // Middleware to parse JSON bodies
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
 
 app.use('/api/v1/authAdmin', authAdminRouter);
 app.use('/api/v1/userAdmin', userAdminRouter);
 app.use('/api/v1/profileAdmin', profileAdminRouter);
+app.use('/api/v1/guideAdmin', guideAdminRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello, World!!!');
