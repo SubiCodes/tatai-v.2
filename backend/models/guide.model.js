@@ -17,12 +17,11 @@ const guideSchema = new mongoose.Schema(
       required: true,
     },
     coverImage: {
-      type: [
+      type: 
         {
           publicId: String,
           url: String,
         },
-      ],
       required: true,
     },
     description: {
@@ -56,7 +55,7 @@ const guideSchema = new mongoose.Schema(
     },
     closingMessage: {
       type: String,
-      requried: true,
+      required: true,
     },
     links: {
       type: String,
@@ -69,6 +68,6 @@ const guideSchema = new mongoose.Schema(
   }
 );
 
-const Guides = mongoose.model("guides", guideSchema);
+const Guide = mongoose.model("guides", guideSchema);
 
-export default Guides;
+export default Guide;

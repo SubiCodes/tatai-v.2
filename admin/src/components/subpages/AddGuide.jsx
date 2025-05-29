@@ -8,7 +8,13 @@ import { toast } from 'sonner'
 import { House, Hammer, Sofa, Image, Info } from 'lucide-react';
 import ToastUnsuccessful from '../util/ToastUnsuccessful.jsx'
 
+import useAdminStore from '../../../store/admin.store.jsx';
+import useGuideStore from '../../../store/guide.store.jsx'
+
 function AddGuide() {
+
+    const { admin } = useAdminStore();
+    const { postGuide, postingGuide } = useGuideStore();
 
     const [category, setCategory] = useState('repair');
 
@@ -32,8 +38,8 @@ function AddGuide() {
     const [stepTitles, setStepTitles] = useState(['']);
     const [stepTitlesError, setStepTitlesError] = useState([false]);
 
-    const [stepDesciptions, setStepDescriptions] = useState(['']);
-    const [stepDesciptionsError, setStepDescriptionsError] = useState([false]);
+    const [stepDescriptions, setStepDescriptions] = useState(['']);
+    const [stepDescriptionsError, setStepDescriptionsError] = useState([false]);
 
     const [stepMedias, setStepMedias] = useState([null]);
     const [stepMediasError, setStepMediasError] = useState([false]);
@@ -44,6 +50,45 @@ function AddGuide() {
     const [closingMessageError, setClosingMessageError] = useState(false);
 
     const [links, setLinks] = useState('');
+
+    //Clear form
+    const resetForm = () => {
+        setCategory('repair');
+
+        setTitle('');
+        setTitleError(false);
+
+        setDescription('');
+        setDescriptionError(false);
+
+        setCoverImage(undefined);
+        setCoverImageError(false);
+        setCoverImageFull(false);
+
+        setTools([]);
+        setPendingTool('');
+        setToolsError(undefined);
+
+        setMaterials('');
+        setMaterialsError(false);
+
+        setStepTitles(['']);
+        setStepTitlesError([false]);
+
+        setStepDescriptions(['']);
+        setStepDescriptionsError([false]);
+
+        setStepMedias([null]);
+        setStepMediasError([false]);
+
+        setProcedureImageDisplay(false);
+        setProcedureImage(undefined);
+
+        setClosingMessage('');
+        setClosingMessageError(false);
+
+        setLinks('');
+    };
 
     //Adding Cover Image Logic
     const handleCoverImageChange = (e) => {
@@ -101,9 +146,9 @@ function AddGuide() {
     //Adding steps / procedure logic
     const addStep = () => {
         setStepTitles([...stepTitles, '']);
-        setStepDescriptions([...stepDesciptions, '']);
+        setStepDescriptions([...stepDescriptions, '']);
         setStepTitlesError([...stepTitlesError, false]);
-        setStepDescriptionsError([...stepDesciptionsError, false]);
+        setStepDescriptionsError([...stepDescriptionsError, false]);
         setStepMedias([...stepMedias, null]);
         setStepMediasError([...stepMediasError, false]);
     };
@@ -111,9 +156,9 @@ function AddGuide() {
         if (stepTitles.length <= 1) return; // prevent removing the last step
 
         setStepTitles(stepTitles.filter((_, i) => i !== index));
-        setStepDescriptions(stepDesciptions.filter((_, i) => i !== index));
+        setStepDescriptions(stepDescriptions.filter((_, i) => i !== index));
         setStepTitlesError(stepTitlesError.filter((_, i) => i !== index));
-        setStepDescriptionsError(stepDesciptionsError.filter((_, i) => i !== index));
+        setStepDescriptionsError(stepDescriptionsError.filter((_, i) => i !== index));
         setStepMedias(stepMedias.filter((_, i) => i !== index));
         setStepMediasError(stepMediasError.filter((_, i) => i !== index));
     };
@@ -123,7 +168,6 @@ function AddGuide() {
     }
 
     const handleSubmit = async () => {
-        console.log(tools)
         let valid = true;
         setTitleError(false);
         setDescriptionError(false);
@@ -191,8 +235,8 @@ function AddGuide() {
         setStepTitlesError(updatedTitleErrors);
 
         //Step Description Check
-        const updatedDescriptionError = [...stepDesciptionsError];
-        stepDesciptions.forEach((description, index) => {
+        const updatedDescriptionError = [...stepDescriptionsError];
+        stepDescriptions.forEach((description, index) => {
             if (!description) {
                 updatedDescriptionError[index] = true;
                 valid = false
@@ -207,6 +251,16 @@ function AddGuide() {
             setClosingMessageError(true);
             toast.custom((t) => (<ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Invalid input!"} message={"Closing Message cannot be empty."} />));
             valid = false
+        };
+
+        if (valid) {
+            const data = {
+                posterId: admin._id, category: category, title: title, description: description, coverImage: coverImage, tools: tools, materials: materials, stepTitles: stepTitles, stepDescriptions: stepDescriptions, stepMedias: stepMedias, closingMessage: closingMessage, links: links
+            };
+            const res = await postGuide(data);
+            if (res) {
+                resetForm();
+            }
         }
     }
 
@@ -296,10 +350,10 @@ function AddGuide() {
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                     e.preventDefault(); // optional: prevent form submission or newline
-                                    if (pendingTool.trim()) { setTools([...tools, [pendingTool]]); setPendingTool('') }
+                                    if (pendingTool.trim()) { setTools([...tools, pendingTool]); setPendingTool('') }
                                 }
                             }} />
-                        <Button className="bg-gray-300 hover:bg-gray-300/50" onClick={() => { if (pendingTool.trim()) { setTools([...tools, [pendingTool]]); setPendingTool('') } }}>Add Tool</Button>
+                        <Button className="bg-gray-300 hover:bg-gray-300/50" onClick={() => { if (pendingTool.trim()) { setTools([...tools, pendingTool]); setPendingTool('') } }}>Add Tool</Button>
                     </div>
                     <div className='w-full flex flex-row flex-wrap gap-2'>
                         {tools.length > 0 && tools.map((tool, index) => (
@@ -362,10 +416,10 @@ function AddGuide() {
                         <div className="grid w-full items-center gap-1.5 mt-2">
                             <Textarea
                                 placeholder="Guide Description"
-                                className={`h-24 ${stepDesciptionsError[index] && 'border-red-400'}`}
-                                value={stepDesciptions[index] || ''}
+                                className={`h-24 ${stepDescriptionsError[index] && 'border-red-400'}`}
+                                value={stepDescriptions[index] || ''}
                                 onChange={(e) => {
-                                    const updated = [...stepDesciptions];
+                                    const updated = [...stepDescriptions];
                                     updated[index] = e.target.value;
                                     setStepDescriptions(updated);
                                 }}
@@ -444,7 +498,9 @@ function AddGuide() {
             </div>
 
             <div className="w-full max-w-4xl flex flex-col">
-                <Button className={`text-white w-full cursor-pointer`} onClick={handleSubmit}>Post Guide</Button>
+                <Button className={`text-white w-full  ${postingGuide ? "bg-primary/50 cursor-not-allowed" : "cursor-pointer"}`} onClick={handleSubmit} disabled={postingGuide}>
+                    Post Guide
+                </Button>
             </div>
 
 
