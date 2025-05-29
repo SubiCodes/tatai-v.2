@@ -4,8 +4,13 @@ const guideSchema = new mongoose.Schema(
   {
     posterId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
+      ref: "User",
       required: true,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "accepted", "rejected"],
+      default: "pending",
     },
     category: {
       type: String,

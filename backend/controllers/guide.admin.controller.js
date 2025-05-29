@@ -40,6 +40,9 @@ export const createGuide = async (req, res) => {
         .json({ success: false, message: `User not found.` });
     }
     const newGuide = new Guide(data);
+    if (poster._role !== 'user') {
+      newGuide.status = 'accepted'
+    }
     await newGuide.save();
     return res
       .status(201)
@@ -49,5 +52,26 @@ export const createGuide = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: `Error posting guide: ${error}` });
+  }
+};
+
+export const getGuides = async (req, res) => {
+  try {
+    const guides = await Guide.find().populate({
+      path: 'posterId',
+      select: 'firstName lastName email profileIcon'
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Guide fetched successfully.',
+      data: guides
+    });
+  } catch (error) {
+    console.error("Error fetching guides: ", error);
+    return res.status(500).json({
+      success: false,
+      message: `Error fetching guides: ${error.message}`
+    });
   }
 };
