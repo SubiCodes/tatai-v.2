@@ -52,6 +52,26 @@ const useGuideStore = create((set) => ({
             set({ postingGuide: false });
             toast.dismiss(toastId);
         }
+    },
+    fetchGuides: async () => {
+        set({ fetchingGuides: true });
+        const toastId = toast.custom((t) => (
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Fetching Guides"} message="This might take a while..." />));
+        try {
+            const result = await axios.get(`${URI}/api/v1/guideAdmin/guide`);
+            set({guides: result.data.data});
+            console.log(result.data.data);
+            return true
+        } catch (error) {
+            console.log("Error posting guide:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Fetching Guides Unsuccessful"} message={error.response.data.message} />
+            ));
+            return false;
+        } finally {
+           set({ fetchingGuides: false });
+           toast.dismiss(toastId);
+        }
     }
 }));
 

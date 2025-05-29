@@ -492,7 +492,7 @@ function AddGuide() {
                 </h1>
                 <span className='text-md text-gray-400 mb-2'>This field is <span className='font-bold'>NOT</span> required.</span>
                 <div className="grid w-full  items-center gap-1.5">
-                    <Textarea placeholder="Closing Message" className={`h-24`}
+                    <Textarea placeholder="Additional links" className={`h-24`}
                         value={links} onChange={(e) => { setLinks(e.target.value) }} />
                 </div>
             </div>

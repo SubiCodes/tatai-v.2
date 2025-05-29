@@ -1,9 +1,11 @@
 import { Router } from "express";
-import { createGuide, uploadMedia } from "../controllers/guide.admin.controller.js";
+import { uploadMedia, createGuide, getGuides} from "../controllers/guide.admin.controller.js";
 
 const guideAdminRouter = Router();
 
-guideAdminRouter.post('/media', uploadMedia);
+guideAdminRouter.get('/guide', getGuides)
 guideAdminRouter.post('/guide', createGuide);
+guideAdminRouter.post('/media', uploadMedia);
+
 
 export default guideAdminRouter;
