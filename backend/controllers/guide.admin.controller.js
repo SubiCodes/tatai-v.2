@@ -25,6 +25,47 @@ export const uploadMedia = async (req, res) => {
   }
 };
 
+const getResourceTypeFromUrl = (url) => {
+  try {
+    const urlObj = new URL(url);
+    const parts = urlObj.pathname.split("/");
+    return parts[2] || "image";
+  } catch {
+    return "image";
+  }
+};
+
+export const deleteMedia = async (req, res) => {
+  try {
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_SECRET_KEY,
+    });
+
+    const { publicId, url } = req.body;
+
+    if (!publicId || !url) {
+      return res.status(400).json({ error: "Missing publicId or url" });
+    }
+
+    const resource_type = getResourceTypeFromUrl(url);
+
+    const result = await cloudinary.uploader.destroy(publicId, {
+      resource_type,
+    });
+
+    if (result.result === "ok") {
+      res.json({ message: "Media deleted successfully" });
+    } else {
+      res.status(500).json({ error: "Failed to delete media" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
 export const createGuide = async (req, res) => {
   const data = req.body.data;
   try {
@@ -55,6 +96,27 @@ export const createGuide = async (req, res) => {
   }
 };
 
+export const deleteGuide = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const guide = await Guide.findById(id);
+    if (!guide) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Unable to find guide." });
+    }
+    await Guide.deleteOne({ _id: id });
+    return res
+      .status(204)
+      .json({ success: true, message: "Guide deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting guide: ", error);
+    return res
+      .status(500)
+      .json({ success: false, message: `Error deleting guide: ${error}` });
+  }
+};
+
 export const getGuides = async (req, res) => {
   try {
     const guides = await Guide.find().populate({
@@ -82,16 +144,26 @@ export const updateStatus = async (req, res) => {
   try {
     const guide = await Guide.findById(id);
     if (!guide) {
-      return res.status(400).json({success: false, message: `No guide found`,}); 
-    };
+      return res
+        .status(400)
+        .json({ success: false, message: `No guide found` });
+    }
     if (!status) {
-      return res.status(400).json({success: false, message: `Please choose a new status`}); 
-    };
+      return res
+        .status(400)
+        .json({ success: false, message: `Please choose a new status` });
+    }
     guide.status = status.trim();
     await guide.save();
-    return res.status(200).json({success: true, message: `Successfully changed guide status to ${status}.`}); 
+    return res.status(200).json({
+      success: true,
+      message: `Successfully changed guide status to ${status}.`,
+    });
   } catch (error) {
     console.error("Error updating guide status: ", error);
-    return res.status(500).json({success: false, message: `Error updating guide status: ${error.message}`,});
+    return res.status(500).json({
+      success: false,
+      message: `Error updating guide status: ${error.message}`,
+    });
   }
 };
