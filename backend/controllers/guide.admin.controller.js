@@ -40,8 +40,8 @@ export const createGuide = async (req, res) => {
         .json({ success: false, message: `User not found.` });
     }
     const newGuide = new Guide(data);
-    if (poster._role !== 'user') {
-      newGuide.status = 'accepted'
+    if (poster._role !== "user") {
+      newGuide.status = "accepted";
     }
     await newGuide.save();
     return res
@@ -58,20 +58,40 @@ export const createGuide = async (req, res) => {
 export const getGuides = async (req, res) => {
   try {
     const guides = await Guide.find().populate({
-      path: 'posterId',
-      select: 'firstName lastName email profileIcon'
+      path: "posterId",
+      select: "firstName lastName email profileIcon",
     });
 
     return res.status(200).json({
       success: true,
-      message: 'Guide fetched successfully.',
-      data: guides
+      message: "Guide fetched successfully.",
+      data: guides,
     });
   } catch (error) {
     console.error("Error fetching guides: ", error);
     return res.status(500).json({
       success: false,
-      message: `Error fetching guides: ${error.message}`
+      message: `Error fetching guides: ${error.message}`,
     });
+  }
+};
+
+export const updateStatus = async (req, res) => {
+  const { status } = req.body;
+  const { id } = req.params;
+  try {
+    const guide = await Guide.findById(id);
+    if (!guide) {
+      return res.status(400).json({success: false, message: `No guide found`,}); 
+    };
+    if (!status) {
+      return res.status(400).json({success: false, message: `Please choose a new status`}); 
+    };
+    guide.status = status.trim();
+    await guide.save();
+    return res.status(200).json({success: true, message: `Successfully changed guide status to ${status}.`}); 
+  } catch (error) {
+    console.error("Error updating guide status: ", error);
+    return res.status(500).json({success: false, message: `Error updating guide status: ${error.message}`,});
   }
 };
