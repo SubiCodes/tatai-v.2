@@ -1,17 +1,19 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
 
 import { ChevronDown } from 'lucide-react'
 
-import useGuideStore from '../../../store/guide.store.jsx'
+import useGuideStore from '../../../store/guide.store.jsx';
+import useAdminStore from '../../../store/admin.store.jsx';
 
 import empty_profile from '../../assets/images/profile-icons/empty_profile.png'
 import boy_1 from '../../assets/images/profile-icons/boy_1.png'
@@ -45,8 +47,18 @@ const profileIcons = {
 
 function ViewGuide({ isOpen, onClose, guide }) {
 
-    const { updatingStatus, updateGuideStatus, getGuideById  } = useGuideStore();
+    const { updatingStatus, updateGuideStatus, getGuideById, deleteGuide, deletingGuide } = useGuideStore();
+    const { admin } = useAdminStore();
     const latestGuide = getGuideById(guide?._id);
+
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+
+    //function responsible for deletion
+    const handleDelete = () => {
+        deleteGuide(latestGuide._id, latestGuide);
+        setIsDeleteConfirmOpen(false);
+        onClose();
+    };
 
     const handleBackdropClick = (e) => {
         if (e.target === e.currentTarget) {
@@ -117,26 +129,35 @@ function ViewGuide({ isOpen, onClose, guide }) {
                                         {latestGuide.status.charAt(0).toUpperCase() + latestGuide.status.slice(1)}
                                     </span>
                                     <DropdownMenu>
-                                        <DropdownMenuTrigger className={` ${updatingStatus ? "cursor-not-allowed" : "cursor-pointer"}`} disabled={updatingStatus}><ChevronDown size={16}/></DropdownMenuTrigger>
+                                        <DropdownMenuTrigger className={` ${updatingStatus ? "cursor-not-allowed" : "cursor-pointer"}`} disabled={updatingStatus}><ChevronDown size={16} /></DropdownMenuTrigger>
                                         <DropdownMenuContent className='bg-white border-gray-400'>
                                             <DropdownMenuLabel>Change Status</DropdownMenuLabel>
-                                            <DropdownMenuSeparator className='bg-gray-200'/>
+                                            <DropdownMenuSeparator className='bg-gray-200' />
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'accepted' && "bg-green-100 text-green-700"}`}
-                                            onClick={() => updateGuideStatus(latestGuide._id, 'accepted')}>Accepted</DropdownMenuItem>
+                                                onClick={() => updateGuideStatus(latestGuide._id, 'accepted')}>Accepted</DropdownMenuItem>
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'rejected' && "bg-red-100 text-red-700"}`}
-                                            onClick={() => updateGuideStatus(latestGuide._id, 'rejected')}>Rejected</DropdownMenuItem>
+                                                onClick={() => updateGuideStatus(latestGuide._id, 'rejected')}>Rejected</DropdownMenuItem>
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'pending' && "bg-yellow-100 text-yellow-700"}`}
-                                            onClick={() => updateGuideStatus(latestGuide._id, 'pending')}>Pending</DropdownMenuItem>
+                                                onClick={() => updateGuideStatus(latestGuide._id, 'pending')}>Pending</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </span>
+                                {admin._id === latestGuide.posterId._id ? (
+                                    <span className="text-sm text-gray-600 flex flex-row gap-2">
+                                        Other Actions:
+                                        <p className='text-red-400 cursor-pointer hover:underline' onClick={() => setIsDeleteConfirmOpen(true)}>
+                                            Delete Guide
+                                        </p>
+                                    </span>
+                                ) : null}
+
                             </div>
                         </div>
 
                         {/* Close Button */}
                         <button
                             onClick={() => { onClose() }}
-                            className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer hidden sm:hidden md:inline"
+                            className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -193,7 +214,14 @@ function ViewGuide({ isOpen, onClose, guide }) {
                                 </div>
                                 {/* Procedure Media */}
                                 <div>
-                                    <img src={latestGuide.stepMedias[index].url} />
+                                    {/\.(mp4|webm|ogg|mov)$/i.test(latestGuide.stepMedias[index].url) ? (
+                                        <video controls width="100%">
+                                            <source src={latestGuide.stepMedias[index].url} type="video/mp4" />
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    ) : (
+                                        <img src={latestGuide.stepMedias[index].url} alt={`Step media ${index + 1}`} />
+                                    )}
                                 </div>
                                 {/* Procedure Description */}
                                 <div>
@@ -235,10 +263,31 @@ function ViewGuide({ isOpen, onClose, guide }) {
                             })}
                         </p>
                     </div>
-
                 </div>
-
             </div>
+
+            {/* Confirmation Dialog */}
+            {isDeleteConfirmOpen && (
+                <div
+                    className="fixed inset-0 z-60 flex items-center justify-center bg-black/50"
+                    onClick={(e) => {
+                        if (e.target === e.currentTarget) setIsDeleteConfirmOpen(false);
+                    }}
+                >
+                    <div className="bg-white rounded-lg p-6 shadow-md w-xl flex flex-col gap-4">
+                        <h3 className='text-xl font-semibold'>Confirm Deletion</h3>
+                        <span className='mb-8'>Are you sure you want to delete "<span className='text-red-400'>{`${guide.title}`}</span>" ?</span>
+                        <div className='w-full flex flex-row justify-end gap-2'>
+                            <Button className='bg-gray-200 text-black hover:bg-gray-400/80 cursor-pointer' onClick={() => setIsDeleteConfirmOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button className={`bg-red-400 text-white hover:bg-red-400/80 ${deletingGuide ? "cursor-not-allowed" : "cursor-pointer"}`} disabled={deletingGuide} onClick={handleDelete}>
+                                Delete
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

@@ -13,6 +13,7 @@ const useGuideStore = create((set, get) => ({
     guides: [],
     fetchingGuides: false,
     postingGuide: false,
+    deletingGuide: false,
     updatingStatus: false,
     postGuide: async (data) => {
         set({ postingGuide: true });
@@ -51,6 +52,37 @@ const useGuideStore = create((set, get) => ({
             return false;
         } finally {
             set({ postingGuide: false });
+            toast.dismiss(toastId);
+        }
+    },
+    deleteGuide: async (id, guide) => {
+        set({ deletingGuide: true });
+        const toastId = toast.custom((t) => (
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Deleting Guide"} memessage="This might take a while..." />
+        ))
+        try {
+            const result = await axios.delete(`${URI}/api/v1/guideAdmin/guide/${id}`);
+            await axios.delete(`${URI}/api/v1/guideAdmin/media/`, { data: { publicId: guide.coverImage.publicId, url: guide.coverImage.url } });
+            await Promise.all(
+                guide.stepMedias.map(media =>
+                    axios.delete(`${URI}/api/v1/guideAdmin/media/`, { data: { publicId: media.publicId, url: media.url } })
+                )
+            );
+            set((state) => ({
+                guides: state.guides.filter((t) => t._id !== id)
+            }))
+            toast.custom((t) => (
+                <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Guide deletion Successful"} message={result.data.message} />
+            ))
+            return true;
+        } catch (error) {
+            console.log("Error deleting guide:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Guide deletion Unsuccessful"} message={error.response.data.message} />
+            ));
+            return false;
+        } finally {
+            set({ deletingGuide: false });
             toast.dismiss(toastId);
         }
     },
