@@ -1,5 +1,8 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+
+import ViewGuide from '../dialogs/ViewGuide.jsx';
 
 import { Button } from '@/components/ui/button'
 import { Skeleton } from "@/components/ui/skeleton"
@@ -8,6 +11,14 @@ import GuideCard from '../cards/GuideCard.jsx'
 import useGuideStore from '../../../store/guide.store.jsx';
 
 function Guides() {
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [guideToOpen, setGuideToOpen] = useState(null);
+
+    const openDialog = (guide) => {
+        setGuideToOpen(guide);
+        setIsDialogOpen(true);
+    };
+    const closeDialog = () => setIsDialogOpen(false);
 
     const navigate = useNavigate();
     const { fetchGuides, fetchingGuides, guides } = useGuideStore();
@@ -49,10 +60,20 @@ function Guides() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 w-full">
                     {guides.map((guide, index) => (
-                        <GuideCard key={guide._id || index} guide={guide} />
+                        <GuideCard
+                            key={guide._id || index}
+                            guide={guide}
+                            onClick={() => openDialog(guide)} // pass the clicked guide
+                        />
                     ))}
                 </div>
+
             )}
+            <ViewGuide
+                isOpen={isDialogOpen}
+                onClose={closeDialog}
+                guide={guideToOpen}
+            />
         </div>
     )
 }
