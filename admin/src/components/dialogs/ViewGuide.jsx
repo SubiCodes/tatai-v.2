@@ -1,5 +1,18 @@
 import React, { useEffect } from 'react'
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+import { ChevronDown } from 'lucide-react'
+
+import useGuideStore from '../../../store/guide.store.jsx'
+
 import empty_profile from '../../assets/images/profile-icons/empty_profile.png'
 import boy_1 from '../../assets/images/profile-icons/boy_1.png'
 import boy_2 from '../../assets/images/profile-icons/boy_2.png'
@@ -31,6 +44,10 @@ const profileIcons = {
 };
 
 function ViewGuide({ isOpen, onClose, guide }) {
+
+    const { updatingStatus, updateGuideStatus, getGuideById  } = useGuideStore();
+    const latestGuide = getGuideById(guide?._id);
+
     const handleBackdropClick = (e) => {
         if (e.target === e.currentTarget) {
             onClose()
@@ -75,19 +92,43 @@ function ViewGuide({ isOpen, onClose, guide }) {
                         <div className="flex flex-row gap-4 items-center">
                             {/* Profile Icon */}
                             <img
-                                src={profileIcons[guide.posterId.profileIcon]}
+                                src={profileIcons[latestGuide.posterId.profileIcon]}
                                 alt="Profile Icon"
                                 className="w-18 h-18 rounded-full object-cover"
                             />
 
                             {/* Title and Info */}
                             <div className="flex flex-col">
-                                <h2 className="text-2xl font-semibold text-gray-900 mb-1">{guide.title}</h2>
+                                <h2 className="text-2xl font-semibold text-gray-900 mb-1">{latestGuide.title}</h2>
                                 <span className="text-sm text-gray-600 flex flex-row gap-2">
-                                    Posted by: <p className="text-gray-800">{`${guide.posterId.firstName} ${guide.posterId.lastName}`}</p>
+                                    Posted by: <p className="text-gray-800">{`${latestGuide.posterId.firstName} ${latestGuide.posterId.lastName}`}</p>
                                 </span>
                                 <span className="text-sm text-gray-600 flex flex-row gap-2">
-                                    Date posted: <p className="text-gray-800">{new Date(guide.updatedAt).toLocaleDateString()}</p>
+                                    Date posted: <p className="text-gray-800">{new Date(latestGuide.updatedAt).toLocaleDateString()}</p>
+                                </span>
+                                <span className="text-sm text-gray-600 flex flex-row items-center gap-2">
+                                    Status: <span
+                                        className={`text-sm font-medium px-2 py-1 rounded-full
+                                        ${latestGuide.status === 'pending' && ' text-yellow-700 border-yellow-200'}
+                                        ${latestGuide.status === 'accepted' && ' text-green-700 border-green-200'}
+                                        ${latestGuide.status === 'rejected' && ' text-red-700 border-red-200'}
+                                        `}
+                                    >
+                                        {latestGuide.status.charAt(0).toUpperCase() + latestGuide.status.slice(1)}
+                                    </span>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger className={` ${updatingStatus ? "cursor-not-allowed" : "cursor-pointer"}`} disabled={updatingStatus}><ChevronDown size={16}/></DropdownMenuTrigger>
+                                        <DropdownMenuContent className='bg-white border-gray-400'>
+                                            <DropdownMenuLabel>Change Status</DropdownMenuLabel>
+                                            <DropdownMenuSeparator className='bg-gray-200'/>
+                                            <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'accepted' && "bg-green-100 text-green-700"}`}
+                                            onClick={() => updateGuideStatus(latestGuide._id, 'accepted')}>Accepted</DropdownMenuItem>
+                                            <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'rejected' && "bg-red-100 text-red-700"}`}
+                                            onClick={() => updateGuideStatus(latestGuide._id, 'rejected')}>Rejected</DropdownMenuItem>
+                                            <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'pending' && "bg-yellow-100 text-yellow-700"}`}
+                                            onClick={() => updateGuideStatus(latestGuide._id, 'pending')}>Pending</DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </span>
                             </div>
                         </div>
@@ -109,19 +150,19 @@ function ViewGuide({ isOpen, onClose, guide }) {
 
                     {/* Cover Image */}
                     <div className='w-full flex flex-col items-center justify-between'>
-                        <img src={guide.coverImage?.url} />
+                        <img src={latestGuide.coverImage?.url} />
                     </div>
                     {/* Description */}
                     <div className='w-full flex flex-col flex-wrap gap-2'>
                         <h1 className='text-xl font-semibold self-start'>Description:</h1>
-                        <p className='text-justify'>{guide.description}</p>
+                        <p className='text-justify'>{latestGuide.description}</p>
                     </div>
                     {/* Tools */}
-                    {guide.category !== 'tool' ? (
+                    {latestGuide.category !== 'tool' ? (
                         <div className='w-full flex flex-col flex-wrap gap-2'>
                             <h1 className='text-xl font-semibold self-start'>Tools you'll need:</h1>
                             <div className='w-full flex flex-row flex-wrap gap-2'>
-                                {guide.tools.map((tool) => (
+                                {latestGuide.tools.map((tool) => (
                                     <span className='flex flex-row items-center justify-center gap-2 text-sm font-medium px-4 py-1 rounded-full border bg-gray/20 text-gray border-gray/50'>
                                         {tool}
                                     </span>
@@ -130,33 +171,33 @@ function ViewGuide({ isOpen, onClose, guide }) {
                         </div>
                     ) : (null)}
                     {/* Materials */}
-                    {guide.category === 'diy' ? (
+                    {latestGuide.category === 'diy' ? (
                         <div className='w-full flex flex-col flex-wrap gap-2'>
                             <h1 className='text-xl font-semibold self-start'>Materials you'll need:</h1>
                             <div className='w-full flex flex-row flex-wrap gap-2'>
-                                {guide.materials}
+                                {latestGuide.materials}
                             </div>
                         </div>
                     ) : (null)}
                     {/* Procedures */}
                     <div className='w-full flex flex-col flex-wrap gap-2'>
                         <h1 className='text-xl font-semibold self-start'>Procedures:</h1>
-                        {guide.stepTitles.map((step, index) => (
+                        {latestGuide.stepTitles.map((step, index) => (
                             <div className='flex flex-col gap-2 mb-4' key={index}>
                                 {/* Procedure Title */}
                                 <div className='flex flex-row flex-wrap items-center gap-4'>
                                     <span className='flex flex-row items-center justify-center gap-2 text-xs font-medium w-8 h-8 rounded-full border bg-secondary/20 text-secondary border-secondary/50'>
                                         {index + 1}
                                     </span>
-                                    <span>{step}</span>
+                                    <span className='text-lg font-semibold'>{step}</span>
                                 </div>
                                 {/* Procedure Media */}
                                 <div>
-                                    <img src={guide.stepMedias[index].url} />
+                                    <img src={latestGuide.stepMedias[index].url} />
                                 </div>
                                 {/* Procedure Description */}
                                 <div>
-                                    <span className='text-justify'>{guide.stepDescriptions[index]}</span>
+                                    <span className='text-justify'>{latestGuide.stepDescriptions[index]}</span>
                                 </div>
                             </div>
                         ))}
@@ -164,13 +205,13 @@ function ViewGuide({ isOpen, onClose, guide }) {
                     {/* Closing Message */}
                     <div className='w-full flex flex-col flex-wrap gap-2'>
                         <h1 className='text-xl font-semibold self-start'>Closing Message:</h1>
-                        <p className='text-justify'>{guide.closingMessage}</p>
+                        <p className='text-justify'>{latestGuide.closingMessage}</p>
                     </div>
                     {/* Additional Links */}
                     <div className="w-full flex flex-col flex-wrap gap-2">
                         <h1 className="text-xl font-semibold self-start">Links:</h1>
                         <p className="text-wrap break-words">
-                            {guide.links.split(/(\s+)/).map((part, index) => {
+                            {latestGuide.links.split(/(\s+)/).map((part, index) => {
                                 const urlRegex = /(https?:\/\/[^\s]+)/;
                                 if (urlRegex.test(part)) {
                                     const displayUrl = part.length > 50 ? part.substring(0, 50) + '...' : part;

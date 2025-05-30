@@ -9,10 +9,11 @@ import ToastPending from "../src/components/util/ToastPending.jsx";
 
 const URI = import.meta.env.VITE_URI;
 
-const useGuideStore = create((set) => ({
+const useGuideStore = create((set, get) => ({
     guides: [],
     fetchingGuides: false,
     postingGuide: false,
+    updatingStatus: false,
     postGuide: async (data) => {
         set({ postingGuide: true });
         const toastId = toast.custom((t) => (
@@ -59,7 +60,7 @@ const useGuideStore = create((set) => ({
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Fetching Guides"} message="This might take a while..." />));
         try {
             const result = await axios.get(`${URI}/api/v1/guideAdmin/guide`);
-            set({guides: result.data.data});
+            set({ guides: result.data.data });
             console.log(result.data.data);
             return true
         } catch (error) {
@@ -69,8 +70,31 @@ const useGuideStore = create((set) => ({
             ));
             return false;
         } finally {
-           set({ fetchingGuides: false });
-           toast.dismiss(toastId);
+            set({ fetchingGuides: false });
+            toast.dismiss(toastId);
+        }
+    },
+    getGuideById: (id) => {
+        return get().guides.find((g) => g._id === id);
+    },
+    updateGuideStatus: async (id, status) => {
+        set({ updatingStatus: true });
+        const toastId = toast.custom((t) => (
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Updating Guide Status"} message="This might take a while..." />));
+        try {
+            const result = await axios.put(`${URI}/api/v1/guideAdmin/guide/status/${id}`, { status: status });
+            set((state) => ({ guides: state.guides.map((guide) => guide._id === id ? { ...guide, status } : guide) }));
+            toast.custom((t) => (
+                <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Updating guide status Successful"} message={result.data.message} />
+            ));
+        } catch (error) {
+            console.log("Error Updating Guide Status:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Updating Guide Status Unsuccessful"} message={error.response.data.message} />
+            ));
+        } finally {
+            set({ updatingStatus: false });
+            toast.dismiss(toastId);
         }
     }
 }));
