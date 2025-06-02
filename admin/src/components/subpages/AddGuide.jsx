@@ -119,6 +119,7 @@ function AddGuide() {
                     toast.custom((t) => (
                         <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Input error!"} message={"The video submitted is too long."} />
                     ));
+                    e.target.value = '';
                 } else {
                     const updatedMedia = [...stepMedias];
                     updatedMedia[index] = file;
@@ -175,6 +176,8 @@ function AddGuide() {
         setClosingMessageError(false)
         setToolsError(false);
         setMaterialsError(false);
+
+        console.log(coverImage);
 
         if (!title.trim()) {
             setTitleError(true);
@@ -446,6 +449,7 @@ function AddGuide() {
                                         />
                                     ) : (
                                         <video
+                                            key={stepMedias[index].name + stepMedias[index].lastModified}
                                             controls
                                             className="w-full h-full object-contain cursor-pointer"
                                         >

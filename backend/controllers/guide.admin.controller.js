@@ -96,6 +96,63 @@ export const createGuide = async (req, res) => {
   }
 };
 
+export const editGuide = async (req, res) => {
+  const { data } = req.body;
+
+  try {
+    if (!data) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Please provide the updated guide data.",
+        });
+    }
+    const poster = await User.findById(data.posterId);
+    if (!poster) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+    const guide = await Guide.findById(data._id);
+    if (!guide) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Guide not found." });
+    }
+
+    // Update the guide fields with the new data
+    guide.status = data.status;
+    guide.posterId = data.posterId;
+    guide.category = data.category;
+    guide.title = data.title;
+    guide.coverImage = data.coverImage;
+    guide.description = data.description;
+    guide.tools = data.tools;
+    guide.materials = data.materials;
+    guide.stepTitles = data.stepTitles;
+    guide.stepDescriptions = data.stepDescriptions;
+    guide.stepMedias = data.stepMedias;
+    guide.closingMessage = data.closingMessage;
+    guide.links = data.links;
+
+    // Save the updated guide
+    const updatedGuide = await guide.save();
+
+    // Return success
+    return res.status(200).json({
+      success: true,
+      message: "Guide updated successfully.",
+      data: updatedGuide,
+    });
+  } catch (error) {
+    console.error("Error editing guide: ", error);
+    return res
+      .status(500)
+      .json({ success: false, message: `Error editing guide: ${error}` });
+  }
+};
+
 export const deleteGuide = async (req, res) => {
   const { id } = req.params;
   try {
@@ -128,6 +185,30 @@ export const getGuides = async (req, res) => {
       success: true,
       message: "Guide fetched successfully.",
       data: guides,
+    });
+  } catch (error) {
+    console.error("Error fetching guides: ", error);
+    return res.status(500).json({
+      success: false,
+      message: `Error fetching guides: ${error.message}`,
+    });
+  }
+};
+
+export const getGuide = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const guide = await Guide.findById(id);
+    if (!guide) {
+      return res.status(404).json({
+        success: false,
+        message: `Guide no longer exists.`,
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Guide fetched successfully.",
+      data: guide,
     });
   } catch (error) {
     console.error("Error fetching guides: ", error);

@@ -28,6 +28,7 @@ import lgbt_1 from '../../assets/images/profile-icons/lgbt_1.png'
 import lgbt_2 from '../../assets/images/profile-icons/lgbt_2.png'
 import lgbt_3 from '../../assets/images/profile-icons/lgbt_3.png'
 import lgbt_4 from '../../assets/images/profile-icons/lgbt_4.png'
+import { useNavigate } from 'react-router-dom';
 
 const profileIcons = {
     'empty_profile': empty_profile,
@@ -50,6 +51,8 @@ function ViewGuide({ isOpen, onClose, guide }) {
     const { updatingStatus, updateGuideStatus, getGuideById, deleteGuide, deletingGuide } = useGuideStore();
     const { admin } = useAdminStore();
     const latestGuide = getGuideById(guide?._id);
+
+    const navigate = useNavigate();
 
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
@@ -145,6 +148,9 @@ function ViewGuide({ isOpen, onClose, guide }) {
                                 {admin._id === latestGuide.posterId._id ? (
                                     <span className="text-sm text-gray-600 flex flex-row gap-2">
                                         Other Actions:
+                                        <p className='text-blue-400 cursor-pointer hover:underline' onClick={() => navigate(`/guides/edit-guide/${latestGuide._id}`)}>
+                                            Edit Guide
+                                        </p>
                                         <p className='text-red-400 cursor-pointer hover:underline' onClick={() => setIsDeleteConfirmOpen(true)}>
                                             Delete Guide
                                         </p>
@@ -204,7 +210,7 @@ function ViewGuide({ isOpen, onClose, guide }) {
                     <div className='w-full flex flex-col flex-wrap gap-2'>
                         <h1 className='text-xl font-semibold self-start'>Procedures:</h1>
                         {latestGuide.stepTitles.map((step, index) => (
-                            <div className='flex flex-col gap-2 mb-4' key={index}>
+                            <div className='flex flex-col gap-2 mb-4 w-full h-auto' key={index}>
                                 {/* Procedure Title */}
                                 <div className='flex flex-row flex-wrap items-center gap-4'>
                                     <span className='flex flex-row items-center justify-center gap-2 text-xs font-medium w-8 h-8 rounded-full border bg-secondary/20 text-secondary border-secondary/50'>
@@ -213,19 +219,38 @@ function ViewGuide({ isOpen, onClose, guide }) {
                                     <span className='text-lg font-semibold'>{step}</span>
                                 </div>
                                 {/* Procedure Media */}
-                                <div>
+                                <div className="w-full">
                                     {/\.(mp4|webm|ogg|mov)$/i.test(latestGuide.stepMedias[index].url) ? (
-                                        <video controls width="100%">
+                                        <video
+                                            controls
+                                            className="block w-full max-w-full"
+                                            style={{
+                                                maxHeight: "500px",
+                                                objectFit: "contain",
+                                                display: "block",
+                                                margin: "0 auto",
+                                            }}
+                                        >
                                             <source src={latestGuide.stepMedias[index].url} type="video/mp4" />
                                             Your browser does not support the video tag.
                                         </video>
                                     ) : (
-                                        <img src={latestGuide.stepMedias[index].url} alt={`Step media ${index + 1}`} />
+                                        <img
+                                            src={latestGuide.stepMedias[index].url}
+                                            alt={`Step media ${index + 1}`}
+                                            className="block w-full max-w-full"
+                                            style={{
+                                                maxHeight: "500px",
+                                                objectFit: "contain",
+                                                display: "block",
+                                                margin: "0 auto",
+                                            }}
+                                        />
                                     )}
                                 </div>
                                 {/* Procedure Description */}
-                                <div>
-                                    <span className='text-justify'>{latestGuide.stepDescriptions[index]}</span>
+                                <div className="w-full">
+                                    <span className='block text-justify'>{latestGuide.stepDescriptions[index]}</span>
                                 </div>
                             </div>
                         ))}

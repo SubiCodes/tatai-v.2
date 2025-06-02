@@ -12,13 +12,16 @@ const URI = import.meta.env.VITE_URI;
 const useGuideStore = create((set, get) => ({
     guides: [],
     fetchingGuides: false,
+    guide: null,
+    fetchingGuide: false,
     postingGuide: false,
     deletingGuide: false,
+    updatingGuide: false,
     updatingStatus: false,
     postGuide: async (data) => {
         set({ postingGuide: true });
         const toastId = toast.custom((t) => (
-            <ToastPending dismiss={() => toast.dismiss(t)} title={"Updating password"} message="This might take a while..." />));
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Posting guide"} message="This might take a while..." />));
         try {
             const coverImg = data.coverImage;
             const base64 = await convertToBase64(coverImg);
@@ -52,6 +55,69 @@ const useGuideStore = create((set, get) => ({
             return false;
         } finally {
             set({ postingGuide: false });
+            toast.dismiss(toastId);
+        }
+    },
+    updateGuide: async (data, mediaToDelete) => {
+        set({ updatingGuide: true });
+        const toastId = toast.custom((t) => (
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Updating guide"} message="This might take a while..." />));
+        try {
+            //Check the cover image first.
+            if (data.coverImage && typeof data.coverImage === "object" && "name" in data.coverImage) {
+                const coverImg = data.coverImage;
+                const base64 = await convertToBase64(coverImg);
+                const coverImageUpload = await axios.post(`${URI}/api/v1/guideAdmin/media`, { data: base64 });
+                data.coverImage = coverImageUpload.data;
+            };
+            //Check the step medias
+            const stepFilesData = [];
+            for (const file of data.stepMedias) {
+                if (file) {
+                    if (typeof file === "object" && "name" in file) {
+                        // It's a File object – convert to base64 and upload
+                        const base64 = await convertToBase64(file);
+                        const res = await axios.post(`${URI}/api/v1/guideAdmin/media`, { data: base64 });
+                        stepFilesData.push({
+                            ...res.data,
+                        });
+                    } else {
+                        // It's already an object (uploaded media)
+                        stepFilesData.push(file);
+                    }
+                } else {
+                    // If null, keep as null
+                    stepFilesData.push(null);
+                }
+            }
+            data.stepMedias = stepFilesData;
+            //Update the Guide
+            const result = await axios.put(`${URI}/api/v1/guideAdmin/guide`, { data });
+            toast.custom((t) => (
+                <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Guide Update Successful"} message={result.data.message} />
+            ));
+            //Delete Medias Changed
+            await Promise.all(
+                mediaToDelete
+                    .filter(media => media) // Skip any nulls
+                    .map(media =>
+                        axios.delete(`${URI}/api/v1/guideAdmin/media/`, {
+                            data: {
+                                publicId: media.publicId,
+                                url: media.url,
+                            },
+                        })
+                    )
+            );
+            return result.data.data;
+        } catch (error) {
+            console.log("Error updating guide:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Guide Update Unsuccessful"} message={error.response.data.message} />
+            ));
+            return false;
+        } finally {
+            set({ updatingGuide: false });
             toast.dismiss(toastId);
         }
     },
@@ -93,10 +159,9 @@ const useGuideStore = create((set, get) => ({
         try {
             const result = await axios.get(`${URI}/api/v1/guideAdmin/guide`);
             set({ guides: result.data.data });
-            console.log(result.data.data);
             return true
         } catch (error) {
-            console.log("Error posting guide:", error);
+            console.log("Error fetching guides:", error);
             toast.custom((t) => (
                 <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Fetching Guides Unsuccessful"} message={error.response.data.message} />
             ));
@@ -104,6 +169,21 @@ const useGuideStore = create((set, get) => ({
         } finally {
             set({ fetchingGuides: false });
             toast.dismiss(toastId);
+        }
+    },
+    fetchGuide: async (id) => {
+        set({ fetchingGuide: true });
+        try {
+            const res = await axios.get(`${URI}/api/v1/guideAdmin/guide/${id}`);
+            set({ guide: res.data.data });
+        } catch (error) {
+            console.log("Error fetching guide:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Fetching Guide Unsuccessful"} message={error.response.data.message} />
+            ));
+            return false;
+        } finally {
+            set({ fetchingGuide: false });
         }
     },
     getGuideById: (id) => {
