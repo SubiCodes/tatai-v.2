@@ -115,8 +115,6 @@ function EditGuide() {
         setToolsError(false);
         setMaterialsError(false);
         setClosingMessageErrors(false);
-
-        console.log(editedGuide.stepMedias);
         
         let valid = true;
 
