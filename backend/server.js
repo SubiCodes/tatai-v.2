@@ -8,7 +8,6 @@ import authAdminRouter from './routes/auth.admin.route.js';
 import userAdminRouter from './routes/user.admin.route.js';
 import profileAdminRouter from './routes/profile.admin.route.js';
 import guideAdminRouter from './routes/guide.admin.route.js';
-
 dotenv.config();
 
 const app = express();
