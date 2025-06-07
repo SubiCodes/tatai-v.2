@@ -20,4 +20,4 @@ export const signIn = async (req, res) => {
         console.error("Error in Signin", error);
         return res.status(500).json({ success: false, message: `Error Signing in: ${error}` });
     }
-}
+};
