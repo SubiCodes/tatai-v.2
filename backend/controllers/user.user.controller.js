@@ -21,7 +21,7 @@ export const createAccout = async (req, res) => {
         status = "Verified";
     };
 
-    const verificationToken = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
     const encryptedPassword = await bcrypt.hash(password, 10);
 
     try {
