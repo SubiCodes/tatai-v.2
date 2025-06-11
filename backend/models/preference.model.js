@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const preferenceSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User", // Reference to the User model
+        ref: "User",
         required: true
     },
     preferredName: {
@@ -30,10 +30,10 @@ const preferenceSchema = new mongoose.Schema({
         default: [] 
     }
 }, {
-    collection: "UserPreferences",
+    collection: "preference",
     timestamps: true
 });
 
-const Preference = mongoose.model("Preference", preferenceSchema);
+const Preference = mongoose.model("preference", preferenceSchema);
 
 export default Preference;
