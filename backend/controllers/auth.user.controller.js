@@ -1,4 +1,5 @@
 import User from '../models/user.model.js';
+import Preference from '../models/preference.model.js';
 import bcrypt from 'bcryptjs';
 import { sendVerificationToken } from '../nodemailer/email.js';
 import { sendResetToken } from '../nodemailer/email.js';
@@ -52,7 +53,13 @@ export const resendVerificationToken = async (req, res) => {
             return res.status(400).json({ success: false, message: `No user with that email exists.` });
         };
         if (!user.verificationToken) {
-            return res.status(400).json({ success: false, message: `User has no verification token.` });
+            if (user.status !== 'Verified') {
+                const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+                user.verificationToken = verificationToken
+                await user.save();
+            } else {
+                return res.status(400).json({ success: false, message: "User has no verification token." })
+            }
         };
         sendVerificationToken(email, user.verificationToken);
         return res.status(200).json({ success: true, message: "Email resent." })
@@ -123,5 +130,29 @@ export const resetPassword = async (req, res) => {
     } catch (error) {
         console.error("Error in Resetting Password", error);
         return res.status(500).json({ success: false, message: `Error in Resetting Password: ${error}` });
+    }
+};
+
+export const validateUserAccess = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(400).json({ success: false, message: "User not found." });
+        };
+        if (user.status === 'Banned') {
+            return res.status(400).json({ success: false, message: "This user is currently banned. Please contact tataihomeassistant@gmail.com for questions.", errorType: 'banned', user: { _id: user._id, email: user.email } });
+        }
+        if (user.status !== 'Verified') {
+            return res.status(400).json({ success: false, message: "User not yet verified. Please verify your account.", errorType: 'unverified', user: { _id: user._id, email: user.email } });
+        };
+        const preference = await Preference.findOne({ userId: id });
+        if (!preference) {
+            return res.status(400).json({ success: false, message: "Please setup your preferences.", errorType: 'preference', user: { _id: user._id, email: user.email } });
+        };
+        return res.status(200).json({ success: true, message: "User validated.", errorType: 'none', user: { _id: user._id, email: user.email } });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Cannot fetch user.", error: error.message });
     }
 }
