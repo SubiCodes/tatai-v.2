@@ -44,20 +44,50 @@ export const fetchUser = async (req, res) => {
         if (!user) {
             return res.status(400).json({ success: false, message: "An account with that ID does not exist." });
         };
-        return res.status(200).json({success: true, message: "User fetched successfully.", data: {...user.toObject(), password: undefined}})
+        return res.status(200).json({ success: true, message: "User fetched successfully.", data: { ...user.toObject(), password: undefined } })
     } catch (error) {
         console.log(error);
         res.status(500).json({ success: false, message: "Cannot fetch user.", error: error.message })
     }
 };
 
-export const updatePreferences = async (req, res) => {
-    const { data, email  } = req.body;
+export const updateUserProfile = async (req, res) => {
+    const { data, email } = req.body;
     try {
         const user = await User.findOne({ email: email });
         if (!user) {
             return res.status(400).json({ success: false, message: "An account with that Email does not exist." });
+        };
+        if (data.firstName && data.firstName.trim() !== '') {
+            user.firstName = data.firstName;
         }
+        if (data.lastName && data.lastName.trim() !== '') {
+            user.lastName = data.lastName;
+        }
+        if (data.gender && data.gender.trim() !== '') {
+            user.gender = data.gender;
+        }
+        if (data.birthday && data.birthday.trim() !== '') {
+            user.birthday = data.birthday;
+        }
+        if (data.profileIcon && data.profileIcon.trim() !== '') {
+            user.profileIcon = data.profileIcon;
+        }
+        await user.save();
+        return res.status(200).json({ success: true, message: "Profile updated successfully.", data: user});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Cannot update user profile.", error: error.message });
+    }
+}
+
+export const updatePreferences = async (req, res) => {
+    const { data, email } = req.body;
+    try {
+        const user = await User.findOne({ email: email });
+        if (!user) {
+            return res.status(400).json({ success: false, message: "An account with that Email does not exist." });
+        };
         let preference = await Preference.findOne({ userId: user._id });
         if (!preference) {
             preference = new Preference({
