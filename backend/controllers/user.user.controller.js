@@ -74,10 +74,35 @@ export const updateUserProfile = async (req, res) => {
             user.profileIcon = data.profileIcon;
         }
         await user.save();
-        return res.status(200).json({ success: true, message: "Profile updated successfully.", data: user});
+        return res.status(200).json({ success: true, message: "Profile updated successfully.", data: user });
     } catch (error) {
         console.log(error);
         res.status(500).json({ success: false, message: "Cannot update user profile.", error: error.message });
+    }
+}
+
+export const fetchPreferences = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(400).json({ success: false, message: "An account with that ID does not exist." });
+        };
+        let preference = await Preference.findOne({ userId: user._id });
+        if (!preference) {
+            preference = new Preference({
+                userId: user._id,
+                preferredName: `${user.firstName} ${user.lastName}`,
+                preferredTone: 'formal',
+                toolFamiliarity: 'unfamiliar',
+                skillLevel: 'beginner'
+            });
+            await preference.save();
+        }
+        return res.status(200).json({ success: true, message: "User preference fetched successfully.", data: preference });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Cannot fetch user preference.", error: error.message });
     }
 }
 
