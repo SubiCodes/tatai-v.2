@@ -12,6 +12,7 @@ import guideAdminRouter from './routes/guide.admin.route.js';
 import authUserRouter from './routes/auth.user.route.js';
 import userUserRouter from './routes/user.user.route.js';
 import emailUserRouter from './routes/email.user.route.js';
+import guideUserRouter from './routes/guide.user.route.js';
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use('/api/v1/guideAdmin', guideAdminRouter);
 app.use('/api/v1/authUser', authUserRouter);
 app.use('/api/v1/userUser', userUserRouter);
 app.use('/api/v1/emailUser', emailUserRouter);
+app.use('/api/v1/guideUser', guideUserRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello, World!!!');
