@@ -13,6 +13,7 @@ import authUserRouter from './routes/auth.user.route.js';
 import userUserRouter from './routes/user.user.route.js';
 import emailUserRouter from './routes/email.user.route.js';
 import guideUserRouter from './routes/guide.user.route.js';
+import feedbackRouter from './routes/feedback.route.js';
 
 dotenv.config();
 
@@ -34,6 +35,9 @@ app.use('/api/v1/authAdmin', authAdminRouter);
 app.use('/api/v1/userAdmin', userAdminRouter);
 app.use('/api/v1/profileAdmin', profileAdminRouter);
 app.use('/api/v1/guideAdmin', guideAdminRouter);
+
+//Both Users
+app.use('/api/v1/feedback', feedbackRouter);
 
 //user/mobile routers
 app.use('/api/v1/authUser', authUserRouter);
