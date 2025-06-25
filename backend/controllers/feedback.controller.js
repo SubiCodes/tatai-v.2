@@ -41,6 +41,7 @@ export const fetchFeedbacks = async (req, res) => {
 export const createFeedback = async (req, res) => {
     const { userId, guideId, rating, comment } = req.body;
     try {
+        console.log(userId, guideId, rating, comment)
         const guide = await Guide.findById(guideId);
         if (!guide) {
             return res.status(404).json({ success: false, message: 'Guide not found' });
@@ -54,7 +55,11 @@ export const createFeedback = async (req, res) => {
             return res.status(404).json({ success: false, message: 'A feedback from user in this guide already exists.' });
         };
         const feedback = await Feedback.create({ userId: userId, guideId: guideId, rating: rating, comment: comment });
-        res.status(200).json({ success: true, message: "Thank you for your feedback!", data: feedback });
+        const populatedFeedback = await feedback.populate({
+            path: "userId",
+            select: "firstName lastName email profileIcon"
+        });
+        res.status(200).json({ success: true, message: "Thank you for your feedback!", data: populatedFeedback });
     } catch (error) {
         console.error('Error details:', error);
         res.status(500).json({ success: false, message: 'Error creating feedback' });
