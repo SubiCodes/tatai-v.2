@@ -49,7 +49,7 @@ app.get('/', (req, res) => {
     res.send('Hello, World!!!');
 });
 
-app.listen(5000, () => {
+app.listen(3000, () => {
     connectDB();
-    console.log('Server is running on htttp://localhost:5000');
+    console.log('Server is running on htttp://localhost:3000');
 });
