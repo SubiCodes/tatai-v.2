@@ -120,7 +120,7 @@ export const updatePreferences = async (req, res) => {
                 preferredName: data.preferredName.trim() || `${user.firstName} ${user.lastName}`,
                 preferredTone: data.preferredTone.trim() || 'formal',
                 toolFamiliarity: data.toolFamiliarity.trim() || 'unfamiliar',
-                skillLevel: data.skillLevel.trim() || 'beginner'
+                skillLevel: data.skillLevel.trim() || 'beginner',
             });
         } else {
             if (data.preferredName && data.preferredName.trim() !== '') {
@@ -134,6 +134,17 @@ export const updatePreferences = async (req, res) => {
             }
             if (data.skillLevel && data.skillLevel.trim() !== '') {
                 preference.skillLevel = data.skillLevel;
+            }
+            if (data.searchTerm && data.searchTerm.trim() !== '') {
+                const term = data.searchTerm.trim();
+                if (!preference.previousSearches) {
+                    preference.previousSearches = [];
+                }
+                preference.previousSearches = preference.previousSearches.filter(t => t !== term);
+                preference.previousSearches.unshift(term);
+                if (preference.previousSearches.length > 10) {
+                    preference.previousSearches = preference.previousSearches.slice(0, 10);
+                }
             }
         }
         await preference.save();
