@@ -11,33 +11,34 @@ export const searchReccomendations = async (req, res) => {
     try {
         const userMatches = await User.find({
             $or: [
-                { firstName: { $regex: query, $options: 'i' } },
-                { lastName: { $regex: query, $options: 'i' } },
+                { firstName: { $regex: search, $options: 'i' } },
+                { lastName: { $regex: search, $options: 'i' } },
             ],
         }).limit(5);
 
         const guideMatches = await Guide.find({
             $or: [
-                { title: { $regex: query, $options: 'i' } },
-                { description: { $regex: query, $options: 'i' } },
+                { title: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } },
             ],
             status: 'accepted'
         }).limit(5);
 
-        const formattedUsers = userMatches.map((user) => ({
-            name: `${user.firstName} ${user.lastName}`,
-        }));
+        const formattedUsers = userMatches.map(
+            (user) => `${user.firstName} ${user.lastName}`
+        );
 
-        const formattedGuides = guideMatches.map((guide) => ({
-            title: guide.title,
-        }));
+        const formattedGuides = guideMatches.map(
+            (guide) => guide.title
+        );
+
 
         const combinedResults = [...formattedUsers, ...formattedGuides];
-        const q = query.toLowerCase();
+        const q = search.toLowerCase();
 
         combinedResults.sort((a, b) => {
-            const aLabel = a.label.toLowerCase();
-            const bLabel = b.label.toLowerCase();
+            const aLabel = a.toLowerCase();
+            const bLabel = b.toLowerCase();
 
             const score = (label) => {
                 if (label === q) return 3;
