@@ -1,4 +1,5 @@
-import Guide from "../models/guide.model";
+import Guide from "../models/guide.model.js";
+import User from "../models/user.model.js";
 
 export const searchReccomendations = async (req, res) => {
     const { search } = req.body;
@@ -8,7 +9,7 @@ export const searchReccomendations = async (req, res) => {
     }
 
     try {
-        const userMatches = await Guide.find({
+        const userMatches = await User.find({
             $or: [
                 { firstName: { $regex: query, $options: 'i' } },
                 { lastName: { $regex: query, $options: 'i' } },
