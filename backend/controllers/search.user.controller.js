@@ -11,7 +11,7 @@ export const searchReccomendations = async (req, res) => {
     try {
         // Split search into individual words
         const searchWords = search.trim().split(/\s+/);
-        
+
         // Create regex patterns for each word
         const wordRegexes = searchWords.map(word => new RegExp(word, 'i'));
 
@@ -58,16 +58,16 @@ export const searchReccomendations = async (req, res) => {
             const score = (label) => {
                 // Exact match gets highest score
                 if (label === q) return 5;
-                
+
                 // Check how many search words are found in the label
-                const wordsFound = searchWords.filter(word => 
+                const wordsFound = searchWords.filter(word =>
                     label.includes(word.toLowerCase())
                 ).length;
-                
+
                 // More matched words = higher score
                 if (wordsFound === searchWords.length) return 4;
                 if (wordsFound > 0) return 3;
-                
+
                 // Fallback to original scoring
                 if (label.startsWith(q)) return 2;
                 if (label.includes(q)) return 1;
@@ -77,10 +77,10 @@ export const searchReccomendations = async (req, res) => {
             return score(bLabel) - score(aLabel);
         });
 
-        return res.status(200).json({ 
-            success: true, 
-            message: "Successfully fetched data.", 
-            data: combinedResults 
+        return res.status(200).json({
+            success: true,
+            message: "Successfully fetched data.",
+            data: combinedResults
         });
 
     } catch (error) {
@@ -124,7 +124,10 @@ export const searchResults = async (req, res) => {
             ]
         };
 
-        const guideMatches = await Guide.find(guideQuery).limit(5);
+        const guideMatches = await Guide.find(guideQuery).populate({
+            path: 'posterId',
+            select: 'firstName lastName email profileIcon',
+        });;
 
         const formattedUsers = userMatches.map(
             (user) => ({ type: 'user', data: user })
@@ -159,10 +162,10 @@ export const searchResults = async (req, res) => {
             return bScore - aScore;
         });
 
-        return res.status(200).json({ 
-            success: true, 
-            message: "Successfully fetched data.", 
-            data: combinedResults 
+        return res.status(200).json({
+            success: true,
+            message: "Successfully fetched data.",
+            data: combinedResults
         });
 
     } catch (error) {

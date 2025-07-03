@@ -142,8 +142,8 @@ export const updatePreferences = async (req, res) => {
                 }
                 preference.previousSearches = preference.previousSearches.filter(t => t !== term);
                 preference.previousSearches.unshift(term);
-                if (preference.previousSearches.length > 10) {
-                    preference.previousSearches = preference.previousSearches.slice(0, 10);
+                if (preference.previousSearches.length > 5) {
+                    preference.previousSearches = preference.previousSearches.slice(0, 5);
                 }
             }
         }
