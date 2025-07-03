@@ -97,32 +97,34 @@ export const searchResults = async (req, res) => {
     }
 
     try {
-        const searchWords = search.trim().split(/\s+/);
-        const wordRegexes = searchWords.map(word => new RegExp(word, 'i'));
+        // Split search into individual words
+        const searchWords = search.trim().split(/\s+/).filter(word => word.length > 0);
+        console.log("Search words:", searchWords);
 
+        // Build user query using string regex
         const userQuery = {
             $or: [
-                ...wordRegexes.map(regex => ({ firstName: regex })),
-                ...wordRegexes.map(regex => ({ lastName: regex }))
+                ...searchWords.map(word => ({ firstName: { $regex: word, $options: 'i' } })),
+                ...searchWords.map(word => ({ lastName: { $regex: word, $options: 'i' } }))
             ]
         };
 
+        const userMatches = await User.find(userQuery).limit(5);
+
+        // Build guide query using string regex
         const guideQuery = {
             $and: [
                 { status: 'accepted' },
                 {
                     $or: [
-                        ...wordRegexes.map(regex => ({ title: regex })),
-                        ...wordRegexes.map(regex => ({ description: regex }))
+                        ...searchWords.map(word => ({ title: { $regex: word, $options: 'i' } })),
+                        ...searchWords.map(word => ({ description: { $regex: word, $options: 'i' } }))
                     ]
                 }
             ]
         };
 
-        console.log("Guide query:", JSON.stringify(guideQuery, null, 2));
-
         const guideMatches = await Guide.find(guideQuery).limit(5);
-        console.log("Guide matches found:", guideMatches.length);
 
         const formattedUsers = userMatches.map(
             (user) => ({ type: 'user', data: user })
@@ -133,8 +135,9 @@ export const searchResults = async (req, res) => {
         );
 
         const combinedResults = [...formattedUsers, ...formattedGuides];
-        const q = search.toLowerCase();
 
+        // Simple sorting without complex scoring
+        const q = search.toLowerCase();
         combinedResults.sort((a, b) => {
             const getLabel = (item) => {
                 if (item.type === 'user') {
@@ -149,22 +152,11 @@ export const searchResults = async (req, res) => {
             const aLabel = getLabel(a);
             const bLabel = getLabel(b);
 
-            const score = (label) => {
-                if (label === q) return 5;
-                
-                const wordsFound = searchWords.filter(word => 
-                    label.includes(word.toLowerCase())
-                ).length;
-                
-                if (wordsFound === searchWords.length) return 4;
-                if (wordsFound > 0) return 3;
-                
-                if (label.startsWith(q)) return 2;
-                if (label.includes(q)) return 1;
-                return 0;
-            };
+            // Simple scoring
+            const aScore = aLabel.includes(q) ? 1 : 0;
+            const bScore = bLabel.includes(q) ? 1 : 0;
 
-            return score(bLabel) - score(aLabel);
+            return bScore - aScore;
         });
 
         return res.status(200).json({ 
@@ -174,7 +166,7 @@ export const searchResults = async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error);
+        console.error("Error in searchResults:", error);
         res.status(500).json({ success: false, message: "Server error" });
     }
 }
