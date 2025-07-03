@@ -5,24 +5,40 @@ export const searchReccomendations = async (req, res) => {
     const { search } = req.body;
 
     if (!search) {
-        return res.status(404).json({ success: false, message: "No search found!" });
+        return res.status(400).json({ success: false, message: "No search found!" });
     }
 
     try {
-        const userMatches = await User.find({
-            $or: [
-                { firstName: { $regex: search, $options: 'i' } },
-                { lastName: { $regex: search, $options: 'i' } },
-            ],
-        }).limit(5);
+        // Split search into individual words
+        const searchWords = search.trim().split(/\s+/);
+        
+        // Create regex patterns for each word
+        const wordRegexes = searchWords.map(word => new RegExp(word, 'i'));
 
-        const guideMatches = await Guide.find({
+        // Build user query - search for any word in firstName or lastName
+        const userQuery = {
             $or: [
-                { title: { $regex: search, $options: 'i' } },
-                { description: { $regex: search, $options: 'i' } },
-            ],
-            status: 'accepted'
-        }).limit(5);
+                ...wordRegexes.map(regex => ({ firstName: regex })),
+                ...wordRegexes.map(regex => ({ lastName: regex }))
+            ]
+        };
+
+        const userMatches = await User.find(userQuery).limit(5);
+
+        // Build guide query - search for any word in title or description
+        const guideQuery = {
+            $and: [
+                { status: 'accepted' },
+                {
+                    $or: [
+                        ...wordRegexes.map(regex => ({ title: regex })),
+                        ...wordRegexes.map(regex => ({ description: regex }))
+                    ]
+                }
+            ]
+        };
+
+        const guideMatches = await Guide.find(guideQuery).limit(5);
 
         const formattedUsers = userMatches.map(
             (user) => `${user.firstName} ${user.lastName}`
@@ -32,7 +48,6 @@ export const searchReccomendations = async (req, res) => {
             (guide) => guide.title
         );
 
-
         const combinedResults = [...formattedUsers, ...formattedGuides];
         const q = search.toLowerCase();
 
@@ -41,7 +56,19 @@ export const searchReccomendations = async (req, res) => {
             const bLabel = b.toLowerCase();
 
             const score = (label) => {
-                if (label === q) return 3;
+                // Exact match gets highest score
+                if (label === q) return 5;
+                
+                // Check how many search words are found in the label
+                const wordsFound = searchWords.filter(word => 
+                    label.includes(word.toLowerCase())
+                ).length;
+                
+                // More matched words = higher score
+                if (wordsFound === searchWords.length) return 4;
+                if (wordsFound > 0) return 3;
+                
+                // Fallback to original scoring
                 if (label.startsWith(q)) return 2;
                 if (label.includes(q)) return 1;
                 return 0;
@@ -50,7 +77,11 @@ export const searchReccomendations = async (req, res) => {
             return score(bLabel) - score(aLabel);
         });
 
-        return res.status(200).json({ success: true, message: "Successfully fetched data.", data: combinedResults });
+        return res.status(200).json({ 
+            success: true, 
+            message: "Successfully fetched data.", 
+            data: combinedResults 
+        });
 
     } catch (error) {
         console.error(error);
