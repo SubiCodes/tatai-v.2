@@ -99,7 +99,6 @@ export const searchResults = async (req, res) => {
     try {
         // Split search into individual words
         const searchWords = search.trim().split(/\s+/).filter(word => word.length > 0);
-        console.log("Search words:", searchWords);
 
         // Build user query using string regex
         const userQuery = {
@@ -152,14 +151,43 @@ export const searchResults = async (req, res) => {
                 return '';
             };
 
+            const calculateRelevanceScore = (label) => {
+                let score = 0;
+
+                // Exact match gets highest score
+                if (label === q) {
+                    score += 1000;
+                }
+
+                // Starts with query gets high score
+                if (label.startsWith(q)) {
+                    score += 500;
+                }
+
+                // Contains query as whole word gets medium score
+                const wordBoundaryRegex = new RegExp(`\\b${q}\\b`, 'i');
+                if (wordBoundaryRegex.test(label)) {
+                    score += 100;
+                }
+
+                // Contains query anywhere gets lower score
+                if (label.includes(q)) {
+                    score += 10;
+                }
+
+                // Bonus for shorter strings (more likely to be relevant)
+                score += Math.max(0, 50 - label.length);
+
+                return score;
+            };
+
             const aLabel = getLabel(a);
             const bLabel = getLabel(b);
 
-            // Simple scoring
-            const aScore = aLabel.includes(q) ? 1 : 0;
-            const bScore = bLabel.includes(q) ? 1 : 0;
+            const aScore = calculateRelevanceScore(aLabel);
+            const bScore = calculateRelevanceScore(bLabel);
 
-            return bScore - aScore;
+            return bScore - aScore; // Higher score first
         });
 
         return res.status(200).json({
