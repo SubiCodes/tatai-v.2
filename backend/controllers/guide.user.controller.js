@@ -176,7 +176,7 @@ export const getUserGuides = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate({
         path: 'posterId',
-        select: 'firstName lastName email profileIcon createdAt',
+        select: 'firstName lastName email profileIcon createdAt role',
       });
 
     if (!guides) {
