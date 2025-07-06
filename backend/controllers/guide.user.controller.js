@@ -171,7 +171,6 @@ export const getUserGuides = async (req, res) => {
     if (!user) {
       return res.status(400).json({ success: false, message: 'User does not exist.' });
     }
-
     const guides = await Guide.find({ posterId: id, status: status })
       .sort({ createdAt: -1 })
       .populate({
@@ -180,9 +179,9 @@ export const getUserGuides = async (req, res) => {
       });
 
     if (!guides) {
-      return res.status(200).json({ success: true, message: 'User has no guides posted.', data: [] });
+      return res.status(200).json({ success: true, message: 'User has no guides posted.', data: {user: user, guides: []} });
     } else {
-      return res.status(200).json({ success: true, message: 'User has no guides posted.', data: guides });
+      return res.status(200).json({ success: true, message: 'User has no guides posted.', data: {user: user, guides: guides} });
     }
     
   } catch (error) {
