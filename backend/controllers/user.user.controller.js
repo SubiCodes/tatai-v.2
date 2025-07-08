@@ -146,6 +146,14 @@ export const updatePreferences = async (req, res) => {
                     preference.previousSearches = preference.previousSearches.slice(0, 5);
                 }
             }
+            if (data.removeSearch && data.removeSearch.trim() !== '') {
+                const toRemove = data.removeSearch; 
+                const newSearches = preference.previousSearches.filter(t => t !== toRemove);
+                preference.previousSearches = newSearches;
+            }
+            if (data.removeAll === 'yes') {
+                preference.previousSearches = []
+            }
         }
         await preference.save();
         return res.status(200).json({ success: true, message: "Preferences updated successfully.", data: preference });
