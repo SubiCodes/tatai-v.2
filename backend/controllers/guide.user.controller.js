@@ -171,19 +171,28 @@ export const getUserGuides = async (req, res) => {
     if (!user) {
       return res.status(400).json({ success: false, message: 'User does not exist.' });
     }
-    const guides = await Guide.find({ posterId: id, status: status })
-      .sort({ createdAt: -1 })
-      .populate({
-        path: 'posterId',
-        select: 'firstName lastName email profileIcon createdAt role',
-      });
-
-    if (!guides) {
-      return res.status(200).json({ success: true, message: 'User has no guides posted.', data: {user: user, guides: []} });
+    if (status === 'all') {
+      const guides = await Guide.find({ posterId: id })
+        .sort({ createdAt: -1 })
+        .populate({
+          path: 'posterId',
+          select: 'firstName lastName email profileIcon createdAt role',
+        });
+      return res.status(200).json({ success: true, message: 'User guides fetched.', data: { user: user, guides: guides } });
     } else {
-      return res.status(200).json({ success: true, message: 'User has no guides posted.', data: {user: user, guides: guides} });
+      const guides = await Guide.find({ posterId: id, status: status })
+        .sort({ createdAt: -1 })
+        .populate({
+          path: 'posterId',
+          select: 'firstName lastName email profileIcon createdAt role',
+        });
+
+      if (!guides) {
+        return res.status(200).json({ success: true, message: 'User has no guides posted.', data: { user: user, guides: [] } });
+      } else {
+        return res.status(200).json({ success: true, message: 'User guides fetched.', data: { user: user, guides: guides } });
+      }
     }
-    
   } catch (error) {
     console.error('Error details:', error);
     res.status(500).json({ success: false, message: 'Error fetching user guides' });
