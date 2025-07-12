@@ -1,6 +1,7 @@
 import Guide from "../models/guide.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import User from "../models/user.model.js";
+import Bookmark from "../models/bookmark.model.js";
 
 export const uploadMedia = async (req, res) => {
   try {
@@ -193,5 +194,35 @@ export const getUserGuides = async (req, res) => {
   } catch (error) {
     console.error('Error details:', error);
     res.status(500).json({ success: false, message: 'Error fetching user guides' });
+  }
+}
+
+export const getBookmarkedGuides = async (req, res) => {
+  const { userId } = req.params;
+
+  if (!userId) {
+    res.status(400).json({ success: false, message: 'Missing paramater' });
+  }
+
+  try {
+    const bookmarks = await Bookmark.find({ userId: userId });
+    if (!bookmarks.length) {
+      return res.status(200).json({success: true, data: [], message: 'No bookmarked guides found'})
+    };
+
+    const guides = await Promise.all(
+      bookmarks.map(async (bookmark) => {
+        const guide = await Guide.findById(bookmark.guideId);
+        return guide;
+      })
+    );
+
+    // Filter out nulls if any guide not found
+    const validGuides = guides.filter(Boolean);
+    return res.status(200).json({ success: true, data: validGuides, message: 'Fetched bookmarked guides' });
+    
+  } catch (error) {
+    console.error('Error details:', error);
+    res.status(500).json({ success: false, message: 'Error fetching bookmarked guides' });
   }
 }
