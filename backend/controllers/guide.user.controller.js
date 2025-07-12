@@ -212,7 +212,11 @@ export const getBookmarkedGuides = async (req, res) => {
 
     const guides = await Promise.all(
       bookmarks.map(async (bookmark) => {
-        const guide = await Guide.findById(bookmark.guideId);
+        const guide = await Guide.findById(bookmark.guideId).sort({ createdAt: -1 })
+        .populate({
+          path: 'posterId',
+          select: 'firstName lastName email profileIcon createdAt role',
+        });
         return guide;
       })
     );
@@ -220,7 +224,7 @@ export const getBookmarkedGuides = async (req, res) => {
     // Filter out nulls if any guide not found
     const validGuides = guides.filter(Boolean);
     return res.status(200).json({ success: true, data: validGuides, message: 'Fetched bookmarked guides' });
-    
+
   } catch (error) {
     console.error('Error details:', error);
     res.status(500).json({ success: false, message: 'Error fetching bookmarked guides' });
