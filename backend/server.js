@@ -15,6 +15,7 @@ import emailUserRouter from './routes/email.user.route.js';
 import guideUserRouter from './routes/guide.user.route.js';
 import feedbackRouter from './routes/feedback.route.js';
 import searchUserRouter from './routes/search.user.route.js';
+import bookmarkUserRouter from './routes/bookmark.route.js';
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ app.use('/api/v1/userUser', userUserRouter);
 app.use('/api/v1/emailUser', emailUserRouter);
 app.use('/api/v1/guideUser', guideUserRouter);
 app.use('/api/v1/searchUser', searchUserRouter);
+app.use('/api/v1/bookmarkUser', bookmarkUserRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello, World!!!');
