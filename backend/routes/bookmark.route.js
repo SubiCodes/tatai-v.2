@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { createDestroyBookmark } from "../controllers/bookmark.controller.js";
+import { createDestroyBookmark, findBookmark } from "../controllers/bookmark.controller.js";
 
 const bookmarkUserRouter = Router();
 
-bookmarkUserRouter.get('/:userId/:guideId')
+bookmarkUserRouter.get('/:userId/:guideId', findBookmark)
 bookmarkUserRouter.post('/', createDestroyBookmark)
 
 export default bookmarkUserRouter
