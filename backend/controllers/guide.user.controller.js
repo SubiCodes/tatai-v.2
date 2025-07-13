@@ -97,6 +97,62 @@ export const createGuide = async (req, res) => {
   }
 };
 
+export const editGuide = async (req, res) => {
+  const { data } = req.body;
+
+  try {
+    if (!data) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Please provide the updated guide data.",
+        });
+    }
+    const poster = await User.findById(data.posterId);
+    if (!poster) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+    const guide = await Guide.findById(data._id);
+    if (!guide) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Guide not found." });
+    }
+
+    // Update the guide fields with the new data
+    guide.status = data.status;
+    guide.posterId = data.posterId;
+    guide.category = data.category;
+    guide.title = data.title;
+    guide.coverImage = data.coverImage;
+    guide.description = data.description;
+    guide.tools = data.tools;
+    guide.materials = data.materials;
+    guide.stepTitles = data.stepTitles;
+    guide.stepDescriptions = data.stepDescriptions;
+    guide.stepMedias = data.stepMedias;
+    guide.closingMessage = data.closingMessage;
+    guide.links = data.links;
+
+    // Save the updated guide
+    const updatedGuide = await guide.save();
+
+    // Return success
+    return res.status(200).json({
+      success: true,
+      message: "Guide updated successfully.",
+    });
+  } catch (error) {
+    console.error("Error editing guide: ", error);
+    return res
+      .status(500)
+      .json({ success: false, message: `Error editing guide: ${error}` });
+  }
+};
+
 export const getGuides = async (req, res) => {
   const { category, amount } = req.query;
   try {
@@ -207,16 +263,16 @@ export const getBookmarkedGuides = async (req, res) => {
   try {
     const bookmarks = await Bookmark.find({ userId: userId });
     if (!bookmarks.length) {
-      return res.status(200).json({success: true, data: [], message: 'No bookmarked guides found'})
+      return res.status(200).json({ success: true, data: [], message: 'No bookmarked guides found' })
     };
 
     const guides = await Promise.all(
       bookmarks.map(async (bookmark) => {
         const guide = await Guide.findById(bookmark.guideId).sort({ createdAt: -1 })
-        .populate({
-          path: 'posterId',
-          select: 'firstName lastName email profileIcon createdAt role',
-        });
+          .populate({
+            path: 'posterId',
+            select: 'firstName lastName email profileIcon createdAt role',
+          });
         return guide;
       })
     );
