@@ -153,6 +153,27 @@ export const editGuide = async (req, res) => {
   }
 };
 
+export const deleteGuide = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const guide = await Guide.findById(id);
+    if (!guide) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Unable to find guide." });
+    }
+    await Guide.deleteOne({ _id: id });
+    return res
+      .status(204)
+      .json({ success: true, message: "Guide deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting guide: ", error);
+    return res
+      .status(500)
+      .json({ success: false, message: `Error deleting guide: ${error}` });
+  }
+};
+
 export const getGuides = async (req, res) => {
   const { category, amount } = req.query;
   try {
