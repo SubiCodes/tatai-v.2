@@ -164,7 +164,7 @@ export const deleteGuide = async (req, res) => {
     }
     await Guide.deleteOne({ _id: id });
     return res
-      .status(204)
+      .status(200)
       .json({ success: true, message: "Guide deleted successfully." });
   } catch (error) {
     console.error("Error deleting guide: ", error);
