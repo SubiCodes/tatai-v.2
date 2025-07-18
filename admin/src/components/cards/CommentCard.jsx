@@ -40,12 +40,12 @@ function CommentCard({ feedback }) {
             <div className='w-full flex flex-row gap-2 items-center'>
                 {/* Profile Image */}
                 <div className='h-full w-auto'>
-                    <img src={profileIcons[feedback.userId.profileIcon ?? 'empty_profile']} className='h-12 w-12' />
+                    <img src={profileIcons[feedback?.userId?.profileIcon ?? 'empty_profile']} className='h-12 w-12' />
                 </div>
                 {/* Name and Email */}
                 <div className='flex flex-col flex-1'>
-                    <h1 className='text-base font-semibold'>{feedback.userId.firstName} {feedback.userId.lastName}</h1>
-                    <p className='text-gray-400 text-md'>{feedback.userId.email}</p>
+                    <h1 className='text-base font-semibold'>{feedback?.userId?.firstName} {feedback?.userId?.lastName}</h1>
+                    <p className='text-gray-400 text-md'>{feedback?.userId?.email}</p>
                 </div>
                 {/* Actions */}
                 <div className='h-full flex items-center justify-center'>
@@ -58,14 +58,14 @@ function CommentCard({ feedback }) {
             {/* Comment */}
             <div className="w-full flex flex-wrap">
                 <span className="line-clamp-3">
-                    {feedback.comment}
+                    {feedback?.comment}
                 </span>
             </div>
 
             {/* Date */}
             <div className='w-full flex flex-wrap'>
                 <span className='text-gray-500'>
-                    {feedback.updatedAt}
+                    {feedback?.updatedAt}
                 </span>
             </div>
 

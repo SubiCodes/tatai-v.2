@@ -15,7 +15,9 @@ const useFeedbackStore = create((set) => ({
     fetchLatestFeedback: async () => {
         set({ fetchingLatesFeedback: true })
         try {
-            const res = await axios.get(`${URI}/api/v1/guideAdmin/feedback/latest`);
+            const res = await axios.get(`${URI}/api/v1/feedback/latest`);
+            set({ latestFeedback: res.data.data[0] })
+            console.log(res.data)
             return res.data;
         } catch (error) {
             toast.custom((t) => (

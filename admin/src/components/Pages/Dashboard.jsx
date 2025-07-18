@@ -7,6 +7,7 @@ import CommentCard from '../cards/CommentCard.jsx';
 import GuideCard from '../cards/GuideCard.jsx';
 import ViewGuide from '../dialogs/ViewGuide.jsx';
 import useGuideStore from '../../../store/guide.store.jsx';
+import useFeedbackStore from '../../../store/feedback.store.jsx';
 
 const areaData = [
   { month: "January", users: 186 },
@@ -30,6 +31,9 @@ function Dashboard() {
   const firstThreeGuides = guides
     .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
     .slice(0, 3);
+
+  const { latestFeedback, fetchingLatesFeedback, fetchLatestFeedback } = useFeedbackStore();
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [guideToOpen, setGuideToOpen] = useState(null);
 
@@ -41,6 +45,7 @@ function Dashboard() {
 
   useEffect(() => {
     fetchGuides();
+    fetchLatestFeedback();
   }, []);
 
   return (
@@ -96,9 +101,11 @@ function Dashboard() {
             {/* Commnents */}
             <div className="lg:col-span-1 w-full min-h-110 p-4 flex flex-col gap-4 bg-white shadow-lg rounded-lg">
               <h1 className='text-gray-700 text-2xl font-bold'>Recent Comment</h1>
-              <div className='flex flex-1'>
-                <CommentCard />
-              </div>
+              {fetchingLatesFeedback ? ('Fetching latest feedback...') : (
+                <div className='flex flex-1'>
+                  <CommentCard feedback={latestFeedback} />
+                </div>
+              )}
               <div className='w-full flex items-center justify-center border-t border-gray-400 h-10'>
                 <h1 className='hover:underline hover:text-blue-600 cursor-pointer'>View All</h1>
               </div>
