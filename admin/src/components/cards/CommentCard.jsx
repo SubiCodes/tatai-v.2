@@ -32,7 +32,7 @@ const profileIcons = {
     'lgbt_4': lgbt_4
 };
 
-function CommentCard() {
+function CommentCard({ feedback }) {
     return (
         <div className='w-full h-full flex flex-col px-4 gap-4 justify-center'>
 
@@ -40,12 +40,12 @@ function CommentCard() {
             <div className='w-full flex flex-row gap-2 items-center'>
                 {/* Profile Image */}
                 <div className='h-full w-auto'>
-                    <img src={profileIcons['empty_profile']} className='h-12 w-12' />
+                    <img src={profileIcons[feedback.userId.profileIcon ?? 'empty_profile']} className='h-12 w-12' />
                 </div>
                 {/* Name and Email */}
                 <div className='flex flex-col flex-1'>
-                    <h1 className='text-base font-semibold'>Tatai User</h1>
-                    <p className='text-gray-400 text-md'>tataiuser@gmail.com</p>
+                    <h1 className='text-base font-semibold'>{feedback.userId.firstName} {feedback.userId.lastName}</h1>
+                    <p className='text-gray-400 text-md'>{feedback.userId.email}</p>
                 </div>
                 {/* Actions */}
                 <div className='h-full flex items-center justify-center'>
@@ -58,14 +58,14 @@ function CommentCard() {
             {/* Comment */}
             <div className="w-full flex flex-wrap">
                 <span className="line-clamp-3">
-                    This guide is so good that it melts my bones. Thanks a lot for posting this and as always keep up the good work.
+                    {feedback.comment}
                 </span>
             </div>
 
             {/* Date */}
             <div className='w-full flex flex-wrap'>
                 <span className='text-gray-500'>
-                    12:33 AM 11/05/2003
+                    {feedback.updatedAt}
                 </span>
             </div>
 
