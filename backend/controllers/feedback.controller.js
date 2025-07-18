@@ -38,6 +38,16 @@ export const fetchFeedbacks = async (req, res) => {
     }
 };
 
+export const fetchLatestFeedback = async (req, res) => {
+    try {
+        const feedbacks = await Feedback.find().populate({ path: "userId", select: "firstName lastName email profileIcon" }).sort({ updatedAt: -1 }).limit(1);
+        res.status(200).json({ success: true, message: "Feedback fetched!", data: feedbacks });
+    } catch (error) {
+        console.error('Error details:', error);
+        res.status(500).json({ success: false, message: 'Error fetching feedback' });
+    }
+};
+
 export const createFeedback = async (req, res) => {
     const { userId, guideId, rating, comment } = req.body;
     try {
