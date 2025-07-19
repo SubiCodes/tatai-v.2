@@ -56,8 +56,8 @@ function CommentCard({ feedback }) {
             </div>
 
             {/* Comment */}
-            <div className="w-full flex flex-wrap">
-                <span className="line-clamp-3">
+            <div className={`w-full flex flex-wrap`}>
+                <span className={`line-clamp-3 ${feedback?.hidden ? 'text-gray-400' : 'text-gray-800'}`}>
                     {feedback?.comment}
                 </span>
             </div>
