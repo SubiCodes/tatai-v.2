@@ -58,6 +58,10 @@ const useFeedbackStore = create((set) => ({
             const res = await axios.put(`${URI}/api/v1/feedback`, { userId, guideId, hidden });
             if (fromLatestFeedback) {
                 set({ latestFeedback: res.data.data });
+            } else {
+                set((state) => ({
+                    feedbacks: state.feedbacks.map((f) => f._id === res.data.data._id ? res.data.data : f)
+                }));
             }
             console.log(res.data.data)
             toast.custom((t) => (
