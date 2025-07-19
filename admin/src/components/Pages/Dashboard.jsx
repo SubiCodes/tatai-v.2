@@ -103,7 +103,7 @@ function Dashboard() {
               <h1 className='text-gray-700 text-2xl font-bold'>Recent Comment</h1>
               {fetchingLatesFeedback ? ('Fetching latest feedback...') : (
                 <div className='flex flex-1'>
-                  <CommentCard feedback={latestFeedback} />
+                  <CommentCard feedback={latestFeedback} fromLatestFeedback={true}/>
                 </div>
               )}
               <div className='w-full flex items-center justify-center border-t border-gray-400 h-10'>

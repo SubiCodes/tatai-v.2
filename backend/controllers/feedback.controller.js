@@ -93,7 +93,7 @@ export const editFeedback = async (req, res) => {
         };
         if (rating) { feedback.rating = rating }
         if (comment) { feedback.comment = comment }
-        if (hidden) { feedback.hidden = !feedback.hidden }
+        if (typeof hidden === 'boolean') { feedback.hidden = hidden }
         await feedback.save()
         res.status(200).json({ success: true, message: "Feedback successfully edited!", data: feedback });
     } catch (error) {

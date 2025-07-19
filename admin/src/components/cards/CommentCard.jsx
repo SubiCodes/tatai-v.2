@@ -45,11 +45,10 @@ const profileIcons = {
 
 function CommentCard({ feedback, fromLatestFeedback = false }) {
 
-    const { editFeedback, editingFeedback } = useFeedbackStore();
+    const { editFeedback } = useFeedbackStore();
 
-    const handleEditFeedback = async () => {
-        const res = await editFeedback(feedback?.userId?._id, feedback?.guideId, !feedback?.hidden, fromLatestFeedback);
-        console.log(res.data)
+    const handleEditFeedback = async (hidden) => {
+        await editFeedback(feedback?.userId?._id, feedback?.guideId, hidden, fromLatestFeedback);
     }
 
     return (
@@ -79,9 +78,9 @@ function CommentCard({ feedback, fromLatestFeedback = false }) {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>
                                 {!feedback?.hidden ? (
-                                    <span className='text-red-400 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback()}><EyeOff/> Hide</span>
+                                    <span className='text-red-400 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(true)}><EyeOff/> Hide</span>
                                 ) : (
-                                    <span className='text-gray-600 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback()}><Eye/> Show</span>
+                                    <span className='text-gray-600 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(false)}><Eye/> Show</span>
                                 )}
                             </DropdownMenuItem>
                         </DropdownMenuContent>
