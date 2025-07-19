@@ -97,7 +97,10 @@ function FeedbackCard({ feedback, fromLatestFeedback = false }) {
             </div>
 
             {/* Date */}
-            <div className='w-full flex flex-wrap'>
+            <div className='w-full flex flex-row  flex-wrap'>
+                <span className='text-gray-500 mr-2'>
+                    Rating: {feedback?.rating} ⭐
+                </span>
                 <span className='text-gray-500'>
                     {new Date(feedback?.updatedAt).toLocaleDateString('en-US', {
                         month: 'short', // "Mar"
