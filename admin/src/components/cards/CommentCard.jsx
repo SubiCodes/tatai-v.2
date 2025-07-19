@@ -52,7 +52,7 @@ function CommentCard({ feedback, fromLatestFeedback = false }) {
     }
 
     return (
-        <div className='w-full h-full flex flex-col px-4 gap-4 justify-center'>
+        <div className='flex flex-col px-4 gap-4 justify-center'>
 
             {/* Icon Name Email Action */}
             <div className='w-full flex flex-row gap-2 items-center'>

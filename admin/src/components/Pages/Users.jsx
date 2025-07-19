@@ -23,7 +23,7 @@ function Users() {
                 </Button>
             </div>
 
-            {/* Table */}
+            {/* User Table */}
             <div className='h-full w-full mt-0 md:mt-4'>
                 <UserTable />
             </div>

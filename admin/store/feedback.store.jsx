@@ -10,6 +10,28 @@ import ToastPending from "../src/components/util/ToastPending.jsx";
 const URI = import.meta.env.VITE_URI;
 
 const useFeedbackStore = create((set) => ({
+    feedbacks: [],
+    fetchingFeedbacks: false,
+    fetchFeedbacks: async () => {
+        set({ fetchingFeedbacks: true });
+        const toastId = toast.custom((t) => (
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Fetching feedbacks"} message="This might take a while..." />));
+        try {
+            const res =  await axios.get(`${URI}/api/v1/feedback`);
+            set({ feedbacks: res.data.data });
+            toast.custom((t) => (
+                <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Successfully fetched feedbacks."} message={'Review feedbacks carefully!'} />
+            ));
+        } catch (error) {
+            console.log("Error fetching feedbacks:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Fetching feedbacks unsuccessful."} message={'Something went wrong...'} />
+            ));
+        } finally {
+            set({ fetchingFeedbacks: false });
+            toast.dismiss(toastId);
+        }
+    },
     latestFeedback: null,
     fetchingLatesFeedback: false,
     fetchLatestFeedback: async () => {
