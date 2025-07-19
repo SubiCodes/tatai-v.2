@@ -52,7 +52,7 @@ function CommentCard({ feedback, fromLatestFeedback = false }) {
     }
 
     return (
-        <div className='flex flex-col px-4 gap-4 justify-center'>
+        <div className='w-full flex flex-col px-4 gap-4 justify-center'>
 
             {/* Icon Name Email Action */}
             <div className='w-full flex flex-row gap-2 items-center'>
@@ -78,9 +78,9 @@ function CommentCard({ feedback, fromLatestFeedback = false }) {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>
                                 {!feedback?.hidden ? (
-                                    <span className='text-red-400 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(true)}><EyeOff/> Hide</span>
+                                    <span className='text-red-400 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(true)}><EyeOff /> Hide</span>
                                 ) : (
-                                    <span className='text-gray-600 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(false)}><Eye/> Show</span>
+                                    <span className='text-gray-600 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(false)}><Eye /> Show</span>
                                 )}
                             </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -97,9 +97,16 @@ function CommentCard({ feedback, fromLatestFeedback = false }) {
             </div>
 
             {/* Date */}
-            <div className='w-full flex flex-wrap'>
+            <div className='w-full flex flex-row  flex-wrap'>
+                <span className='text-gray-500 mr-2'>
+                    Rating: {feedback?.rating} ⭐
+                </span>
                 <span className='text-gray-500'>
-                    {feedback?.updatedAt}
+                    {new Date(feedback?.updatedAt).toLocaleDateString('en-US', {
+                        month: 'short', // "Mar"
+                        day: '2-digit', // "04"
+                        year: 'numeric' // "2004"
+                    })}
                 </span>
             </div>
 

@@ -78,9 +78,9 @@ function FeedbackCard({ feedback, fromLatestFeedback = false }) {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>
                                 {!feedback?.hidden ? (
-                                    <span className='text-red-400 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(true)}><EyeOff/> Hide</span>
+                                    <span className='text-red-400 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(true)}><EyeOff /> Hide</span>
                                 ) : (
-                                    <span className='text-gray-600 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(false)}><Eye/> Show</span>
+                                    <span className='text-gray-600 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(false)}><Eye /> Show</span>
                                 )}
                             </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -99,7 +99,11 @@ function FeedbackCard({ feedback, fromLatestFeedback = false }) {
             {/* Date */}
             <div className='w-full flex flex-wrap'>
                 <span className='text-gray-500'>
-                    {feedback?.updatedAt}
+                    {new Date(feedback?.updatedAt).toLocaleDateString('en-US', {
+                        month: 'short', // "Mar"
+                        day: '2-digit', // "04"
+                        year: 'numeric' // "2004"
+                    })}
                 </span>
             </div>
 
