@@ -91,10 +91,22 @@ export const editFeedback = async (req, res) => {
         if (!feedback) {
             return res.status(404).json({ success: false, message: 'A feedback from user in this guide already exists.' });
         };
-        if (rating) { feedback.rating = rating }
-        if (comment) { feedback.comment = comment }
-        if (typeof hidden === 'boolean') { feedback.hidden = hidden }
-        await feedback.save()
+
+        let shouldUpdateTimestamp = false;
+
+        if (rating) {
+            feedback.rating = rating;
+            shouldUpdateTimestamp = true;
+        }
+        if (comment) {
+            feedback.comment = comment;
+            shouldUpdateTimestamp = true;
+        }
+        if (typeof hidden === 'boolean') {
+            feedback.hidden = hidden;
+        }
+
+        await feedback.save({ timestamps: shouldUpdateTimestamp });
         res.status(200).json({ success: true, message: "Feedback successfully edited!", data: feedback });
     } catch (error) {
         console.error('Error details:', error);
