@@ -2,6 +2,7 @@ import React from 'react'
 
 import { SyncLoader } from "react-spinners";
 import CommentCard from '../cards/CommentCard';
+import FeedbackCard from '../cards/FeedbackCard';
 
 import useFeedbackStore from '../../../store/feedback.store'
 import { useEffect } from 'react';
@@ -36,7 +37,7 @@ function Feedbacks() {
       {/* Scrollable feedback list */}
       <div className='flex-1 overflow-y-auto flex flex-col gap-4'>
         {feedbacks?.map((feedback) => (
-          <CommentCard key={feedback._id} feedback={feedback} />
+          <FeedbackCard key={feedback._id} feedback={feedback} />
         ))}
       </div>
 
