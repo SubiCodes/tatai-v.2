@@ -18,6 +18,10 @@ const feedbackSchema = new mongoose.Schema({
     comment: {
         type: String,
         required: true
+    },
+    hidden: {
+        type: Boolean,
+        default: false
     }
 }, {
     collection: "feedback",

@@ -77,7 +77,7 @@ export const createFeedback = async (req, res) => {
 };
 
 export const editFeedback = async (req, res) => {
-    const { userId, guideId, rating, comment } = req.body;
+    const { userId, guideId, rating, comment, hidden } = req.body;
     try {
         const guide = await Guide.findById(guideId);
         if (!guide) {
@@ -93,6 +93,7 @@ export const editFeedback = async (req, res) => {
         };
         if (rating) { feedback.rating = rating }
         if (comment) { feedback.comment = comment }
+        if (hidden) { feedback.hidden = !feedback.hidden }
         await feedback.save()
         res.status(200).json({ success: true, message: "Feedback successfully edited!", data: feedback });
     } catch (error) {
