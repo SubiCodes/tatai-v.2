@@ -1,6 +1,15 @@
 import React from 'react'
 
-import { Ellipsis } from 'lucide-react'
+import { Ellipsis, EyeOff, Eye } from 'lucide-react'
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 import empty_profile from '../../assets/images/profile-icons/empty_profile.png'
 import boy_1 from '../../assets/images/profile-icons/boy_1.png'
@@ -49,9 +58,25 @@ function CommentCard({ feedback }) {
                 </div>
                 {/* Actions */}
                 <div className='h-full flex items-center justify-center'>
-                    <span className='text-gray-600 cursor-pointer'>
-                        <Ellipsis />
-                    </span>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger>
+                            <span className='text-gray-600 cursor-pointer'>
+                                <Ellipsis />
+                            </span>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className='bg-white border border-gray-400'>
+                            <DropdownMenuLabel>Hide Comment</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>
+                                {!feedback?.hidden ? (
+                                    <span className='text-red-400 flex flex-row items-center justify-center gap-2 cursor-pointer'><EyeOff/> Hide</span>
+                                ) : (
+                                    <span className='text-gray-600 flex flex-row items-center justify-center gap-2'><Eye/> Show</span>
+                                )}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
                 </div>
             </div>
 
