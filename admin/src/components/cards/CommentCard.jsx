@@ -41,7 +41,7 @@ const profileIcons = {
     'lgbt_4': lgbt_4
 };
 
-function CommentCard({ feedback }) {
+function CommentCard({ feedback, fromLatestFeedback = false }) {
     return (
         <div className='w-full h-full flex flex-col px-4 gap-4 justify-center'>
 
@@ -71,7 +71,7 @@ function CommentCard({ feedback }) {
                                 {!feedback?.hidden ? (
                                     <span className='text-red-400 flex flex-row items-center justify-center gap-2 cursor-pointer'><EyeOff/> Hide</span>
                                 ) : (
-                                    <span className='text-gray-600 flex flex-row items-center justify-center gap-2'><Eye/> Show</span>
+                                    <span className='text-gray-600 flex flex-row items-center justify-center gap-2 cursor-pointer'><Eye/> Show</span>
                                 )}
                             </DropdownMenuItem>
                         </DropdownMenuContent>
