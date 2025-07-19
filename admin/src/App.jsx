@@ -14,6 +14,7 @@ import Settings from './components/Pages/Settings.jsx';
 import Guides from './components/Pages/Guides.jsx';
 import AddGuide from './components/subpages/AddGuide.jsx';
 import EditGuide from './components/subpages/EditGuide.jsx';
+import Feedbacks from './components/Pages/Feedbacks.jsx';
 
 function App() {
 
@@ -49,6 +50,7 @@ function App() {
               <Route path="/guides" element={<Guides />} />
               <Route path="/guides/add-guide" element={<AddGuide />} />
               <Route path="/guides/edit-guide/:id" element={<EditGuide />} />
+              <Route path="/feedbacks" element={<Feedbacks />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
           </Route>
