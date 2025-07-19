@@ -25,6 +25,8 @@ import lgbt_2 from '../../assets/images/profile-icons/lgbt_2.png'
 import lgbt_3 from '../../assets/images/profile-icons/lgbt_3.png'
 import lgbt_4 from '../../assets/images/profile-icons/lgbt_4.png'
 
+import useFeedbackStore from '../../../store/feedback.store'
+
 const profileIcons = {
     'empty_profile': empty_profile,
     'boy_1': boy_1,
@@ -42,6 +44,14 @@ const profileIcons = {
 };
 
 function CommentCard({ feedback, fromLatestFeedback = false }) {
+
+    const { editFeedback, editingFeedback } = useFeedbackStore();
+
+    const handleEditFeedback = async () => {
+        const res = await editFeedback(feedback?.userId?._id, feedback?.guideId, !feedback?.hidden, fromLatestFeedback);
+        console.log(res.data)
+    }
+
     return (
         <div className='w-full h-full flex flex-col px-4 gap-4 justify-center'>
 
@@ -69,9 +79,9 @@ function CommentCard({ feedback, fromLatestFeedback = false }) {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>
                                 {!feedback?.hidden ? (
-                                    <span className='text-red-400 flex flex-row items-center justify-center gap-2 cursor-pointer'><EyeOff/> Hide</span>
+                                    <span className='text-red-400 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback()}><EyeOff/> Hide</span>
                                 ) : (
-                                    <span className='text-gray-600 flex flex-row items-center justify-center gap-2 cursor-pointer'><Eye/> Show</span>
+                                    <span className='text-gray-600 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback()}><Eye/> Show</span>
                                 )}
                             </DropdownMenuItem>
                         </DropdownMenuContent>

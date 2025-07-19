@@ -17,14 +17,38 @@ const useFeedbackStore = create((set) => ({
         try {
             const res = await axios.get(`${URI}/api/v1/feedback/latest`);
             set({ latestFeedback: res.data.data[0] })
-            console.log(res.data)
             return res.data;
         } catch (error) {
+            console.log("Error fetching latest feedback:", error);
             toast.custom((t) => (
-                <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Fetching latest feedback unsuccessful."} message={error.message} />
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Fetching latest feedback unsuccessful."} message={'Something went wrong...'} />
             ));
         } finally {
             set({ fetchingLatesFeedback: false })
+        }
+    },
+    editingFeedback: false,
+    editFeedback: async (userId, guideId, hidden, fromLatestFeedback) => {
+        set({ editingFeedback: true });
+        const toastId = toast.custom((t) => (
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Posting guide"} message="This might take a while..." />));
+        try {
+            const res = await axios.put(`${URI}/api/v1/feedback`, { userId, guideId, hidden });
+            if (fromLatestFeedback) {
+                set({ latestFeedback: res.data.data });
+            }
+            console.log(res.data.data)
+            toast.custom((t) => (
+                <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Successfully edited feedback."} message={'Feedback hidden status changed.'} />
+            ));
+        } catch (error) {
+            console.log("Error editing feedback:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Fetching latest feedback unsuccessful."} message={'Something went wrong...'} />
+            ));
+        } finally {
+            set({ editingFeedback: true });
+            toast.dismiss(toastId);
         }
     }
 }));
