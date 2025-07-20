@@ -30,4 +30,11 @@ const reportSchema = new mongoose.Schema({
         default: false,
         required: true
     }
-})
+}, {
+    collection: "report",
+    timestamps: true
+});
+
+const Report = mongoose.model("Report", reportSchema);
+
+export default Report;
