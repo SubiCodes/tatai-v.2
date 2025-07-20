@@ -24,5 +24,10 @@ const reportSchema = new mongoose.Schema({
     description: {
         type: String,
         required: true
+    },
+    reviewed: {
+        type: Boolean,
+        default: false,
+        required: true
     }
 })
