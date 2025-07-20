@@ -27,4 +27,25 @@ export const createReport = async (req, res) => {
         console.error('Error details on createReport:', error);
         return res.status(500).json({ success: false, message: 'An unexpected error occured.' });
     }
+};
+
+export const changeReviewedStatus = async (req, res) => {
+    const { id, reviewed } = req.params;
+
+    if (!id) {
+        return res.status(400).json({ success: false, message: 'The id of the report instance not found.' });
+    }
+    
+    try {
+        const report = await Report.findById(id);
+        if (!report) {
+            return res.status(400).json({ success: false, message: 'The report no longer exists.' });
+        }
+        report.reviewed = reviewed;
+        await report.save();
+        return res.status(200).json({ success: true, message: 'Report reviewed status changed successfully.'});
+    } catch (error) {
+        console.error('Error details on markAsReviewed:', error);
+        return res.status(500).json({ success: false, message: 'An unexpected error occured.' });
+    }
 }
