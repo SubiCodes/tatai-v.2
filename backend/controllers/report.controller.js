@@ -1,3 +1,5 @@
+import Report from "../models/report.model.js";
+
 export const createReport = async (req, res) => {
     const { userId, feedbackId, guideId, type, description } = req.body;
 
@@ -12,7 +14,15 @@ export const createReport = async (req, res) => {
     }
 
     try {
-        // const report = await Report
+        const report = await Report.create({
+            userId,
+            feedbackId: feedbackId || null,
+            guideId: guideId || null,
+            type: type,
+            description: description,
+            reviewed: false
+        });
+        return res.status(201).json({ success: true, message: 'Report created successfully.', data: report });
     } catch (error) {
         console.error('Error details on createReport:', error);
         return res.status(500).json({ success: false, message: 'An unexpected error occured.' });
