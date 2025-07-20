@@ -30,12 +30,13 @@ export const createReport = async (req, res) => {
 };
 
 export const changeReviewedStatus = async (req, res) => {
-    const { id, reviewed } = req.params;
+    const { id } = req.params;
+    const { reviewed } = req.body;
 
     if (!id) {
         return res.status(400).json({ success: false, message: 'The id of the report instance not found.' });
     }
-    
+
     try {
         const report = await Report.findById(id);
         if (!report) {
