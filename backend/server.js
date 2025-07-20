@@ -9,11 +9,13 @@ import userAdminRouter from './routes/user.admin.route.js';
 import profileAdminRouter from './routes/profile.admin.route.js';
 import guideAdminRouter from './routes/guide.admin.route.js';
 
+import feedbackRouter from './routes/feedback.route.js';
+import reportRouter from './routes/report.route.js';
+
 import authUserRouter from './routes/auth.user.route.js';
 import userUserRouter from './routes/user.user.route.js';
 import emailUserRouter from './routes/email.user.route.js';
 import guideUserRouter from './routes/guide.user.route.js';
-import feedbackRouter from './routes/feedback.route.js';
 import searchUserRouter from './routes/search.user.route.js';
 import bookmarkUserRouter from './routes/bookmark.route.js';
 
@@ -40,6 +42,7 @@ app.use('/api/v1/guideAdmin', guideAdminRouter);
 
 //Both Users
 app.use('/api/v1/feedback', feedbackRouter);
+app.use('/api/v1/report', reportRouter);
 
 //user/mobile routers
 app.use('/api/v1/authUser', authUserRouter);
