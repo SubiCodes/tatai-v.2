@@ -17,6 +17,24 @@ export const createReport = async (req, res) => {
     }
 
     try {
+
+        const existingReport = await Report.findOne({
+            where: {
+                userId,
+                reportedUserId,
+                feedbackId: feedbackId || null,
+                guideId: guideId || null,
+            }
+        });
+
+        if (existingReport) {
+            return res.status(200).json({
+                success: false,
+                message: 'You have already submitted a report for this instance.',
+                data: existingReport
+            });
+        }
+
         const report = await Report.create({
             userId,
             reportedUserId,
@@ -48,7 +66,7 @@ export const changeReviewedStatus = async (req, res) => {
         }
         report.reviewed = reviewed;
         await report.save();
-        return res.status(200).json({ success: true, message: 'Report reviewed status changed successfully.'});
+        return res.status(200).json({ success: true, message: 'Report reviewed status changed successfully.' });
     } catch (error) {
         console.error('Error details on markAsReviewed:', error);
         return res.status(500).json({ success: false, message: 'An unexpected error occured.' });
