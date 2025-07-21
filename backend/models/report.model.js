@@ -6,6 +6,11 @@ const reportSchema = new mongoose.Schema({
         ref: "User",
         required: true
     },
+    reportedUserId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
     feedbackId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Feedback",
