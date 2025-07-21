@@ -19,17 +19,15 @@ export const createReport = async (req, res) => {
     try {
 
         const existingReport = await Report.findOne({
-            where: {
-                userId,
-                reportedUserId,
-                feedbackId: feedbackId || null,
-                guideId: guideId || null,
-            }
+            userId,
+            reportedUserId,
+            feedbackId: feedbackId || null,
+            guideId: guideId || null,
         });
 
         if (existingReport) {
             return res.status(200).json({
-                success: false,
+                success: true,
                 message: 'You have already submitted a report for this instance.',
                 data: existingReport
             });
