@@ -1,10 +1,13 @@
 import Report from "../models/report.model.js";
 
 export const createReport = async (req, res) => {
-    const { userId, feedbackId, guideId, type, description } = req.body;
+    const { userId, reportedUserId, feedbackId, guideId, type, description } = req.body;
 
     if (!userId) {
         return res.status(400).json({ success: false, message: 'The id of the reporter not found.' });
+    }
+    if (!reportedUserId) {
+        return res.status(400).json({ success: false, message: 'The id of the reported user not found.' });
     }
     if (!feedbackId && !guideId) {
         return res.status(400).json({ success: false, message: 'The id of the reported instance not found.' });
@@ -16,6 +19,7 @@ export const createReport = async (req, res) => {
     try {
         const report = await Report.create({
             userId,
+            reportedUserId,
             feedbackId: feedbackId || null,
             guideId: guideId || null,
             type: type,
