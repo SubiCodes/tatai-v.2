@@ -1,3 +1,4 @@
+import Feedback from "../models/feedback.model.js";
 import Guide from "../models/guide.model.js";
 import User from "../models/user.model.js";
 
@@ -25,6 +26,7 @@ export const getViewUserData = async (req, res) => {
                 categoryCounts[cat]++;
             }
         }
+        const feedbacks = await Feedback.find({ userId: id }).populate({ path: 'userId', select: 'firstName lastName email profileIcon' }).sort({ updatedAt: -1 });
         return res.status(200).json({ success: true, message: 'User data fetched successfully', user: user, guides: guides, count: categoryCounts });
     } catch (error) {
         console.error('Error fetching user data:', error);
