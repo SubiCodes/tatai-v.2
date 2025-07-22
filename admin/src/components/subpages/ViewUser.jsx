@@ -147,23 +147,22 @@ function ViewUser() {
 
                     {viewing === 'guides' && (
                         <div className='min-w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4'>
-                            {userData?.guides?.length > 0 ? (
+                            {guides?.length > 0 ? (
                                 guides.map((guide) => (
                                     <div className='w-full' key={guide._id}>
                                         <GuideCard guide={guide} onClick={() => openGuide(guide)} />
                                     </div>
                                 ))
                             ) : (
-                                <div className='min-w-full min-h-full flex flex-col items-center justify-center gap-4'>
-                                    <span className='text-xl font-lg text-gray-400'>No guides posted.</span>
+                                <div className='col-span-3 w-full h-full flex flex-col items-center justify-center gap-4'>
+                                    <span className='text-xl text-gray-400'>No guides posted.</span>
                                 </div>
-
                             )}
                         </div>
                     )}
 
                     {viewing === 'comments' && (
-                        <div className='min-w-full flex flex-col gap-2'>
+                        <div className='min-w-full flex flex-col gap-2 p-4'>
                             {feedbacks?.length > 0 ? (
                                 feedbacks.map((feedback) => (
                                     <div className='w-full' key={feedback._id}>
