@@ -78,31 +78,40 @@ function ViewUser() {
                                 {/* Full-width badge */}
                                 <div className="absolute bottom-0 left-0 w-full bg-primary py-1 rounded-lg flex items-center justify-center">
                                     <span className="text-xs text-white font-semibold">
-                                        ADMIN
+                                        {userData?.user?.role.toLocaleUpperCase()}
                                     </span>
                                 </div>
                             </div>
                         </div>
 
                         <div className='flex flex-1 flex-col h-full ml-4 lg:ml-12 xl:ml-16 justify-center'>
-                            <span className='text-2xl font-bold'>John Doe</span>
-                            <span className='text-md'>Member since: May 24, 2024</span>
+                            <span className='text-2xl font-bold'>{userData?.user?.firstName ?? 'Username'} {userData?.user?.lastName ?? 'Not Found'}</span>
+                            <span className='text-md'>
+                                Member since:{' '}
+                                {userData?.user?.createdAt
+                                    ? new Date(userData.user.createdAt).toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                    })
+                                    : '—'}
+                            </span>
 
                             <div className='flex flex-row items-center justify-start gap-4 mt-2'>
                                 <div className='flex flex-row items-center justify-start'>
                                     <Briefcase className="w-4 h-4 text-primary" />
                                     <span className='text-sm font-semibold mr-2 ml-1'>:</span>
-                                    <span className='text-sm'>10</span>
+                                    <span className='text-sm'>{userData?.count?.repair}</span>
                                 </div>
                                 <div className='flex flex-row items-center justify-start'>
                                     <Sofa className="w-4 h-4 text-primary" />
                                     <span className='text-sm font-semibold mr-2 ml-1'>:</span>
-                                    <span className='text-sm'>10</span>
+                                    <span className='text-sm'>{userData?.count?.diy}</span>
                                 </div>
                                 <div className='flex flex-row items-center justify-start'>
                                     <Wrench className="w-4 h-4 text-primary" />
                                     <span className='text-sm font-semibold mr-2 ml-1'>:</span>
-                                    <span className='text-sm'>10</span>
+                                    <span className='text-sm'>{userData?.count?.tool}</span>
                                 </div>
                             </div>
                         </div>
