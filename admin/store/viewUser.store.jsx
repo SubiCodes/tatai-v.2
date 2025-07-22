@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 const useViewUserStore = create((set, get) => ({
     guides: [],
+    feedbacks: [],
     userData: null,
     fetchingUserData: false,
     fetchUserData: async (id) => {
@@ -18,6 +19,7 @@ const useViewUserStore = create((set, get) => ({
             const res = await axios.get(`${import.meta.env.VITE_URI}/api/v1/viewUserAdmin/${id}`);
             set({ userData: res.data });
             set({ guides: res.data.guides });
+            set({ feedbacks: res.data.feedbacks });
             return res.data;
         } catch (error) {
             console.error("Error fetching user data:", error);
