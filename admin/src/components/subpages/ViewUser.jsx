@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom';
 
 import { MoveLeft, Briefcase, Sofa, Wrench } from 'lucide-react';
+import { DotLoader } from 'react-spinners'
+
+import useViewUserStore from '../../../store/viewUser.store.jsx';
 
 import empty_profile from '../../assets/images/profile-icons/empty_profile.png'
 import boy_1 from '../../assets/images/profile-icons/boy_1.png'
@@ -37,65 +40,77 @@ function ViewUser() {
 
     const { id } = useParams();
 
+    const { userData, fetchUserData, fetchingUserData } = useViewUserStore();
+
+    useEffect(() => {
+        if (id) {
+            fetchUserData(id);
+        }
+    }, [id]);
+
     return (
         <div className='flex flex-1 flex-col overflow-auto items-center justify-start p-4'>
             {/* HEADER */}
-            <div className='w-full items-center hover:cursor-pointer hover:underline flex justify-start gap-2 font-bold text-lg mb-8' onClick={() => window.history.back()}>
+            <div
+                className='w-full items-center hover:cursor-pointer hover:underline flex justify-start gap-2 font-bold text-lg mb-8'
+                onClick={() => window.history.back()}
+            >
                 <MoveLeft /> Return to Users
             </div>
 
-            {/* CONTAINER FOR USER INFO, POSTS, COMMENTS */}
-            <div className='max-w-full min-w-full md:max-w-xl md:min-w-xl lg:max-w-2xl lg:min-w-2xl xl:max-w-4xl xl:min-w-4xl'>
-
-                {/* USER INFO */}
-                <div className='flex flex-row items-center justify-start p-4 border-b border-gray-300'>
-
-                    <div className="flex items-center justify-center">
-                        <div className="relative">
-                            <img
-                                src={profileIcons['empty_profile']}
-                                alt="User Icon"
-                                className="w-28 h-28 rounded-full object-cover"
-                            />
-                            {/* Full-width badge */}
-                            <div className="absolute bottom-0 left-0 w-full bg-primary py-1 rounded-lg flex items-center justify-center">
-                                <span className="text-xs text-white font-semibold">
-                                    ADMIN
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className='flex flex-1 flex-col h-full ml-4 lg:ml-12 xl:ml-16 justify-center'>
-                        <span className='text-2xl font-bold'>John Doe</span>
-                        <span className='text-md'>Member since: May 24, 2024</span>
-
-                        <div className='flex flex-row items-center justify-start gap-4 mt-2'>
-                            <div className='flex flex-row items-center justify-start'>
-                                <Briefcase className="w-4 h-4 text-primary" />
-                                <span className='text-sm font-semibold mr-2 ml-1'>:</span>
-                                <span className='text-sm'>10</span>
-                            </div>
-                            <div className='flex flex-row items-center justify-start'>
-                                <Sofa className="w-4 h-4 text-primary" />
-                                <span className='text-sm font-semibold mr-2 ml-1'>:</span>
-                                <span className='text-sm'>10</span>
-                            </div>
-                            <div className='flex flex-row items-center justify-start'>
-                                <Wrench className="w-4 h-4 text-primary" />
-                                <span className='text-sm font-semibold mr-2 ml-1'>:</span>
-                                <span className='text-sm'>10</span>
-                            </div>
-
-                        </div>
-                    </div>
-
+            {fetchingUserData ? (
+                <div className='w-full h-full flex flex-col gap-4 items-center justify-center'>
+                    <DotLoader size={32} />
+                    <h1>Loading...</h1>
                 </div>
+            ) : (
+                // CONTAINER FOR USER INFO, POSTS, COMMENTS
+                <div className='max-w-full min-w-full md:max-w-xl md:min-w-xl lg:max-w-2xl lg:min-w-2xl xl:max-w-4xl xl:min-w-4xl'>
+                    {/* USER INFO */}
+                    <div className='flex flex-row items-center justify-start p-4 border-b border-gray-300'>
+                        <div className="flex items-center justify-center">
+                            <div className="relative">
+                                <img
+                                    src={profileIcons[userData?.user?.profileIcon ?? 'empty_profile']}
+                                    alt="User Icon"
+                                    className="w-28 h-28 rounded-full object-cover"
+                                />
+                                {/* Full-width badge */}
+                                <div className="absolute bottom-0 left-0 w-full bg-primary py-1 rounded-lg flex items-center justify-center">
+                                    <span className="text-xs text-white font-semibold">
+                                        ADMIN
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
 
-            </div>
+                        <div className='flex flex-1 flex-col h-full ml-4 lg:ml-12 xl:ml-16 justify-center'>
+                            <span className='text-2xl font-bold'>John Doe</span>
+                            <span className='text-md'>Member since: May 24, 2024</span>
 
+                            <div className='flex flex-row items-center justify-start gap-4 mt-2'>
+                                <div className='flex flex-row items-center justify-start'>
+                                    <Briefcase className="w-4 h-4 text-primary" />
+                                    <span className='text-sm font-semibold mr-2 ml-1'>:</span>
+                                    <span className='text-sm'>10</span>
+                                </div>
+                                <div className='flex flex-row items-center justify-start'>
+                                    <Sofa className="w-4 h-4 text-primary" />
+                                    <span className='text-sm font-semibold mr-2 ml-1'>:</span>
+                                    <span className='text-sm'>10</span>
+                                </div>
+                                <div className='flex flex-row items-center justify-start'>
+                                    <Wrench className="w-4 h-4 text-primary" />
+                                    <span className='text-sm font-semibold mr-2 ml-1'>:</span>
+                                    <span className='text-sm'>10</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
-    )
-}
+    );
+};
 
-export default ViewUser
+export default ViewUser;

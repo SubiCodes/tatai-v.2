@@ -1,4 +1,4 @@
-import Guide from "../models/guide.model";
+import Guide from "../models/guide.model.js";
 import User from "../models/user.model.js";
 
 export const getViewUserData = async (req, res) => {
