@@ -21,6 +21,7 @@ import lgbt_1 from '../../assets/images/profile-icons/lgbt_1.png'
 import lgbt_2 from '../../assets/images/profile-icons/lgbt_2.png'
 import lgbt_3 from '../../assets/images/profile-icons/lgbt_3.png'
 import lgbt_4 from '../../assets/images/profile-icons/lgbt_4.png'
+import ViewGuide from '../dialogs/ViewGuide.jsx';
 
 const profileIcons = {
     'empty_profile': empty_profile,
@@ -42,9 +43,17 @@ function ViewUser() {
 
     const { id } = useParams();
 
-    const { userData, fetchUserData, fetchingUserData } = useViewUserStore();
+    const { userData, fetchUserData, fetchingUserData, guides } = useViewUserStore();
 
     const [viewing, setViewing] = useState('guides');
+
+    const [showGuide, setShowGuide] = useState(false);
+    const [guideToOpen, setGuideToOpen] = useState(null);
+
+    const openGuide = (guide) => {
+        setGuideToOpen(guide);
+        setShowGuide(true);
+    }
 
     useEffect(() => {
         if (id) {
@@ -138,9 +147,9 @@ function ViewUser() {
                     {viewing === 'guides' && (
                         <div className='min-w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4'>
                             {userData?.guides?.length > 0 ? (
-                                userData.guides.map((guide) => (
-                                    <div className='w-full'>
-                                        <GuideCard guide={guide} />
+                                guides.map((guide) => (
+                                    <div className='w-full' key={guide._id}>
+                                        <GuideCard guide={guide} onClick={() => openGuide(guide)} />
                                     </div>
                                 ))
                             ) : (
@@ -151,6 +160,12 @@ function ViewUser() {
                     )}
                 </div>
             )}
+            <ViewGuide
+                isOpen={showGuide}
+                onClose={() => setShowGuide(false)}
+                guide={guideToOpen}
+                fromViewUser={true}
+            />
         </div>
     );
 };

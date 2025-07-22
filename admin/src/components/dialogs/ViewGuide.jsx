@@ -14,6 +14,7 @@ import { ChevronDown } from 'lucide-react'
 
 import useGuideStore from '../../../store/guide.store.jsx';
 import useAdminStore from '../../../store/admin.store.jsx';
+import useViewUserStore from '../../../store/viewUser.store.jsx';
 
 import empty_profile from '../../assets/images/profile-icons/empty_profile.png'
 import boy_1 from '../../assets/images/profile-icons/boy_1.png'
@@ -46,11 +47,13 @@ const profileIcons = {
     'lgbt_4': lgbt_4
 };
 
-function ViewGuide({ isOpen, onClose, guide }) {
+function ViewGuide({ isOpen, onClose, guide, fromViewUser = false }) {
 
     const { updatingStatus, updateGuideStatus, getGuideById, deleteGuide, deletingGuide } = useGuideStore();
+    const { getGuideByIdFromViewUser, updateGuideStatusFromViewUser } = useViewUserStore();
     const { admin } = useAdminStore();
-    const latestGuide = getGuideById(guide?._id);
+
+    const latestGuide = fromViewUser ? (getGuideByIdFromViewUser(guide?._id)) : (getGuideById(guide?._id));
 
     const navigate = useNavigate();
 
@@ -93,6 +96,16 @@ function ViewGuide({ isOpen, onClose, guide }) {
     }, [isOpen])
 
     if (!isOpen) return null
+
+    if (!latestGuide || !latestGuide.posterId) {
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                <div className="bg-white p-8 rounded shadow">
+                    <span>Loading guide details...</span>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div
@@ -137,11 +150,11 @@ function ViewGuide({ isOpen, onClose, guide }) {
                                             <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                                             <DropdownMenuSeparator className='bg-gray-200' />
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'accepted' && "bg-green-100 text-green-700"}`}
-                                                onClick={() => updateGuideStatus(latestGuide._id, 'accepted')}>Accepted</DropdownMenuItem>
+                                                onClick={() => {fromViewUser ? (updateGuideStatusFromViewUser(latestGuide._id, 'accepted')) : (updateGuideStatus(latestGuide._id, 'accepted'))} }>Accepted</DropdownMenuItem>
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'rejected' && "bg-red-100 text-red-700"}`}
-                                                onClick={() => updateGuideStatus(latestGuide._id, 'rejected')}>Rejected</DropdownMenuItem>
+                                                onClick={() => {fromViewUser ? (updateGuideStatusFromViewUser(latestGuide._id, 'rejected')) : (updateGuideStatus(latestGuide._id, 'rejected'))} }>Rejected</DropdownMenuItem>
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'pending' && "bg-yellow-100 text-yellow-700"}`}
-                                                onClick={() => updateGuideStatus(latestGuide._id, 'pending')}>Pending</DropdownMenuItem>
+                                                onClick={() => {fromViewUser ? (updateGuideStatusFromViewUser(latestGuide._id, 'pending')) : (updateGuideStatus(latestGuide._id, 'pending'))} }>Pending</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </span>
