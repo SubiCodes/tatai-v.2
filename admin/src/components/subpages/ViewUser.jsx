@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom';
 import { MoveLeft, Briefcase, Sofa, Wrench } from 'lucide-react';
 import { DotLoader } from 'react-spinners'
 
+import GuideCard from '../cards/GuideCard.jsx';
+
 import useViewUserStore from '../../../store/viewUser.store.jsx';
 
 import empty_profile from '../../assets/images/profile-icons/empty_profile.png'
@@ -131,6 +133,22 @@ function ViewUser() {
                         </div>
                     </div>
 
+                    {/* USER GUIDES */}
+
+                    {viewing === 'guides' && (
+                        <div className='min-w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4'>
+                            {userData?.guides?.length > 0 ? (
+                                userData.guides.map((guide) => (
+                                    <div className='w-full'>
+                                        <GuideCard guide={guide} />
+                                    </div>
+                                ))
+                            ) : (
+                                <span className='text-xl font-lg'>No guides posted.</span>
+                            )}
+                        </div>
+
+                    )}
                 </div>
             )}
         </div>
