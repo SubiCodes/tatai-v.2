@@ -27,7 +27,7 @@ export const getViewUserData = async (req, res) => {
             }
         }
         const feedbacks = await Feedback.find({ userId: id }).populate({ path: 'userId', select: 'firstName lastName email profileIcon' }).sort({ updatedAt: -1 });
-        return res.status(200).json({ success: true, message: 'User data fetched successfully', user: user, guides: guides, count: categoryCounts });
+        return res.status(200).json({ success: true, message: 'User data fetched successfully', user: user, guides: guides, count: categoryCounts, feedbacks: feedbacks });
     } catch (error) {
         console.error('Error fetching user data:', error);
         return res.status(500).json({ error: 'Internal server error' });
