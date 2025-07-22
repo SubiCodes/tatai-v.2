@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 
 import { MoveLeft, Briefcase, Sofa, Wrench } from 'lucide-react';
@@ -41,6 +41,8 @@ function ViewUser() {
     const { id } = useParams();
 
     const { userData, fetchUserData, fetchingUserData } = useViewUserStore();
+
+    const [viewing, setViewing] = useState('guides');
 
     useEffect(() => {
         if (id) {
@@ -116,6 +118,19 @@ function ViewUser() {
                             </div>
                         </div>
                     </div>
+
+                    {/* USER GUIDES || User Fedbacks*/}
+
+                    {/* GUIDE / FEEDBACKS FILTER */}
+                    <div className='w-full grid grid-cols-2 py-2'>
+                        <div className={`flex items-center justify-center cursor-pointer border-b ${viewing === 'guides' ? 'border-b-2 border-secondary' : 'border-gray-400'} py-2`} onClick={() => setViewing('guides')}>
+                            <span className={`text-lg font-semibold ${viewing === 'guides' ? 'text-primary' : 'text-gray-400'} `}>Guides</span>
+                        </div>
+                        <div className={`flex items-center justify-center cursor-pointer border-b ${viewing === 'comments' ? 'border-b-2 border-secondary' : 'border-gray-400'} py-2`} onClick={() => setViewing('comments')}>
+                            <span className={`text-lg font-semibold ${viewing === 'comments' ? 'text-primary' : 'text-gray-400'} `}>Comments</span>
+                        </div>
+                    </div>
+
                 </div>
             )}
         </div>
