@@ -26,6 +26,7 @@ import lgbt_3 from '../../assets/images/profile-icons/lgbt_3.png'
 import lgbt_4 from '../../assets/images/profile-icons/lgbt_4.png'
 
 import useFeedbackStore from '../../../store/feedback.store'
+import useViewUserStore from '../../../store/viewUser.store'
 
 const profileIcons = {
     'empty_profile': empty_profile,
@@ -43,12 +44,19 @@ const profileIcons = {
     'lgbt_4': lgbt_4
 };
 
-function FeedbackCard({ feedback, fromLatestFeedback = false }) {
+function FeedbackCard({ feedback, fromLatestFeedback = false, fromViewUser = false }) {
 
     const { editFeedback } = useFeedbackStore();
+    const { editFeedbackFromViewUser } = useViewUserStore();
+
 
     const handleEditFeedback = async (hidden) => {
-        await editFeedback(feedback?.userId?._id, feedback?.guideId, hidden, fromLatestFeedback);
+        if (fromViewUser) {
+            editFeedbackFromViewUser(feedback?.userId?._id, feedback?.guideId, hidden)
+        } else {
+            await editFeedback(feedback?.userId?._id, feedback?.guideId, hidden, fromLatestFeedback);
+        }
+
     }
 
     return (

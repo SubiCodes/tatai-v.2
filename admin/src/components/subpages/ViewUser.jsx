@@ -166,7 +166,7 @@ function ViewUser() {
                             {feedbacks?.length > 0 ? (
                                 feedbacks.map((feedback) => (
                                     <div className='w-full' key={feedback._id}>
-                                        <FeedbackCard feedback={feedback} />
+                                        <FeedbackCard feedback={feedback} fromViewUser={true}/>
                                     </div>
                                 ))
                             ) : (

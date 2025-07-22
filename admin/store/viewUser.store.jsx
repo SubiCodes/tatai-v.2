@@ -84,6 +84,27 @@ const useViewUserStore = create((set, get) => ({
             toast.dismiss(toastId);
         }
     },
+    editFeedbackFromViewUser: async (userId, guideId, hidden) => {
+        const toastId = toast.custom((t) => (
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Posting guide"} message="This might take a while..." />));
+        try {
+            const res = await axios.put(`${import.meta.env.VITE_URI}/api/v1/feedback`, { userId, guideId, hidden });
+            set((state) => ({
+                feedbacks: state.feedbacks.map((f) => f._id === res.data.data._id ? res.data.data : f)
+            }));
+            console.log(res.data.data)
+            toast.custom((t) => (
+                <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Successfully edited feedback."} message={'Feedback hidden status changed.'} />
+            ));
+        } catch (error) {
+            console.log("Error editing feedback:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Fetching latest feedback unsuccessful."} message={'Something went wrong...'} />
+            ));
+        } finally {
+            toast.dismiss(toastId);
+        }
+    }
 }));
 
 export default useViewUserStore;
