@@ -50,7 +50,38 @@ const useViewUserStore = create((set, get) => ({
         } finally {
             toast.dismiss(toastId);
         }
-    }
+    },
+    deleteGuideFromViewUser: async (id, guide) => {
+        set({ deletingGuide: true });
+        const toastId = toast.custom((t) => (
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Deleting Guide"} memessage="This might take a while..." />
+        ))
+        try {
+            const result = await axios.delete(`${import.meta.env.VITE_URI}/api/v1/guideAdmin/guide/${id}`);
+            await axios.delete(`${import.meta.env.VITE_URI}/api/v1/guideAdmin/media/`, { data: { publicId: guide.coverImage.publicId, url: guide.coverImage.url } });
+            await Promise.all(
+                guide.stepMedias.map(media =>
+                    axios.delete(`${import.meta.env.VITE_URI}/api/v1/guideAdmin/media/`, { data: { publicId: media.publicId, url: media.url } })
+                )
+            );
+            set((state) => ({
+                guides: state.guides.filter((t) => t._id !== id)
+            }))
+            toast.custom((t) => (
+                <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Guide deletion Successful"} message={result.data.message} />
+            ))
+            return true;
+        } catch (error) {
+            console.log("Error deleting guide:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Guide deletion Unsuccessful"} message={error.response.data.message} />
+            ));
+            return false;
+        } finally {
+            set({ deletingGuide: false });
+            toast.dismiss(toastId);
+        }
+    },
 }));
 
 export default useViewUserStore;

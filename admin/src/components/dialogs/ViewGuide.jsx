@@ -50,7 +50,7 @@ const profileIcons = {
 function ViewGuide({ isOpen, onClose, guide, fromViewUser = false }) {
 
     const { updatingStatus, updateGuideStatus, getGuideById, deleteGuide, deletingGuide } = useGuideStore();
-    const { getGuideByIdFromViewUser, updateGuideStatusFromViewUser } = useViewUserStore();
+    const { getGuideByIdFromViewUser, updateGuideStatusFromViewUser, deleteGuideFromViewUser } = useViewUserStore();
     const { admin } = useAdminStore();
 
     const latestGuide = fromViewUser ? (getGuideByIdFromViewUser(guide?._id)) : (getGuideById(guide?._id));
@@ -61,7 +61,11 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false }) {
 
     //function responsible for deletion
     const handleDelete = () => {
-        deleteGuide(latestGuide._id, latestGuide);
+        if (fromViewUser) {
+            deleteGuideFromViewUser(latestGuide._id, latestGuide);
+        } else {
+            deleteGuide(latestGuide._id, latestGuide);
+        }
         setIsDeleteConfirmOpen(false);
         onClose();
     };
@@ -150,11 +154,11 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false }) {
                                             <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                                             <DropdownMenuSeparator className='bg-gray-200' />
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'accepted' && "bg-green-100 text-green-700"}`}
-                                                onClick={() => {fromViewUser ? (updateGuideStatusFromViewUser(latestGuide._id, 'accepted')) : (updateGuideStatus(latestGuide._id, 'accepted'))} }>Accepted</DropdownMenuItem>
+                                                onClick={() => { fromViewUser ? (updateGuideStatusFromViewUser(latestGuide._id, 'accepted')) : (updateGuideStatus(latestGuide._id, 'accepted')) }}>Accepted</DropdownMenuItem>
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'rejected' && "bg-red-100 text-red-700"}`}
-                                                onClick={() => {fromViewUser ? (updateGuideStatusFromViewUser(latestGuide._id, 'rejected')) : (updateGuideStatus(latestGuide._id, 'rejected'))} }>Rejected</DropdownMenuItem>
+                                                onClick={() => { fromViewUser ? (updateGuideStatusFromViewUser(latestGuide._id, 'rejected')) : (updateGuideStatus(latestGuide._id, 'rejected')) }}>Rejected</DropdownMenuItem>
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'pending' && "bg-yellow-100 text-yellow-700"}`}
-                                                onClick={() => {fromViewUser ? (updateGuideStatusFromViewUser(latestGuide._id, 'pending')) : (updateGuideStatus(latestGuide._id, 'pending'))} }>Pending</DropdownMenuItem>
+                                                onClick={() => { fromViewUser ? (updateGuideStatusFromViewUser(latestGuide._id, 'pending')) : (updateGuideStatus(latestGuide._id, 'pending')) }}>Pending</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </span>
