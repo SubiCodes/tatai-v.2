@@ -13,7 +13,7 @@ export const getViewUserData = async (req, res) => {
         if (!user) {
             return res.status(400).json({ error: 'User not found!' });
         }
-        const guides = await Guide.find({ userId: id }).populate({ path: 'posterId', select: 'firstName lastName email profileIcon' }).sort({ createdAt: -1 });
+        const guides = await Guide.find({ userId: id }).populate({ path: 'posterId', select: 'firstName lastName email profileIcon' }).sort({ updatedAt: -1 });
         const categoryCounts = {
             diy: 0,
             tool: 0,
