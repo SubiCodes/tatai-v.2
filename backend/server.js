@@ -8,6 +8,7 @@ import authAdminRouter from './routes/auth.admin.route.js';
 import userAdminRouter from './routes/user.admin.route.js';
 import profileAdminRouter from './routes/profile.admin.route.js';
 import guideAdminRouter from './routes/guide.admin.route.js';
+import viewUserAdminRouter from './routes/viewUser.admin.route.js';
 
 import feedbackRouter from './routes/feedback.route.js';
 import reportRouter from './routes/report.route.js';
@@ -37,6 +38,7 @@ app.use(cookieParser());
 //admin routers
 app.use('/api/v1/authAdmin', authAdminRouter);
 app.use('/api/v1/userAdmin', userAdminRouter);
+app.use('/api/v1/viewUserAdmin', viewUserAdminRouter);
 app.use('/api/v1/profileAdmin', profileAdminRouter);
 app.use('/api/v1/guideAdmin', guideAdminRouter);
 
