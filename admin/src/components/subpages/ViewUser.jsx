@@ -5,6 +5,7 @@ import { MoveLeft, Briefcase, Sofa, Wrench } from 'lucide-react';
 import { DotLoader } from 'react-spinners'
 
 import GuideCard from '../cards/GuideCard.jsx';
+import FeedbackCard from '../cards/FeedbackCard.jsx';
 
 import useViewUserStore from '../../../store/viewUser.store.jsx';
 
@@ -43,7 +44,7 @@ function ViewUser() {
 
     const { id } = useParams();
 
-    const { userData, fetchUserData, fetchingUserData, guides } = useViewUserStore();
+    const { userData, fetchUserData, fetchingUserData, guides, feedbacks } = useViewUserStore();
 
     const [viewing, setViewing] = useState('guides');
 
@@ -153,10 +154,28 @@ function ViewUser() {
                                     </div>
                                 ))
                             ) : (
-                                <span className='text-xl font-lg'>No guides posted.</span>
+                                <div className='min-w-full min-h-full flex flex-col items-center justify-center gap-4'>
+                                    <span className='text-xl font-lg text-gray-400'>No guides posted.</span>
+                                </div>
+
                             )}
                         </div>
+                    )}
 
+                    {viewing === 'comments' && (
+                        <div className='min-w-full flex flex-col gap-2'>
+                            {feedbacks?.length > 0 ? (
+                                feedbacks.map((feedback) => (
+                                    <div className='w-full' key={feedback._id}>
+                                        <FeedbackCard feedback={feedback} />
+                                    </div>
+                                ))
+                            ) : (
+                                <div className='w-full h-full flex flex-col items-center justify-center gap-4'>
+                                    <span className='text-xl font-lg text-gray-400'>No comments yet.</span>
+                                </div>
+                            )}
+                        </div>
                     )}
                 </div>
             )}
