@@ -48,6 +48,7 @@ import { Search, Dot, UserLock, ShieldUser, User, Mail, Shield, Calendar, UserCh
 import { SyncLoader } from "react-spinners";
 
 import useUserStore from '../../../store/user.store.jsx'
+import { useNavigate } from 'react-router-dom'
 
 const profileIcons = {
     'empty_profile': empty_profile,
@@ -66,6 +67,8 @@ const profileIcons = {
 };
 
 function UserTable() {
+
+    const navigate = useNavigate();
 
     const { users, fetchUsers, fetchingUsers, updateUserStatus } = useUserStore();
 
@@ -362,7 +365,7 @@ function UserTable() {
                                             )}
 
                                             <DropdownMenuLabel>Other</DropdownMenuLabel>
-                                            <DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => navigate(`/users/${user._id}`)}>
                                                 <Eye />
                                                 View
                                             </DropdownMenuItem>
