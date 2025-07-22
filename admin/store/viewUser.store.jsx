@@ -15,6 +15,7 @@ const useViewUserStore = create((set) => ({
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Fetching user data"} message="This might take a while..." />));
         try {
             const res = await axios.get(`${import.meta.env.VITE_URI}/api/v1/viewUserAdmin/${id}`);
+            set({ userData: res.data });
             return res.data;
         } catch (error) {
             console.error("Error fetching user data:", error);
