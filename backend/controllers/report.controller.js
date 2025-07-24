@@ -59,9 +59,6 @@ export const changeReviewedStatus = async (req, res) => {
 
     try {
         const report = await Report.findById(id);
-        if (!report) {
-            return res.status(400).json({ success: false, message: 'The report no longer exists.' });
-        }
         report.reviewed = reviewed;
         await report.save();
         return res.status(200).json({ success: true, message: 'Report reviewed status changed successfully.' });
