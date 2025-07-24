@@ -1,15 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
+import { DotLoader } from 'react-spinners'
 import { Search } from 'lucide-react';
 
+import useReportStore from '../../../store/report.store.jsx';
+
 function Reports() {
+
+    const { reports, fetchingReports, fetchReports } = useReportStore();
+
     const [typeFilter, setTypeFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
     const [isLatestFirst, setIsLatestFirst] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Mock data array
-    const reportData = [];
+    useEffect(() => {
+        fetchReports();
+    }, [])
+
+    if (fetchingReports) {
+        return (
+            <div className='w-full h-full flex flex-col gap-4 items-center justify-center'>
+                <DotLoader size={32} />
+                <h1>Loading...</h1>
+            </div>
+        )
+    }
 
     return (
         <div className='w-full h-screen px-2 py-4 md:px-6 md:py-6 flex flex-col'>
@@ -72,7 +88,7 @@ function Reports() {
             {/* Report List Placeholder */}
             <div className="flex-1 overflow-y-auto">
                 {/* You can render reportData here later */}
-                {reportData.length === 0 && (
+                {reports.length === 0 && (
                     <p className="text-sm text-gray-500">No reports to show.</p>
                 )}
             </div>
