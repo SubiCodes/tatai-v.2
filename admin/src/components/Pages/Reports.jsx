@@ -37,7 +37,7 @@ import {
 import { Button } from "@/components/ui/button"
 
 import { DotLoader } from 'react-spinners'
-import { Search, Calendar } from 'lucide-react';
+import { Search, Calendar, Ellipsis, Eye, Check } from 'lucide-react';
 
 import useReportStore from '../../../store/report.store.jsx';
 
@@ -191,12 +191,56 @@ function Reports() {
                                         }`}></div>
 
                                     <span className={`font-medium text-xs px-2 py-1 rounded-full ${report?.reviewed
-                                            ? 'bg-green-50 text-green-700 border border-green-200'
-                                            : 'bg-red-50 text-red-700 border border-red-200'
+                                        ? 'bg-green-50 text-green-700 border border-green-200'
+                                        : 'bg-red-50 text-red-700 border border-red-200'
                                         }`}>
                                         {report?.reviewed ? 'Yes' : 'No'}
                                     </span>
                                 </div>
+                            </TableCell>
+                            <TableCell className="text-sm">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button className="bg-clear hover:bg-clear cursor-pointer">
+                                            <Ellipsis />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+
+                                    <DropdownMenuContent className="w-auto bg-white border border-gray-300">
+                                        <DropdownMenuLabel>Reviewed Status</DropdownMenuLabel>
+                                        <DropdownMenuSeparator className="bg-gray-200" />
+
+                                        {/* Mark as Reviewed */}
+                                        <DropdownMenuItem
+                                            className={`flex items-center gap-2 cursor-pointer ${report?.reviewed ? "bg-green-100 text-green-700" : ""
+                                                }`}
+                                           
+                                        >
+                                            {report?.reviewed && <div className="w-2 h-2 rounded-full bg-green-400" />}
+                                            Reviewed
+                                        </DropdownMenuItem>
+
+                                        {/* Mark as Not Reviewed */}
+                                        <DropdownMenuItem
+                                            className={`flex items-center gap-2 cursor-pointer ${report?.reviewed === false ? "bg-red-100 text-red-700" : ""
+                                                }`}
+                                            
+                                        >
+                                            {report?.reviewed === false && (
+                                                <div className="w-2 h-2 rounded-full bg-red-400" />
+                                            )}
+                                            Not Reviewed
+                                        </DropdownMenuItem>
+
+                                        <DropdownMenuSeparator className="bg-gray-200" />
+                                        <DropdownMenuLabel>Other</DropdownMenuLabel>
+
+                                        <DropdownMenuItem className="flex items-center gap-2">
+                                            <Eye size={16} />
+                                            View
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </TableCell>
                         </TableRow>
                     ))}
