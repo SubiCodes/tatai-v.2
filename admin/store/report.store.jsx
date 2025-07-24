@@ -15,7 +15,7 @@ const useReportStore = create((set) => ({
     fetchReports: async () => {
         set({ fetchingReports: false });
         const toastId = toast.custom((t) => (
-            <ToastPending dismiss={() => toast.dismiss(t)} title={"Posting guide"} message="This might take a while..." />));
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Fetching Reports"} message="This might take a while..." />));
         try {
             const res = await axios.get(`${URI}/api/v1/report`);
             set({ reports: res.data.data });
