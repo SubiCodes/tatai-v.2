@@ -29,6 +29,31 @@ const useReportStore = create((set) => ({
             set({ fetchingReports: false });
             toast.dismiss(toastId);
         }
+    },
+    updatingReportStatus: false,
+    updateReportStatus: async (id, reviewed) => {
+        set({ updatingReportStatus: false });
+        const toastId = toast.custom((t) => (
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Updating Report Status"} message="This might take a while..." />));
+        try {
+            const res = await axios.put(`${URI}/api/v1/report/${id}`, { reviewed });
+            set((state) => ({
+                reports: state.reports.map((report) =>
+                    report._id === id ? { ...report, reviewed: res.data.data.reviewed } : report
+                )
+            }));
+            toast.custom((t) => (
+                <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Report Status Updated"} message={res.data.message} />
+            ));
+        } catch (error) {
+            console.log("Error updating report:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Updating Report Unsuccessful"} message={error.response.data.message} />
+            ));
+        } finally {
+            set({ updatingReportStatus: false });
+            toast.dismiss(toastId);
+        }
     }
 }));
 
