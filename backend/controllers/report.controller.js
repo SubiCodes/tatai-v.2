@@ -70,3 +70,13 @@ export const changeReviewedStatus = async (req, res) => {
         return res.status(500).json({ success: false, message: 'An unexpected error occured.' });
     }
 }
+
+export const getReports = async (req, res) => {
+    try {
+        const reports = await Report.find().populate({ path: 'userId', select: 'email firstName lastName profileIcon' });
+        return res.status(200).json({ success: true, message: 'Fetched all reports successfully', data: reports });
+    } catch (error) {
+        console.error('Error details on getReports:', error);
+        return res.status(500).json({ success: false, message: 'An unexpected error occured.' });
+    }
+}
