@@ -59,7 +59,7 @@ const profileIcons = {
 
 function Reports() {
 
-    const { reports, fetchingReports, fetchReports } = useReportStore();
+    const { reports, fetchingReports, fetchReports, updateReportStatus } = useReportStore();
 
     const [typeFilter, setTypeFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
@@ -99,6 +99,10 @@ function Reports() {
 
         return result;
     }, [reports, typeFilter, statusFilter, searchQuery, isLatestFirst]);
+
+    const handleStatusChange = async (reportId, reviewed) => {
+        await updateReportStatus(reportId, reviewed);
+    }
 
     useEffect(() => {
         fetchReports();
@@ -248,7 +252,7 @@ function Reports() {
                                         <DropdownMenuItem
                                             className={`flex items-center gap-2 cursor-pointer ${report?.reviewed ? "bg-green-100 text-green-700" : ""
                                                 }`}
-
+                                            onClick={() => handleStatusChange(report._id, true)}
                                         >
                                             {report?.reviewed && <div className="w-2 h-2 rounded-full bg-green-400" />}
                                             Reviewed
@@ -258,7 +262,7 @@ function Reports() {
                                         <DropdownMenuItem
                                             className={`flex items-center gap-2 cursor-pointer ${report?.reviewed === false ? "bg-red-100 text-red-700" : ""
                                                 }`}
-
+                                            onClick={() => handleStatusChange(report._id, false)}
                                         >
                                             {report?.reviewed === false && (
                                                 <div className="w-2 h-2 rounded-full bg-red-400" />

@@ -13,7 +13,7 @@ const useReportStore = create((set) => ({
     reports: [],
     fetchingReports: false,
     fetchReports: async () => {
-        set({ fetchingReports: false });
+        set({ fetchingReports: true });
         const toastId = toast.custom((t) => (
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Fetching Reports"} message="This might take a while..." />));
         try {
@@ -32,7 +32,7 @@ const useReportStore = create((set) => ({
     },
     updatingReportStatus: false,
     updateReportStatus: async (id, reviewed) => {
-        set({ updatingReportStatus: false });
+        set({ updatingReportStatus: true });
         const toastId = toast.custom((t) => (
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Updating Report Status"} message="This might take a while..." />));
         try {
