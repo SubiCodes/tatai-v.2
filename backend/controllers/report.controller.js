@@ -61,7 +61,7 @@ export const changeReviewedStatus = async (req, res) => {
         const report = await Report.findById(id);
         report.reviewed = reviewed;
         await report.save();
-        return res.status(200).json({ success: true, message: 'Report reviewed status changed successfully.' });
+        return res.status(200).json({ success: true, message: 'Report reviewed status changed successfully.', data: report });
     } catch (error) {
         console.error('Error details on markAsReviewed:', error);
         return res.status(500).json({ success: false, message: 'An unexpected error occured.' });
