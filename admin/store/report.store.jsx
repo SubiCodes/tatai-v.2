@@ -18,7 +18,6 @@ const useReportStore = create((set) => ({
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Posting guide"} message="This might take a while..." />));
         try {
             const res = await axios.get(`${URI}/api/v1/report`);
-            console.log("Fetched reports:", res.data);
             set({ reports: res.data.data });
         } catch (error) {
             console.log("Error fetching reports:", error);
