@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import empty_profile from '../../assets/images/profile-icons/empty_profile.png'
 import boy_1 from '../../assets/images/profile-icons/boy_1.png'
@@ -65,6 +65,40 @@ function Reports() {
     const [statusFilter, setStatusFilter] = useState('all');
     const [isLatestFirst, setIsLatestFirst] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredReports = useMemo(() => {
+        let result = [...reports];
+
+        // Filter by type
+        if (typeFilter !== 'all') {
+            result = result.filter(report => report.type === typeFilter);
+        }
+
+        // Filter by status
+        if (statusFilter !== 'all') {
+            const isReviewed = statusFilter === 'reviewed';
+            result = result.filter(report => report.reviewed === isReviewed);
+        }
+
+        // Filter by search query (case-insensitive)
+        if (searchQuery.trim() !== '') {
+            const query = searchQuery.trim().toLowerCase();
+            result = result.filter(report =>
+                report.title?.toLowerCase().includes(query) || // if reports have titles
+                report.description?.toLowerCase().includes(query) || // or descriptions
+                report.type?.toLowerCase().includes(query)
+            );
+        }
+
+        // Sort by date
+        result.sort((a, b) => {
+            const dateA = new Date(a.createdAt);
+            const dateB = new Date(b.createdAt);
+            return isLatestFirst ? dateB - dateA : dateA - dateB;
+        });
+
+        return result;
+    }, [reports, typeFilter, statusFilter, searchQuery, isLatestFirst]);
 
     useEffect(() => {
         fetchReports();
@@ -149,7 +183,7 @@ function Reports() {
                     </TableRow>
                 </TableHeader>
                 <TableBody className="flex-1">
-                    {reports.map((report) => (
+                    {filteredReports.map((report) => (
                         <TableRow key={report._id} className="border-gray-200 h-16 hover:bg-gray-50/80 transition-colors duration-200">
                             {/* Name and Profile */}
                             <TableCell className="max-w-xs">
@@ -214,7 +248,7 @@ function Reports() {
                                         <DropdownMenuItem
                                             className={`flex items-center gap-2 cursor-pointer ${report?.reviewed ? "bg-green-100 text-green-700" : ""
                                                 }`}
-                                           
+
                                         >
                                             {report?.reviewed && <div className="w-2 h-2 rounded-full bg-green-400" />}
                                             Reviewed
@@ -224,7 +258,7 @@ function Reports() {
                                         <DropdownMenuItem
                                             className={`flex items-center gap-2 cursor-pointer ${report?.reviewed === false ? "bg-red-100 text-red-700" : ""
                                                 }`}
-                                            
+
                                         >
                                             {report?.reviewed === false && (
                                                 <div className="w-2 h-2 rounded-full bg-red-400" />
