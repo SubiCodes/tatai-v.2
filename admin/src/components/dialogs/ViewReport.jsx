@@ -20,7 +20,7 @@ const ReportField = ({ label, value, multiline = false }) => (
 
 function ViewReport({ isOpen, onClose, reportId }) {
 
-    const { report, fetchingReport, fetchReport, fetchReportedGuide, reportedGuide } = useReportStore();
+    const { report, fetchingReport, fetchReport, fetchReportedGuide, reportedGuide, reportedFeedback, fetchReportedFeedback } = useReportStore();
 
     const [openViewGuide, setOpenViewGuide] = useState(false);
 
@@ -34,6 +34,15 @@ function ViewReport({ isOpen, onClose, reportId }) {
     const getReportedGuideData = async () => {
         await fetchReportedGuide(report?.guideId._id)
         setOpenViewGuide(true);
+    }
+
+    const fetchInfo = async () => {
+        await getReportDetails();
+        if (report?.type === 'guide' && report) {
+            await fetchReportedGuide(report?.guideId._id)
+        } else {
+            await fetchReportedFeedback(report?.feedbackId)
+        }
     }
 
     useEffect(() => {
@@ -115,10 +124,10 @@ function ViewReport({ isOpen, onClose, reportId }) {
                             <ReportField label="Description" value={report?.description} multiline />
 
                             {report?.type === 'feedback' && (
-                                <FeedbackCard feedback={report.feedbackId} />
+                                <FeedbackCard feedback={reportedFeedback} />
                             )}
                             {report?.type === 'guide' && report?.guideId && (
-                                <GuideCard guide={report.guideId} onClick={() => getReportedGuideData()} />
+                                <GuideCard guide={reportedGuide} onClick={() => getReportedGuideData()} />
                             )}
                         </div>
                     )}
