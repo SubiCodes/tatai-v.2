@@ -96,6 +96,27 @@ const useReportStore = create((set) => ({
             set({ fetchingReportedGuide: false });
             toast.dismiss(toastId);
         }
+    },
+    reportedFeedback: null,
+    fetchingReportedFeedback: false,
+    fetchReportedFeedback: async (feedbackId) => {
+        set({ fetchingReportedFeedback: true });
+        const toastId = toast.custom((t) => (
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Fetching Reported Feedback"} message="This might take a while..." />));
+        try {
+            const res = await axios.get(`${URI}/api/v1/feedback/${feedbackId}`);
+            console.log(res.data.data);
+            set({ reportedFeedback: res.data.data });
+        } catch (error) {
+            console.log("Error fetching reported feedback:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Fetching Reported Feedback Unsuccessful"} message={error.response.data.message} />
+            ));
+            return false;
+        } finally {
+            set({ fetchingReportedFeedback: false });
+            toast.dismiss(toastId);
+        }
     }
 }));
 
