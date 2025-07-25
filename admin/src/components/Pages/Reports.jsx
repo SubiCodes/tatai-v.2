@@ -61,19 +61,10 @@ const profileIcons = {
 
 function Reports() {
 
-    const { reports, fetchingReports, fetchReports, updateReportStatus, reportedGuide, fetchingReportedGuide, fetchReportedGuide } = useReportStore();
+    const { reports, fetchingReports, fetchReports, updateReportStatus } = useReportStore();
 
     const [openViewReport, setOpenViewReport] = useState(false);
     const [reportToView, setReportToView] = useState(null);
-
-    const [openViewGuide, setOpenViewGuide] = useState(false);
-    const [guideToView, setGuideToView] = useState(null);
-
-    const getReportedGuideData = async () => {
-        await fetchReportedGuide
-        setGuideToView(reportedGuide);
-        setOpenViewGuide(true);
-    }
 
     const [typeFilter, setTypeFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
@@ -304,12 +295,7 @@ function Reports() {
                 </TableBody>
 
             </Table>
-            <ViewGuide
-                isOpen={openViewGuide}
-                onClose={() => setOpenViewGuide(false)}
-                guide={guideToView} 
-            />
-            <ViewReport isOpen={openViewReport} onClose={() => setOpenViewReport(false)} reportId={reportToView} onOpenGuide={getReportedGuideData} />
+            <ViewReport isOpen={openViewReport} onClose={() => setOpenViewReport(false)} reportId={reportToView}/>
         </div>
     );
 }

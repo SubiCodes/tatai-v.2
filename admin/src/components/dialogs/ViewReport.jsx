@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import {
     MoonLoader
@@ -7,6 +7,7 @@ import FeedbackCard from '../cards/FeedbackCard.jsx'
 import GuideCard from '../cards/GuideCard.jsx'
 
 import useReportStore from '../../../store/report.store'
+import ViewGuide from './ViewGuide.jsx';
 
 const ReportField = ({ label, value, multiline = false }) => (
     <div className="w-full flex flex-row items-center gap-2">
@@ -17,15 +18,22 @@ const ReportField = ({ label, value, multiline = false }) => (
     </div>
 );
 
-function ViewReport({ isOpen, onClose, reportId, onOpenGuide }) {
+function ViewReport({ isOpen, onClose, reportId }) {
 
-    const { report, fetchingReport, fetchReport } = useReportStore();
+    const { report, fetchingReport, fetchReport, fetchReportedGuide, reportedGuide } = useReportStore();
+
+    const [openViewGuide, setOpenViewGuide] = useState(false);
 
     const getReportDetails = async () => {
         if (reportId) {
             await fetchReport(reportId);
             console.log("Report details fetched for ID:", report?.guideId);
         }
+    };
+
+    const getReportedGuideData = async () => {
+        await fetchReportedGuide(report?.guideId)
+        setOpenViewGuide(true);
     }
 
     useEffect(() => {
@@ -110,12 +118,17 @@ function ViewReport({ isOpen, onClose, reportId, onOpenGuide }) {
                                 <FeedbackCard feedback={report.feedbackId} />
                             )}
                             {report?.type === 'guide' && report?.guideId && (
-                                <GuideCard guide={report.guideId} onClick={() => (onOpenGuide(report?.guideId))}/>
+                                <GuideCard guide={report.guideId} onClick={() => getReportedGuideData()} />
                             )}
                         </div>
                     )}
                 </div>
             </div>
+             <ViewGuide
+                isOpen={openViewGuide}
+                onClose={() => setOpenViewGuide(false)}
+                guide={reportedGuide} 
+            />
         </div>
     )
 }
