@@ -35,11 +35,13 @@ import {
     DropdownMenuItem,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import ViewReport from '../dialogs/ViewReport.jsx';
 
 import { DotLoader } from 'react-spinners'
 import { Search, Calendar, Ellipsis, Eye, Check } from 'lucide-react';
 
 import useReportStore from '../../../store/report.store.jsx';
+import { set } from 'mongoose';
 
 const profileIcons = {
     'empty_profile': empty_profile,
@@ -60,6 +62,8 @@ const profileIcons = {
 function Reports() {
 
     const { reports, fetchingReports, fetchReports, updateReportStatus, fetchReport } = useReportStore();
+
+    const [openViewReport, setOpenViewReport] = useState(false);
 
     const [typeFilter, setTypeFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
@@ -107,6 +111,7 @@ function Reports() {
     const handleViewReport = async (reportId) => {
         await fetchReport(reportId);
         console.log("Report details fetched for ID:", reportId);
+        setOpenViewReport(true);
     }
 
     useEffect(() => {
@@ -290,7 +295,7 @@ function Reports() {
                 </TableBody>
 
             </Table>
-
+            <ViewReport isOpen={openViewReport} onClose={() => setOpenViewReport(false)} />
         </div>
     );
 }
