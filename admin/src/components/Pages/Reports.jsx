@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import ViewReport from '../dialogs/ViewReport.jsx';
+import ViewGuide from '../dialogs/ViewGuide.jsx';
 
 import { DotLoader } from 'react-spinners'
 import { Search, Calendar, Ellipsis, Eye, Check } from 'lucide-react';
@@ -60,10 +61,19 @@ const profileIcons = {
 
 function Reports() {
 
-    const { reports, fetchingReports, fetchReports, updateReportStatus } = useReportStore();
+    const { reports, fetchingReports, fetchReports, updateReportStatus, reportedGuide, fetchingReportedGuide, fetchReportedGuide } = useReportStore();
 
     const [openViewReport, setOpenViewReport] = useState(false);
     const [reportToView, setReportToView] = useState(null);
+
+    const [openViewGuide, setOpenViewGuide] = useState(false);
+    const [guideToView, setGuideToView] = useState(null);
+
+    const getReportedGuideData = async () => {
+        await fetchReportedGuide
+        setGuideToView( reportedGuide );
+        setOpenViewGuide(true);
+    }
 
     const [typeFilter, setTypeFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
@@ -294,7 +304,8 @@ function Reports() {
                 </TableBody>
 
             </Table>
-            <ViewReport isOpen={openViewReport} onClose={() => setOpenViewReport(false)} reportId={reportToView}/>
+            <ViewGuide />
+            <ViewReport isOpen={openViewReport} onClose={() => setOpenViewReport(false)} reportId={reportToView} onOpenGuide={getReportedGuideData}/>
         </div>
     );
 }
