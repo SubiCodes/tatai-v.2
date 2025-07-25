@@ -30,6 +30,27 @@ const useReportStore = create((set) => ({
             toast.dismiss(toastId);
         }
     },
+    report: null,
+    fetchingReport: false,
+    fetchReport: async ( id ) => {
+        set({ fetchingReport: true });
+        const toastId = toast.custom((t) => (
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Fetching Report"} message="This might take a while..." />));
+        try {
+            const res = await axios.get(`${URI}/api/v1/report/${id}`);
+            console.log("fetched report: ", res.data.data);
+            set({ report: res.data.data });
+        } catch (error) {
+            console.log("Error fetching report:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Fetching Report Unsuccessful"} message={error.response.data.message} />
+            ));
+            return false;
+        } finally {
+            set({ fetchingReport: false });
+            toast.dismiss(toastId);
+        }
+    },
     updatingReportStatus: false,
     updateReportStatus: async (id, reviewed) => {
         set({ updatingReportStatus: true });
