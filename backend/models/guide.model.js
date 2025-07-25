@@ -73,6 +73,6 @@ const guideSchema = new mongoose.Schema(
   }
 );
 
-const Guide = mongoose.model("guides", guideSchema);
+const Guide = mongoose.model("Guide", guideSchema);
 
 export default Guide;

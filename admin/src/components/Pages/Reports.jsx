@@ -59,7 +59,7 @@ const profileIcons = {
 
 function Reports() {
 
-    const { reports, fetchingReports, fetchReports, updateReportStatus } = useReportStore();
+    const { reports, fetchingReports, fetchReports, updateReportStatus, fetchReport } = useReportStore();
 
     const [typeFilter, setTypeFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
@@ -102,6 +102,11 @@ function Reports() {
 
     const handleStatusChange = async (reportId, reviewed) => {
         await updateReportStatus(reportId, reviewed);
+    }
+
+    const handleViewReport = async (reportId) => {
+        await fetchReport(reportId);
+        console.log("Report details fetched for ID:", reportId);
     }
 
     useEffect(() => {
@@ -273,7 +278,7 @@ function Reports() {
                                         <DropdownMenuSeparator className="bg-gray-200" />
                                         <DropdownMenuLabel>Other</DropdownMenuLabel>
 
-                                        <DropdownMenuItem className="flex items-center gap-2">
+                                        <DropdownMenuItem className="flex items-center gap-2" onClick={() => handleViewReport(report._id)}>
                                             <Eye size={16} />
                                             View
                                         </DropdownMenuItem>
