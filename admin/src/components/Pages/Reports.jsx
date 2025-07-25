@@ -41,7 +41,6 @@ import { DotLoader } from 'react-spinners'
 import { Search, Calendar, Ellipsis, Eye, Check } from 'lucide-react';
 
 import useReportStore from '../../../store/report.store.jsx';
-import { set } from 'mongoose';
 
 const profileIcons = {
     'empty_profile': empty_profile,
@@ -61,9 +60,10 @@ const profileIcons = {
 
 function Reports() {
 
-    const { reports, fetchingReports, fetchReports, updateReportStatus, fetchReport } = useReportStore();
+    const { reports, fetchingReports, fetchReports, updateReportStatus } = useReportStore();
 
     const [openViewReport, setOpenViewReport] = useState(false);
+    const [reportToView, setReportToView] = useState(null);
 
     const [typeFilter, setTypeFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
@@ -109,8 +109,7 @@ function Reports() {
     }
 
     const handleViewReport = async (reportId) => {
-        await fetchReport(reportId);
-        console.log("Report details fetched for ID:", reportId);
+        setReportToView(reportId);
         setOpenViewReport(true);
     }
 
@@ -295,7 +294,7 @@ function Reports() {
                 </TableBody>
 
             </Table>
-            <ViewReport isOpen={openViewReport} onClose={() => setOpenViewReport(false)} />
+            <ViewReport isOpen={openViewReport} onClose={() => setOpenViewReport(false)} reportId={reportToView}/>
         </div>
     );
 }
