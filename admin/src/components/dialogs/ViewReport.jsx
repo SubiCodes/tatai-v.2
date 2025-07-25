@@ -74,17 +74,23 @@ function ViewReport({ isOpen, onClose, reportId }) {
                 onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
             >
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-20">
-                    <h2 className="text-2xl font-semibold text-gray-800">Viewing Report</h2>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                <div className='w-full flex-col px-6 py-4 border-b border-gray-200 flex items-start justify-between sticky gap-2 top-0 bg-white z-20'>
+                    <div className="flex w-full items-center justify-between">
+                        <h2 className="text-2xl font-semibold text-gray-800">Viewing Report</h2>
+                        <button
+                            onClick={onClose}
+                            className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div className=''>
+                        <p className='text-sm text-gray-500'>Report ID: {report?._id}</p>
+                    </div>
                 </div>
+
 
                 {/* Body */}
                 <div className="w-full px-6 py-4 min-h-[200px]">
@@ -95,7 +101,6 @@ function ViewReport({ isOpen, onClose, reportId }) {
                         </div>
                     ) : (
                         <div className="flex flex-col gap-2">
-                            <ReportField label="Report ID" value={report?._id} />
                             <ReportField label="Reported by" value={report?.userId?.email} />
                             <ReportField label="Report Date" value={new Date(report.createdAt).toLocaleDateString()} />
                             <ReportField label="Type" value={report?.type?.toUpperCase()} />
