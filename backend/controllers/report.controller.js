@@ -101,11 +101,8 @@ export const getReportById = async (req, res) => {
             })
             .populate({
                 path: 'feedbackId',
-                populate: {
-                    path: 'userId',
-                    select: 'email firstName lastName profileIcon'
-                }
-            });
+                select: 'comment rating hidden userId guideId'
+            })
         if (!report) {
             return res.status(404).json({ success: false, message: 'Report not found.', data: {} });
         }

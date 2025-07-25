@@ -24,30 +24,38 @@ function ViewReport({ isOpen, onClose, reportId }) {
 
     const [openViewGuide, setOpenViewGuide] = useState(false);
 
-    const getReportDetails = async () => {
-        if (reportId) {
-            await fetchReport(reportId);
-            console.log("Report details fetched for ID:", report?.guideId);
-        }
-    };
+    const [showFeedback, setShowFeedback] = useState(false);
+    const [showGuide, setShowGuide] = useState(false);
 
     const getReportedGuideData = async () => {
         await fetchReportedGuide(report?.guideId._id)
         setOpenViewGuide(true);
     }
 
-    const fetchInfo = async () => {
-        await getReportDetails();
-        if (report?.type === 'guide' && report) {
-            await fetchReportedGuide(report?.guideId._id)
-        } else {
-            await fetchReportedFeedback(report?.feedbackId)
-        }
-    }
-
+    // Step 1: Fetch report on open
     useEffect(() => {
-        getReportDetails();
-    }, [reportId])
+        if (isOpen && reportId) {
+            fetchReport(reportId); // just fire it
+        }
+    }, [isOpen, reportId]);
+
+    // Step 2: When report is available, do next step
+    useEffect(() => {
+        if (!report) return;
+
+        setShowGuide(false);
+        setShowFeedback(false);
+
+        if (report.type === 'guide') {
+            fetchReportedGuide(report?.guideId?._id).then(() => {
+                setShowGuide(true);
+            });
+        } else if (report.type === 'feedback') {
+            fetchReportedFeedback(report?.feedbackId?._id).then(() => {
+                setShowFeedback(true);
+            });
+        }
+    }, [report]);
 
     const handleBackdropClick = (e) => {
         if (e.target === e.currentTarget) {
@@ -123,20 +131,20 @@ function ViewReport({ isOpen, onClose, reportId }) {
                             <ReportField label="Type" value={report?.type?.toUpperCase()} />
                             <ReportField label="Description" value={report?.description} multiline />
 
-                            {report?.type === 'feedback' && (
+                            {showFeedback && (
                                 <FeedbackCard feedback={reportedFeedback} />
                             )}
-                            {report?.type === 'guide' && report?.guideId && (
+                            {showGuide && (
                                 <GuideCard guide={reportedGuide} onClick={() => getReportedGuideData()} />
                             )}
                         </div>
                     )}
                 </div>
             </div>
-             <ViewGuide
+            <ViewGuide
                 isOpen={openViewGuide}
                 onClose={() => setOpenViewGuide(false)}
-                guide={reportedGuide} 
+                guide={reportedGuide}
                 fromReports={true}
             />
         </div>

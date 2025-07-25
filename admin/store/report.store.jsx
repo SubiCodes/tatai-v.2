@@ -9,7 +9,7 @@ import ToastPending from "../src/components/util/ToastPending.jsx";
 
 const URI = import.meta.env.VITE_URI;
 
-const useReportStore = create((set, get) => ({
+const useReportStore = create((set) => ({
     reports: [],
     fetchingReports: false,
     fetchReports: async () => {
@@ -38,7 +38,6 @@ const useReportStore = create((set, get) => ({
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Fetching Report"} message="This might take a while..." />));
         try {
             const res = await axios.get(`${URI}/api/v1/report/${id}`);
-            console.log("fetched report: ", res.data.data);
             set({ report: res.data.data });
         } catch (error) {
             console.log("Error fetching report:", error);
@@ -84,7 +83,6 @@ const useReportStore = create((set, get) => ({
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Fetching Reported Guide"} message="This might take a while..." />));
         try {
             const res = await axios.get(`${URI}/api/v1/guideAdmin/guide/${guideId}`);
-            console.log(res.data.data);
             set({ reportedGuide: res.data.data });
         } catch (error) {
             console.log("Error fetching reported guide:", error);
@@ -128,8 +126,9 @@ const useReportStore = create((set, get) => ({
         const toastId = toast.custom((t) => (
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Fetching Reported Feedback"} message="This might take a while..." />));
         try {
+            console.log("feedback iD: ",feedbackId);
             const res = await axios.get(`${URI}/api/v1/feedback/${feedbackId}`);
-            console.log(res.data.data);
+            console.log("Feedback fetched: ", res.data.data);
             set({ reportedFeedback: res.data.data });
         } catch (error) {
             console.log("Error fetching reported feedback:", error);
@@ -142,9 +141,28 @@ const useReportStore = create((set, get) => ({
             toast.dismiss(toastId);
         }
     },
-    getGuideByIdFromReports: (id) => {
-        return get().reportedFeedback.find((g) => g._id === id);
-    },
+    editingFeedbackFromReports: false,
+    editFeedbackFromReports: async (userId, guideId, hidden) => {
+        set({ editingFeedbackFromReports: true });
+        const toastId = toast.custom((t) => (
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Posting guide"} message="This might take a while..." />));
+        try {
+            const res = await axios.put(`${URI}/api/v1/feedback`, { userId, guideId, hidden });
+            set({ reportedFeedback: res.data.data })
+            console.log(res.data.data)
+            toast.custom((t) => (
+                <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Successfully edited feedback."} message={'Feedback hidden status changed.'} />
+            ));
+        } catch (error) {
+            console.log("Error editing feedback:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Fetching latest feedback unsuccessful."} message={'Something went wrong...'} />
+            ));
+        } finally {
+            set({ editingFeedbackFromReports: true });
+            toast.dismiss(toastId);
+        }
+    }
 }));
 
 export default useReportStore;
