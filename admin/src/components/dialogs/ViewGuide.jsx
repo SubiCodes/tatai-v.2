@@ -170,11 +170,11 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
                                             <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                                             <DropdownMenuSeparator className='bg-gray-200' />
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'accepted' && "bg-green-100 text-green-700"}`}
-                                                onClick={() => updateGuideStatus(latestGuide._id, 'accepted')}>Accepted</DropdownMenuItem>
+                                                onClick={() => updateStatus(latestGuide._id, 'accepted')}>Accepted</DropdownMenuItem>
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'rejected' && "bg-red-100 text-red-700"}`}
-                                                onClick={() => updateGuideStatus(latestGuide._id, 'rejected')}>Rejected</DropdownMenuItem>
+                                                onClick={() => updateStatus(latestGuide._id, 'rejected')}>Rejected</DropdownMenuItem>
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'pending' && "bg-yellow-100 text-yellow-700"}`}
-                                                onClick={() => updateGuideStatus(latestGuide._id, 'pending')}>Pending</DropdownMenuItem>
+                                                onClick={() => updateStatus(latestGuide._id, 'pending')}>Pending</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </span>
