@@ -77,3 +77,22 @@ export const getReports = async (req, res) => {
         return res.status(500).json({ success: false, message: 'An unexpected error occured.' });
     }
 }
+
+export const getReportById = async (req, res) => {
+    const { id } = req.params;
+
+    if (!id) {
+        return res.status(400).json({ success: false, message: 'The id of the report instance not found.' });
+    }
+
+    try {
+        const report = await Report.findById(id).populate({ path: 'userId', select: 'email firstName lastName profileIcon' }).populate({ path: "guideId", select: "title coverImage category status" });
+        if (!report) {
+            return res.status(404).json({ success: false, message: 'Report not found.', data: {}});
+        }
+        return res.status(200).json({ success: true, message: 'Fetched report successfully', data: report });
+    } catch (error) {
+        console.error('Error details on getReportById:', error);
+        return res.status(500).json({ success: false, message: 'An unexpected error occured.' });
+    }
+}
