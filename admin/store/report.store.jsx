@@ -97,6 +97,30 @@ const useReportStore = create((set, get) => ({
             toast.dismiss(toastId);
         }
     },
+    updateGuideStatusFromReport: async (id, status) => {
+        set({ updatingStatus: true });
+        const toastId = toast.custom((t) => (
+            <ToastPending dismiss={() => toast.dismiss(t)} title={"Updating Guide Status"} message="This might take a while..." />));
+        try {
+            const result = await axios.put(`${URI}/api/v1/guideAdmin/guide/status/${id}`, { status: status });
+            set((state) => ({
+                reportedGuide: state.reportedGuide && state.reportedGuide._id === id
+                    ? { ...state.reportedGuide, status }
+                    : state.reportedGuide
+            }));
+            toast.custom((t) => (
+                <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Updating guide status Successful"} message={result.data.message} />
+            ));
+        } catch (error) {
+            console.log("Error Updating Guide Status:", error);
+            toast.custom((t) => (
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Updating Guide Status Unsuccessful"} message={error.response.data.message} />
+            ));
+        } finally {
+            set({ updatingStatus: false });
+            toast.dismiss(toastId);
+        }
+    },
     reportedFeedback: null,
     fetchingReportedFeedback: false,
     fetchReportedFeedback: async (feedbackId) => {
