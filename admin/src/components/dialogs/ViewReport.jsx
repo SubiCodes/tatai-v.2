@@ -9,7 +9,7 @@ import GuideCard from '../cards/GuideCard.jsx'
 import useReportStore from '../../../store/report.store'
 
 const ReportField = ({ label, value, multiline = false }) => (
-  <div className="w-full">
+  <div className="w-full flex flex-row items-center gap-2">
     <p className="text-sm text-gray-500">{label}: </p>
     <p className={`text-base text-gray-800 font-medium ${multiline ? "whitespace-pre-wrap break-words" : ""}`}>
       {value || "—"}
@@ -94,12 +94,19 @@ function ViewReport({ isOpen, onClose, reportId }) {
                             <span className="text-gray-600">Fetching report data...</span>
                         </div>
                     ) : (
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-2">
                             <ReportField label="Report ID" value={report?._id} />
                             <ReportField label="Reported by" value={report?.userId?.email} />
                             <ReportField label="Report Date" value={new Date(report.createdAt).toLocaleDateString()} />
                             <ReportField label="Type" value={report?.type?.toUpperCase()} />
                             <ReportField label="Description" value={report?.description} multiline />
+
+                            {report?.type === 'feedback' && (
+                                <FeedbackCard feedback={report.feedbackId}/>
+                            )}
+                            {report?.type === 'guide' && (
+                                <GuideCard feedback={report.guideId}/>
+                            )}
                         </div>
                     )}
                 </div>
