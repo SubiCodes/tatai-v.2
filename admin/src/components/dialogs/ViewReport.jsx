@@ -3,8 +3,19 @@ import React, { useEffect } from 'react'
 import {
     MoonLoader
 } from "react-spinners";
+import FeedbackCard from '../cards/FeedbackCard.jsx'
+import GuideCard from '../cards/GuideCard.jsx'
 
 import useReportStore from '../../../store/report.store'
+
+const ReportField = ({ label, value, multiline = false }) => (
+  <div className="w-full">
+    <p className="text-sm text-gray-500">{label}: </p>
+    <p className={`text-base text-gray-800 font-medium ${multiline ? "whitespace-pre-wrap break-words" : ""}`}>
+      {value || "—"}
+    </p>
+  </div>
+);
 
 function ViewReport({ isOpen, onClose, reportId }) {
 
@@ -58,36 +69,41 @@ function ViewReport({ isOpen, onClose, reportId }) {
             style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
             onClick={handleBackdropClick}>
 
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto relative z-10">
-                {/* Header with close button */}
-                <div className="px-6 py-4 border-b border-gray-200">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-gray-900">Viewing Report</h2>
-                        <button
-                            onClick={() => { onClose() }}
-                            className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
+            <div
+                className="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto relative z-10"
+                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
+            >
+                {/* Header */}
+                <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-20">
+                    <h2 className="text-2xl font-semibold text-gray-800">Viewing Report</h2>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
 
-                <div className='w-full min-h-[200px]'>
-
+                {/* Body */}
+                <div className="w-full px-6 py-4 min-h-[200px]">
                     {fetchingReport ? (
-                        <div className='flex flex-1 flex-col items-center justify-center gap-4 min-h-full mt-12'>
-                            <MoonLoader size={32}/>
-                            <span className='text-gray-600'>Fetching report data...</span>
+                        <div className="flex flex-col items-center justify-center gap-4 mt-12">
+                            <MoonLoader size={32} />
+                            <span className="text-gray-600">Fetching report data...</span>
                         </div>
                     ) : (
-                        <span>REPORT HERE</span>
+                        <div className="flex flex-col gap-4">
+                            <ReportField label="Report ID" value={report?._id} />
+                            <ReportField label="Reported by" value={report?.userId?.email} />
+                            <ReportField label="Report Date" value={new Date(report.createdAt).toLocaleDateString()} />
+                            <ReportField label="Type" value={report?.type?.toUpperCase()} />
+                            <ReportField label="Description" value={report?.description} multiline />
+                        </div>
                     )}
-
                 </div>
             </div>
-
         </div>
     )
 }
