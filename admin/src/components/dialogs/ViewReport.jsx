@@ -32,14 +32,12 @@ function ViewReport({ isOpen, onClose, reportId }) {
         setOpenViewGuide(true);
     }
 
-    // Step 1: Fetch report on open
     useEffect(() => {
         if (isOpen && reportId) {
-            fetchReport(reportId); // just fire it
+            fetchReport(reportId);
         }
     }, [isOpen, reportId]);
 
-    // Step 2: When report is available, do next step
     useEffect(() => {
         if (!report) return;
 
@@ -132,7 +130,7 @@ function ViewReport({ isOpen, onClose, reportId }) {
                             <ReportField label="Description" value={report?.description} multiline />
 
                             {showFeedback && (
-                                <FeedbackCard feedback={reportedFeedback} />
+                                <FeedbackCard feedback={reportedFeedback} fromReports={true}/>
                             )}
                             {showGuide && (
                                 <GuideCard guide={reportedGuide} onClick={() => getReportedGuideData()} />

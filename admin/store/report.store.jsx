@@ -126,9 +126,7 @@ const useReportStore = create((set) => ({
         const toastId = toast.custom((t) => (
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Fetching Reported Feedback"} message="This might take a while..." />));
         try {
-            console.log("feedback iD: ",feedbackId);
             const res = await axios.get(`${URI}/api/v1/feedback/${feedbackId}`);
-            console.log("Feedback fetched: ", res.data.data);
             set({ reportedFeedback: res.data.data });
         } catch (error) {
             console.log("Error fetching reported feedback:", error);
@@ -148,8 +146,7 @@ const useReportStore = create((set) => ({
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Posting guide"} message="This might take a while..." />));
         try {
             const res = await axios.put(`${URI}/api/v1/feedback`, { userId, guideId, hidden });
-            set({ reportedFeedback: res.data.data })
-            console.log(res.data.data)
+            set({ reportedFeedback: { ...res.data.data } }); 
             toast.custom((t) => (
                 <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Successfully edited feedback."} message={'Feedback hidden status changed.'} />
             ));
