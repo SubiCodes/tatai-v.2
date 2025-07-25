@@ -98,6 +98,13 @@ export const getReportById = async (req, res) => {
                     path: 'posterId',
                     select: 'email firstName lastName profileIcon'
                 }
+            })
+            .populate({
+                path: 'feedbackId',
+                populate: {
+                    path: 'userId',
+                    select: 'email firstName lastName profileIcon'
+                }
             });
         if (!report) {
             return res.status(404).json({ success: false, message: 'Report not found.', data: {} });
