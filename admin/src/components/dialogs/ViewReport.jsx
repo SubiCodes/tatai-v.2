@@ -32,7 +32,7 @@ function ViewReport({ isOpen, onClose, reportId }) {
     };
 
     const getReportedGuideData = async () => {
-        await fetchReportedGuide(report?.guideId)
+        await fetchReportedGuide(report?.guideId._id)
         setOpenViewGuide(true);
     }
 
@@ -128,6 +128,7 @@ function ViewReport({ isOpen, onClose, reportId }) {
                 isOpen={openViewGuide}
                 onClose={() => setOpenViewGuide(false)}
                 guide={reportedGuide} 
+                fromReports={true}
             />
         </div>
     )

@@ -198,7 +198,7 @@ export const getGuides = async (req, res) => {
 export const getGuide = async (req, res) => {
   const { id } = req.params;
   try {
-    const guide = await Guide.findById(id);
+    const guide = await Guide.findById(id).populate({ path: 'posterId', select: "firstName lastName email profileIcon" });
     if (!guide) {
       return res.status(404).json({
         success: false,

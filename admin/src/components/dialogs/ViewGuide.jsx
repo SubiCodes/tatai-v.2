@@ -30,6 +30,7 @@ import lgbt_2 from '../../assets/images/profile-icons/lgbt_2.png'
 import lgbt_3 from '../../assets/images/profile-icons/lgbt_3.png'
 import lgbt_4 from '../../assets/images/profile-icons/lgbt_4.png'
 import { useNavigate } from 'react-router-dom';
+import useReportStore from '../../../store/report.store.jsx';
 
 const profileIcons = {
     'empty_profile': empty_profile,
@@ -47,13 +48,18 @@ const profileIcons = {
     'lgbt_4': lgbt_4
 };
 
-function ViewGuide({ isOpen, onClose, guide, fromViewUser = false }) {
+function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports = false }) {
 
     const { updatingStatus, updateGuideStatus, getGuideById, deleteGuide, deletingGuide } = useGuideStore();
     const { getGuideByIdFromViewUser, updateGuideStatusFromViewUser, deleteGuideFromViewUser } = useViewUserStore();
+    const { getGuideByIdFromReports, reportedGuide } = useReportStore();
     const { admin } = useAdminStore();
 
-    const latestGuide = fromViewUser ? (getGuideByIdFromViewUser(guide?._id)) : (getGuideById(guide?._id));
+    const latestGuide = fromReports
+        ? reportedGuide
+        : fromViewUser
+            ? getGuideByIdFromViewUser(guide?._id)
+            : getGuideById(guide?._id);
 
     const navigate = useNavigate();
 

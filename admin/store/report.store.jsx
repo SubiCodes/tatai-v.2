@@ -9,7 +9,7 @@ import ToastPending from "../src/components/util/ToastPending.jsx";
 
 const URI = import.meta.env.VITE_URI;
 
-const useReportStore = create((set) => ({
+const useReportStore = create((set, get) => ({
     reports: [],
     fetchingReports: false,
     fetchReports: async () => {
@@ -32,7 +32,7 @@ const useReportStore = create((set) => ({
     },
     report: null,
     fetchingReport: false,
-    fetchReport: async ( id ) => {
+    fetchReport: async (id) => {
         set({ fetchingReport: true });
         const toastId = toast.custom((t) => (
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Fetching Report"} message="This might take a while..." />));
@@ -83,7 +83,7 @@ const useReportStore = create((set) => ({
         const toastId = toast.custom((t) => (
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Fetching Reported Guide"} message="This might take a while..." />));
         try {
-            const res = await axios.get(`${URI}/api/v1/guide/${guideId}`);
+            const res = await axios.get(`${URI}/api/v1/guideAdmin/guide/${guideId}`);
             console.log(res.data.data);
             set({ reportedGuide: res.data.data });
         } catch (error) {
@@ -117,7 +117,10 @@ const useReportStore = create((set) => ({
             set({ fetchingReportedFeedback: false });
             toast.dismiss(toastId);
         }
-    }
+    },
+    getGuideByIdFromReports: (id) => {
+        return get().reportedFeedback.find((g) => g._id === id);
+    },
 }));
 
 export default useReportStore;
