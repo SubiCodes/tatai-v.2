@@ -71,7 +71,7 @@ function Reports() {
 
     const getReportedGuideData = async () => {
         await fetchReportedGuide
-        setGuideToView( reportedGuide );
+        setGuideToView(reportedGuide);
         setOpenViewGuide(true);
     }
 
@@ -304,8 +304,12 @@ function Reports() {
                 </TableBody>
 
             </Table>
-            <ViewGuide />
-            <ViewReport isOpen={openViewReport} onClose={() => setOpenViewReport(false)} reportId={reportToView} onOpenGuide={getReportedGuideData}/>
+            <ViewGuide
+                isOpen={openViewGuide}
+                onClose={() => setOpenViewGuide(false)}
+                guide={guideToView} 
+            />
+            <ViewReport isOpen={openViewReport} onClose={() => setOpenViewReport(false)} reportId={reportToView} onOpenGuide={getReportedGuideData} />
         </div>
     );
 }

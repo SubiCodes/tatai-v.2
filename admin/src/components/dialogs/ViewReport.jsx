@@ -17,7 +17,7 @@ const ReportField = ({ label, value, multiline = false }) => (
     </div>
 );
 
-function ViewReport({ isOpen, onClose, reportId }) {
+function ViewReport({ isOpen, onClose, reportId, onOpenGuide }) {
 
     const { report, fetchingReport, fetchReport } = useReportStore();
 
@@ -102,7 +102,7 @@ function ViewReport({ isOpen, onClose, reportId }) {
                     ) : (
                         <div className="flex flex-col gap-2">
                             <ReportField label="Reported by" value={report?.userId?.email} />
-                            <ReportField label="Report Date" value={new Date(report.createdAt).toLocaleDateString()} />
+                            <ReportField label="Report Date" value={new Date(report?.createdAt).toLocaleDateString()} />
                             <ReportField label="Type" value={report?.type?.toUpperCase()} />
                             <ReportField label="Description" value={report?.description} multiline />
 
@@ -110,7 +110,7 @@ function ViewReport({ isOpen, onClose, reportId }) {
                                 <FeedbackCard feedback={report.feedbackId} />
                             )}
                             {report?.type === 'guide' && report?.guideId && (
-                                <GuideCard guide={report.guideId} />
+                                <GuideCard guide={report.guideId} onClick={() => (onOpenGuide(report?.guideId))}/>
                             )}
                         </div>
                     )}
