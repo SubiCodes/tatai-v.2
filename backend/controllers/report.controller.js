@@ -86,9 +86,21 @@ export const getReportById = async (req, res) => {
     }
 
     try {
-        const report = await Report.findById(id).populate({ path: 'userId', select: 'email firstName lastName profileIcon' }).populate({ path: "guideId", select: "title coverImage category status" });
+        const report = await Report.findById(id)
+            .populate({
+                path: 'userId',
+                select: 'email firstName lastName profileIcon'
+            })
+            .populate({
+                path: 'guideId',
+                select: 'title coverImage category status posterId',
+                populate: {
+                    path: 'posterId',
+                    select: 'email firstName lastName profileIcon'
+                }
+            });
         if (!report) {
-            return res.status(404).json({ success: false, message: 'Report not found.', data: {}});
+            return res.status(404).json({ success: false, message: 'Report not found.', data: {} });
         }
         return res.status(200).json({ success: true, message: 'Fetched report successfully', data: report });
     } catch (error) {
