@@ -9,12 +9,12 @@ import GuideCard from '../cards/GuideCard.jsx'
 import useReportStore from '../../../store/report.store'
 
 const ReportField = ({ label, value, multiline = false }) => (
-  <div className="w-full flex flex-row items-center gap-2">
-    <p className="text-sm text-gray-500">{label}: </p>
-    <p className={`text-base text-gray-800 font-medium ${multiline ? "whitespace-pre-wrap break-words" : ""}`}>
-      {value || "—"}
-    </p>
-  </div>
+    <div className="w-full flex flex-row items-center gap-2">
+        <p className="text-sm text-gray-500">{label}: </p>
+        <p className={`text-base text-gray-800 font-medium ${multiline ? "whitespace-pre-wrap break-words" : ""}`}>
+            {value || "—"}
+        </p>
+    </div>
 );
 
 function ViewReport({ isOpen, onClose, reportId }) {
@@ -24,7 +24,7 @@ function ViewReport({ isOpen, onClose, reportId }) {
     const getReportDetails = async () => {
         if (reportId) {
             await fetchReport(reportId);
-            console.log("Report details fetched for ID:", reportId);
+            console.log("Report details fetched for ID:", report?.guideId);
         }
     }
 
@@ -102,10 +102,10 @@ function ViewReport({ isOpen, onClose, reportId }) {
                             <ReportField label="Description" value={report?.description} multiline />
 
                             {report?.type === 'feedback' && (
-                                <FeedbackCard feedback={report.feedbackId}/>
+                                <FeedbackCard feedback={report.feedbackId} />
                             )}
-                            {report?.type === 'guide' && (
-                                <GuideCard feedback={report.guideId}/>
+                            {report?.type === 'guide' && report?.guideId && (
+                                <GuideCard guide={report.guideId} />
                             )}
                         </div>
                     )}
