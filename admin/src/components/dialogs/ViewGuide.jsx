@@ -165,8 +165,8 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
                                         {latestGuide.status.charAt(0).toUpperCase() + latestGuide.status.slice(1)}
                                     </span>
                                     <DropdownMenu>
-                                        <DropdownMenuTrigger className={` ${updatingStatus ? "cursor-not-allowed" : "cursor-pointer"}`} disabled={updatingStatus}><ChevronDown size={16} /></DropdownMenuTrigger>
-                                        <DropdownMenuContent className='bg-white border-gray-400'>
+                                        <DropdownMenuTrigger className={` ${updatingStatus ? "cursor-not-allowed" : "cursor-pointer"}`}><ChevronDown size={16} /></DropdownMenuTrigger>
+                                        <DropdownMenuContent className='bg-white border-gray-400 z-[100]'>
                                             <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                                             <DropdownMenuSeparator className='bg-gray-200' />
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'accepted' && "bg-green-100 text-green-700"}`}
