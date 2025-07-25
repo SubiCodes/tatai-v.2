@@ -1,6 +1,25 @@
 import React, { useEffect } from 'react'
 
-function ViewReport({ isOpen, onClose }) {
+import {
+    MoonLoader
+} from "react-spinners";
+
+import useReportStore from '../../../store/report.store'
+
+function ViewReport({ isOpen, onClose, reportId }) {
+
+    const { report, fetchingReport, fetchReport } = useReportStore();
+
+    const getReportDetails = async () => {
+        if (reportId) {
+            await fetchReport(reportId);
+            console.log("Report details fetched for ID:", reportId);
+        }
+    }
+
+    useEffect(() => {
+        getReportDetails();
+    }, [reportId])
 
     const handleBackdropClick = (e) => {
         if (e.target === e.currentTarget) {
@@ -53,6 +72,19 @@ function ViewReport({ isOpen, onClose }) {
                             </svg>
                         </button>
                     </div>
+                </div>
+
+                <div className='w-full min-h-[200px]'>
+
+                    {fetchingReport ? (
+                        <div className='flex flex-1 flex-col items-center justify-center gap-4 min-h-full mt-12'>
+                            <MoonLoader size={32}/>
+                            <span className='text-gray-600'>Fetching report data...</span>
+                        </div>
+                    ) : (
+                        <span>REPORT HERE</span>
+                    )}
+
                 </div>
             </div>
 
