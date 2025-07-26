@@ -26,10 +26,10 @@ This dashboard allows administrators to manage users, guides, and data feeding f
 
 ## 🛠 Tech Stack
 
-- **Frontend**: React.js (with Tailwind CSS or other styling if used)
+- **Frontend**: React.js with Tailwind CSS and ShadCN
 - **Backend**: Node.js + Express.js
 - **Database**: MongoDB
-- **Authentication**: JWT-based admin login (if implemented)
-- **Deployment**: (Optional: add details here if hosted on Vercel, Heroku, or your own server)
+- **Authentication**: JWT-based admin login
+- **Deployment**: (UNDER DEVELOPMENT)
 
 ---
