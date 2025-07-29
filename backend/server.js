@@ -12,6 +12,7 @@ import viewUserAdminRouter from './routes/viewUser.admin.route.js';
 
 import feedbackRouter from './routes/feedback.route.js';
 import reportRouter from './routes/report.route.js';
+import chatbotRouter from './routes/chatbot.route.js';
 
 import authUserRouter from './routes/auth.user.route.js';
 import userUserRouter from './routes/user.user.route.js';
@@ -45,6 +46,7 @@ app.use('/api/v1/guideAdmin', guideAdminRouter);
 //Both Users
 app.use('/api/v1/feedback', feedbackRouter);
 app.use('/api/v1/report', reportRouter);
+app.use('/api/v1/chatbot', chatbotRouter);
 
 //user/mobile routers
 app.use('/api/v1/authUser', authUserRouter);
