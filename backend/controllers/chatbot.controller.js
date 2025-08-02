@@ -2,6 +2,24 @@ import Guide from "../models/guide.model.js";
 import EmbeddedChunk from "../models/embeddedchunks.model.js";
 import OpenAI from "openai";
 
+
+// --- Utility Functions ---
+const cosineSimilarity = (vecA, vecB) => {
+    const dot = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
+    const magA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
+    const magB = Math.sqrt(vecB.reduce((sum, b) => sum + b * b, 0));
+    return dot / (magA * magB);
+};
+
+const embedText = async (text) => {
+    const response = await openai.embeddings.create({
+        model: "text-embedding-ada-002",
+        input: text,
+    });
+    return response.data[0].embedding;
+};
+
+
 export const getAcceptedGuidesData = async (req, res) => {
     try {
         let cleanedData = [];
