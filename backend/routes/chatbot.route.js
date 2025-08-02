@@ -3,7 +3,7 @@ import { askChatbot, uploadGuidesToChatbot } from "../controllers/chatbot.contro
 
 const chatbotRouter = Router();
 
-chatbotRouter.get('/data', uploadGuidesToChatbot);
+chatbotRouter.post('/data', uploadGuidesToChatbot);
 chatbotRouter.post('/ask', askChatbot)
 
 export default chatbotRouter;
