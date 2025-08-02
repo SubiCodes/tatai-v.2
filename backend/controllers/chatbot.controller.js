@@ -1,8 +1,6 @@
 import Guide from "../models/guide.model.js";
 import EmbeddedChunk from "../models/embeddedchunks.model.js";
-import OpenAI from "openai";
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+import openai from "../utils/openaiClient.js";
 
 // --- Utility Functions ---
 const cosineSimilarity = (vecA, vecB) => {
@@ -12,15 +10,15 @@ const cosineSimilarity = (vecA, vecB) => {
     return dot / (magA * magB);
 };
 
-const embedText = async (text) => {
+const embedBatch = async (texts) => {
     const response = await openai.embeddings.create({
         model: "text-embedding-ada-002",
-        input: text,
+        input: texts,
     });
-    return response.data[0].embedding;
+    return response.data.map(obj => obj.embedding);
 };
 
-// Feed the RAG with data.
+// --- Main Upload Function (with batching) ---
 export const uploadGuidesToChatbot = async (req, res) => {
     try {
         const acceptedGuides = await Guide.find({ status: 'accepted' }).populate({
@@ -32,6 +30,7 @@ export const uploadGuidesToChatbot = async (req, res) => {
             return res.status(404).json({ success: false, message: "No accepted guides found." });
         }
 
+        // 1. Chunk all guide texts
         let allChunks = [];
         acceptedGuides.forEach((guide) => {
             const steps = guide.stepTitles.map((title, index) => ({
@@ -40,32 +39,46 @@ export const uploadGuidesToChatbot = async (req, res) => {
             }));
 
             const guideText = `
-                Title: ${guide.title}
-                By: ${guide.posterId.firstName} ${guide.posterId.lastName}
-                Description: ${guide.description}
-                Materials: ${(guide.materials || []).join(', ')}
-                Tools: ${(guide.tools || []).join(', ')}
-                ${steps.map((s, i) => `Step ${i + 1}: ${s.stepTitle}\n${s.stepDescription}`).join('\n\n')}
-                `;
+Title: ${guide.title}
+By: ${guide.posterId.firstName} ${guide.posterId.lastName}
+Description: ${guide.description}
+Materials: ${typeof guide.materials === 'string' ? guide.materials : ''}
+Tools: ${typeof guide.tools === 'string' ? guide.tools : ''}
+
+${steps.map((s, i) => `Step ${i + 1}: ${s.stepTitle}\n${s.stepDescription}`).join('\n\n')}
+`;
 
             const chunks = guideText.match(/(.|[\r\n]){1,500}/g) || [];
             allChunks.push(...chunks);
         });
 
+        // 2. Clear old embeddings
         await EmbeddedChunk.deleteMany();
 
+        // 3. Batch embeddings for speed
+        const batchSize = 100;
         const embeddedChunks = [];
-        for (const chunk of allChunks) {
-            const embedding = await embedText(chunk);
-            embeddedChunks.push({ text: chunk, embedding });
+
+        for (let i = 0; i < allChunks.length; i += batchSize) {
+            const batch = allChunks.slice(i, i + batchSize);
+            const embeddings = await embedBatch(batch);
+            for (let j = 0; j < batch.length; j++) {
+                embeddedChunks.push({
+                    text: batch[j],
+                    embedding: embeddings[j],
+                });
+            }
         }
+
+        // 4. Save all embeddings
         await EmbeddedChunk.insertMany(embeddedChunks);
 
         return res.status(200).json({
             success: true,
             message: "Guides uploaded and embedded into chatbot memory.",
-            embeddedChunks: embeddedChunks.length
+            embeddedChunks: embeddedChunks.length,
         });
+
     } catch (error) {
         console.error("Error uploading guides:", error);
         return res.status(500).json({ success: false, message: "Failed to upload guide data." });
