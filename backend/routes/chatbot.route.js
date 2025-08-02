@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { getAcceptedGuidesData } from "../controllers/chatbot.controller.js";
+import { uploadGuidesToChatbot } from "../controllers/chatbot.controller.js";
 
 const chatbotRouter = Router();
 
-chatbotRouter.get('/data', getAcceptedGuidesData);
+chatbotRouter.get('/data', uploadGuidesToChatbot);
 
 export default chatbotRouter;
