@@ -20,7 +20,7 @@ const embedText = async (text) => {
     return response.data[0].embedding;
 };
 
-
+// Feed the RAG with data.
 export const uploadGuidesToChatbot = async (req, res) => {
     try {
         const acceptedGuides = await Guide.find({ status: 'accepted' }).populate({
@@ -69,5 +69,55 @@ export const uploadGuidesToChatbot = async (req, res) => {
     } catch (error) {
         console.error("Error uploading guides:", error);
         return res.status(500).json({ success: false, message: "Failed to upload guide data." });
+    }
+};
+
+//Ask the bot questions
+
+export const askChatbot = async (req, res) => {
+    const { question } = req.body;
+
+    if (!question) {
+        return res.status(400).json({ success: false, message: "Question is required." });
+    }
+
+    try {
+        const allChunks = await EmbeddedChunk.find();
+
+        if (!allChunks.length) {
+            return res.status(400).json({
+                success: false,
+                message: "Chatbot memory is empty. Please upload guides first."
+            });
+        }
+
+        const questionEmbedding = await embedText(question);
+
+        const topMatches = allChunks
+            .map(obj => ({
+                text: obj.text,
+                score: cosineSimilarity(obj.embedding, questionEmbedding),
+            }))
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 3);
+
+        const contextText = topMatches.map(m => m.text).join('\n---\n');
+
+        const completion = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            messages: [
+                { role: "system", content: "You are a helpful assistant. Use only the provided context to answer the user's question." },
+                { role: "user", content: `Context:\n${contextText}\n\nQuestion: ${question}` }
+            ],
+        });
+
+        return res.status(200).json({
+            success: true,
+            answer: completion.choices[0].message.content
+        });
+
+    } catch (error) {
+        console.error("Error answering chatbot question:", error);
+        return res.status(500).json({ success: false, message: "Error answering question." });
     }
 };
