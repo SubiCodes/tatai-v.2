@@ -73,17 +73,20 @@ export const uploadGuidesToChatbot = async (req, res) => {
 };
 
 //Ask the bot questions
-
 export const askChatbot = async (req, res) => {
-    const { question } = req.body;
+    const { messages } = req.body;
 
-    if (!question) {
-        return res.status(400).json({ success: false, message: "Question is required." });
+    if (!messages || !Array.isArray(messages)) {
+        return res.status(400).json({ success: false, message: "Messages array is required." });
+    }
+
+    const latestUserMessage = messages[messages.length - 1]?.content;
+    if (!latestUserMessage) {
+        return res.status(400).json({ success: false, message: "User's latest question is missing." });
     }
 
     try {
         const allChunks = await EmbeddedChunk.find();
-
         if (!allChunks.length) {
             return res.status(400).json({
                 success: false,
@@ -91,7 +94,7 @@ export const askChatbot = async (req, res) => {
             });
         }
 
-        const questionEmbedding = await embedText(question);
+        const questionEmbedding = await embedText(latestUserMessage);
 
         const topMatches = allChunks
             .map(obj => ({
@@ -103,12 +106,21 @@ export const askChatbot = async (req, res) => {
 
         const contextText = topMatches.map(m => m.text).join('\n---\n');
 
+        const finalMessages = [
+            {
+                role: "system",
+                content: "You are a helpful assistant. Use only the provided context to answer the user. You can remember what the user said before."
+            },
+            {
+                role: "user",
+                content: `Context:\n${contextText}`
+            },
+            ...messages  // contains user + assistant history
+        ];
+
         const completion = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
-            messages: [
-                { role: "system", content: "You are a helpful assistant. Use only the provided context to answer the user's question." },
-                { role: "user", content: `Context:\n${contextText}\n\nQuestion: ${question}` }
-            ],
+            messages: finalMessages,
         });
 
         return res.status(200).json({
