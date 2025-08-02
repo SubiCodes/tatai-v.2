@@ -1,9 +1,10 @@
 import React from 'react'
+import { Button } from "@/components/ui/button"
 
 function AddData() {
   return (
-    <div>
-      
+    <div className='w-full h-full flex items-center justify-center'>
+        <Button>Update Chatbot</Button>
     </div>
   )
 }
