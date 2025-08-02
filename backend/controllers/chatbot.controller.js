@@ -2,6 +2,7 @@ import Guide from "../models/guide.model.js";
 import EmbeddedChunk from "../models/embeddedchunks.model.js";
 import OpenAI from "openai";
 
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // --- Utility Functions ---
 const cosineSimilarity = (vecA, vecB) => {
