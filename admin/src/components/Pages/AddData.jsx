@@ -7,7 +7,9 @@ function AddData() {
     const { embeddingData, embedData } = useChatbotStore();
   return (
     <div className='w-full h-full flex items-center justify-center'>
-        <Button className="text-white" disabled={embeddingData}>Update Chatbot</Button>
+        <Button className="text-white" disabled={embeddingData} onClick={() => embedData()}>
+            Update Chatbot
+        </Button>
     </div>
   )
 }
