@@ -5,4 +5,6 @@ const embeddedChunkSchema = new mongoose.Schema({
   embedding: { type: [Number], required: true },
 });
 
-export default mongoose.model('EmbeddedChunk', embeddedChunkSchema);
+const EmbeddedChunk = mongoose.model("EmbeddedChunk", embeddedChunkSchema);
+
+export default EmbeddedChunk;

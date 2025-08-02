@@ -1,4 +1,6 @@
 import Guide from "../models/guide.model.js";
+import EmbeddedChunk from "../models/embeddedchunks.model.js";
+import OpenAI from "openai";
 
 export const getAcceptedGuidesData = async (req, res) => {
     try {
