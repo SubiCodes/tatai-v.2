@@ -1,4 +1,4 @@
-import { Box, ChevronDown, ChartArea, Menu, NotebookPen, User, Wrench, X, LogOut, Settings, MessageSquareMore, CloudAlert } from 'lucide-react';
+import { Box, ChevronDown, ChartArea, Menu, NotebookPen, User, Wrench, X, LogOut, Settings, MessageSquareMore, CloudAlert, Brain } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -33,6 +33,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             title: 'Feedbacks',
             icon: MessageSquareMore,
             link: '/feedbacks'
+        },
+        {
+            title: 'Chatbot',
+            icon: Brain,
+            link: '/chatbot'
         },
         {
             title: 'Reports',
