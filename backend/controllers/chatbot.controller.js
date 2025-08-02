@@ -18,6 +18,14 @@ const embedBatch = async (texts) => {
     return response.data.map(obj => obj.embedding);
 };
 
+const embedText = async (text) => {
+    const response = await openai.embeddings.create({
+        model: "text-embedding-ada-002",
+        input: text,
+    });
+    return response.data[0].embedding;
+};
+
 // --- Main Upload Function (with batching) ---
 export const uploadGuidesToChatbot = async (req, res) => {
     try {
@@ -39,14 +47,14 @@ export const uploadGuidesToChatbot = async (req, res) => {
             }));
 
             const guideText = `
-Title: ${guide.title}
-By: ${guide.posterId.firstName} ${guide.posterId.lastName}
-Description: ${guide.description}
-Materials: ${typeof guide.materials === 'string' ? guide.materials : ''}
-Tools: ${typeof guide.tools === 'string' ? guide.tools : ''}
+            Title: ${guide.title}
+            By: ${guide.posterId.firstName} ${guide.posterId.lastName}
+            Description: ${guide.description}
+            Materials: ${typeof guide.materials === 'string' ? guide.materials : ''}
+            Tools: ${typeof guide.tools === 'string' ? guide.tools : ''}
 
-${steps.map((s, i) => `Step ${i + 1}: ${s.stepTitle}\n${s.stepDescription}`).join('\n\n')}
-`;
+            ${steps.map((s, i) => `Step ${i + 1}: ${s.stepTitle}\n${s.stepDescription}`).join('\n\n')}
+            `;
 
             const chunks = guideText.match(/(.|[\r\n]){1,500}/g) || [];
             allChunks.push(...chunks);
