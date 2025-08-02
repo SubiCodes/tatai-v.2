@@ -21,28 +21,53 @@ const embedText = async (text) => {
 };
 
 
-export const getAcceptedGuidesData = async (req, res) => {
+export const uploadGuidesToChatbot = async (req, res) => {
     try {
-        let cleanedData = [];
-        const acceptedGuides = await Guide.find({ status: 'accepted' }).populate({ path: 'posterId', select: "firstName lastName email profileIcon", });
-        acceptedGuides?.map((guide) => {
-            let steps = guide.stepTitles.map((title, index) => ({
+        const acceptedGuides = await Guide.find({ status: 'accepted' }).populate({
+            path: 'posterId',
+            select: "firstName lastName email profileIcon",
+        });
+
+        if (!acceptedGuides.length) {
+            return res.status(404).json({ success: false, message: "No accepted guides found." });
+        }
+
+        let allChunks = [];
+        acceptedGuides.forEach((guide) => {
+            const steps = guide.stepTitles.map((title, index) => ({
                 stepTitle: title,
                 stepDescription: guide.stepDescriptions[index] || "",
             }));
-            let newData = {
-                poster: `${guide.posterId.firstName} ${guide.posterId.lastName}`,
-                title: guide.title,
-                description: guide.description,
-                materials: guide.materials,
-                tools: guide.tools,
-                steps: steps
-            }
-            cleanedData.push(newData);
+
+            const guideText = `
+                Title: ${guide.title}
+                By: ${guide.posterId.firstName} ${guide.posterId.lastName}
+                Description: ${guide.description}
+                Materials: ${(guide.materials || []).join(', ')}
+                Tools: ${(guide.tools || []).join(', ')}
+                ${steps.map((s, i) => `Step ${i + 1}: ${s.stepTitle}\n${s.stepDescription}`).join('\n\n')}
+                `;
+
+            const chunks = guideText.match(/(.|[\r\n]){1,500}/g) || [];
+            allChunks.push(...chunks);
         });
-        return res.status(200).json({ success: true, message: "Data ready to be fed to chatbot.", data: cleanedData });
+
+        await EmbeddedChunk.deleteMany();
+
+        const embeddedChunks = [];
+        for (const chunk of allChunks) {
+            const embedding = await embedText(chunk);
+            embeddedChunks.push({ text: chunk, embedding });
+        }
+        await EmbeddedChunk.insertMany(embeddedChunks);
+
+        return res.status(200).json({
+            success: true,
+            message: "Guides uploaded and embedded into chatbot memory.",
+            embeddedChunks: embeddedChunks.length
+        });
     } catch (error) {
-        console.log("Unable to fetch accepted guides.", error);
-        return res.status(500).json({ success: false, message: "Unable to collect guides data." })
+        console.error("Error uploading guides:", error);
+        return res.status(500).json({ success: false, message: "Failed to upload guide data." });
     }
-}
+};
