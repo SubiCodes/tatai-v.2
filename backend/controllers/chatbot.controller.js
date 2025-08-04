@@ -74,6 +74,8 @@ export const uploadGuidesToChatbot = async (req, res) => {
                 embeddedChunks.push({
                     text: batch[j],
                     embedding: embeddings[j],
+                    author: currentGuide.posterId.firstName + " " + currentGuide.posterId.lastName,
+                    guideTitle: currentGuide.title,
                 });
             }
         }
@@ -130,13 +132,16 @@ export const askChatbot = async (req, res) => {
         const finalMessages = [
             {
                 role: "system",
-                content: "You are a helpful assistant. Use only the provided context to answer the user. You can remember what the user said before."
+                content:
+                    `You are a helpful home assistant named TatAi designed to help with repairs and diy projects. Your a chatbot in an application where guides are posted by users.
+                The context below are the guides posted and you should use those to answer the questions by user. NOE that you should include a reference to the guide creator when using there guides.
+
+                Context:
+                ${contextText}
+
+                If the question cannot be answered using the context, reply: "Sorry, I couldn't find that in the guides."`
             },
-            {
-                role: "user",
-                content: `Context:\n${contextText}`
-            },
-            ...messages  // contains user + assistant history
+            ...messages
         ];
 
         const completion = await openai.chat.completions.create({
