@@ -77,13 +77,15 @@ export const uploadGuidesToChatbot = async (req, res) => {
 
         for (let i = 0; i < allChunks.length; i += batchSize) {
             const batch = allChunks.slice(i, i + batchSize);
-            const embeddings = await embedBatch(batch);
+            const texts = batch.map(chunk => chunk.text);
+            const embeddings = await embedBatch(texts);
+
             for (let j = 0; j < batch.length; j++) {
                 embeddedChunks.push({
-                    text: batch[j],
+                    text: batch[j].text,
                     embedding: embeddings[j],
-                    author: currentGuide.posterId.firstName + " " + currentGuide.posterId.lastName,
-                    guideTitle: currentGuide.title,
+                    author: batch[j].author,
+                    guideTitle: batch[j].guideTitle,
                 });
             }
         }
