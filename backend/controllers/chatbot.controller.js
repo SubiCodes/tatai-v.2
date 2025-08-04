@@ -47,17 +47,25 @@ export const uploadGuidesToChatbot = async (req, res) => {
             }));
 
             const guideText = `
-            Title: ${guide.title}
-            By: ${guide.posterId.firstName} ${guide.posterId.lastName}
-            Description: ${guide.description}
-            Materials: ${typeof guide.materials === 'string' ? guide.materials : ''}
-            Tools: ${typeof guide.tools === 'string' ? guide.tools : ''}
+                Title: ${guide.title}
+                By: ${guide.posterId.firstName} ${guide.posterId.lastName}
+                Description: ${guide.description}
+                Materials: ${typeof guide.materials === 'string' ? guide.materials : ''}
+                Tools: ${typeof guide.tools === 'string' ? guide.tools : ''}
 
-            ${steps.map((s, i) => `Step ${i + 1}: ${s.stepTitle}\n${s.stepDescription}`).join('\n\n')}
-            `;
+    ${steps.map((s, i) => `Step ${i + 1}: ${s.stepTitle}\n${s.stepDescription}`).join('\n\n')}
+    `;
 
             const chunks = guideText.match(/(.|[\r\n]){1,500}/g) || [];
-            allChunks.push(...chunks);
+
+            // Associate each chunk with author and title
+            chunks.forEach(chunk => {
+                allChunks.push({
+                    text: chunk,
+                    author: `${guide.posterId.firstName} ${guide.posterId.lastName}`,
+                    guideTitle: guide.title,
+                });
+            });
         });
 
         // 2. Clear old embeddings
@@ -136,8 +144,8 @@ export const askChatbot = async (req, res) => {
 
         const finalMessages = [
             {
-            role: "system",
-            content: `You are TatAi, a helpful home assistant chatbot using user-submitted guides. Only answer using the context provided below.
+                role: "system",
+                content: `You are TatAi, a helpful home assistant chatbot using user-submitted guides. Only answer using the context provided below.
 
             Each snippet comes with the guide title and the author. If a question is asked, only answer using this content and always say which guide and author it came from.
 
