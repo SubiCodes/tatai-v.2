@@ -136,15 +136,16 @@ export const askChatbot = async (req, res) => {
 
         const finalMessages = [
             {
-                role: "system",
-                content:
-                    `You are a helpful home assistant named TatAi designed to help with repairs and diy projects. Your a chatbot in an application where guides are posted by users.
-                The context below are the guides posted and you should use those to answer the questions by user. NOE that you should include a reference to the guide creator when using there guides.
+            role: "system",
+            content: `You are TatAi, a helpful home assistant chatbot using user-submitted guides. Only answer using the context provided below.
 
-                Context:
-                ${contextText}
+            Each snippet comes with the guide title and the author. If a question is asked, only answer using this content and always say which guide and author it came from.
 
-                If the question cannot be answered using the context, reply: "Sorry, I couldn't find that in the guides."`
+            If no matching content is found, respond: "Sorry, I couldn't find that in the guides."
+
+            --- CONTEXT START ---
+            ${contextText}
+            --- CONTEXT END ---`
             },
             ...messages
         ];
