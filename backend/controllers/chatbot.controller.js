@@ -122,8 +122,11 @@ export const askChatbot = async (req, res) => {
         const topMatches = allChunks
             .map(obj => ({
                 text: obj.text,
+                author: obj.author,
+                guideTitle: obj.guideTitle,
                 score: cosineSimilarity(obj.embedding, questionEmbedding),
             }))
+            .filter(m => m.score > 0.75)
             .sort((a, b) => b.score - a.score)
             .slice(0, 3);
 
