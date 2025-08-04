@@ -130,7 +130,9 @@ export const askChatbot = async (req, res) => {
             .sort((a, b) => b.score - a.score)
             .slice(0, 3);
 
-        const contextText = topMatches.map(m => m.text).join('\n---\n');
+        const contextText = topMatches
+            .map(m => `From "${m.guideTitle}" by ${m.author}:\n${m.text}`)
+            .join('\n---\n');
 
         const finalMessages = [
             {
