@@ -151,7 +151,7 @@ export const askChatbot = async (req, res) => {
 
             Each snippet comes with the guide title and the author. If a question is asked, only answer using this content and always say which guide and author it came from.
 
-            If no matching content is found, respond: "Sorry, I couldn't find that in the guides."
+            If no matching content is found, respond with "I did not find that in my database but..." then give your own guide on how to do it.
 
             --- CONTEXT START ---
             ${contextText}
