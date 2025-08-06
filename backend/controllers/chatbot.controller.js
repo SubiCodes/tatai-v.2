@@ -394,7 +394,7 @@ export const askChatbot = async (req, res) => {
         if (relevantChunks.length === 0) {
             relevantChunks = scoredChunks
                 .filter(m => m.score > 0.4)
-                .sort((a, b) => b.score - a.score)
+                .sort((a, b) => b.score - a.sort)
                 .slice(0, 3);
         }
 
@@ -425,46 +425,64 @@ export const askChatbot = async (req, res) => {
         const hasRelevantContext = topMatches.length > 0 && qualityMetrics.avgRelevance > 0.4;
         const contextText = hasRelevantContext ? formatContext(topMatches) : "";
 
-        // Prepare context message
-        const contextMessage = {
-            role: "user",
-            content: hasRelevantContext
-                ? `--- RELEVANT GUIDE INFORMATION ---\n${contextText}\n--- END GUIDE INFORMATION ---\n\nUser Question: ${latestUserMessage}`
-                : `No highly relevant guide information found for this question. User Question: ${latestUserMessage}`
-        };
+        // Debug logging for conversation flow
+        console.log(`Current question: "${latestUserMessage}"`);
+        console.log(`Total conversation messages: ${messages.length}`);
+        console.log(`Has relevant context: ${hasRelevantContext}`);
 
-        // Manage conversation history
-        const historySummary = await summarizeHistory(messages);
-        
-        // Build enhanced messages array
+        // Prepare conversation messages for OpenAI API
         const finalMessages = [
-            { role: "system", content: getSystemPrompt() }
+            {
+                role: "system",
+                content: getSystemPrompt()
+            }
         ];
 
-        // Add history summary if available
-        if (historySummary) {
-            finalMessages.push({
-                role: "system",
-                content: `Previous conversation summary: ${historySummary}`
+        // Add conversation history (if it exists)
+        if (messages.length > 1) {
+            // Summarize old conversation if too long
+            const conversationSummary = await summarizeHistory(messages);
+            if (conversationSummary) {
+                finalMessages.push({
+                    role: "system",
+                    content: `Previous conversation summary: ${conversationSummary}`
+                });
+            }
+
+            // Add recent conversation messages (exclude the latest user message as we'll add it with context)
+            const recentMessages = messages.slice(-6, -1); // Get last 5 messages before current
+            recentMessages.forEach(msg => {
+                finalMessages.push({
+                    role: msg.role,
+                    content: msg.content
+                });
             });
         }
 
-        // Add recent context and conversation
-        finalMessages.push(contextMessage);
-        
-        // Add recent conversation history (last few messages, excluding the latest which is in context)
-        const recentMessages = messages.slice(-6, -1); // Last 5 messages before current
-        finalMessages.push(...recentMessages);
+        // Add current user question with context
+        if (hasRelevantContext) {
+            finalMessages.push({
+                role: "user",
+                content: `Context from DIY guides:\n\n${contextText}\n\n---\n\nUser question: ${latestUserMessage}`
+            });
+        } else {
+            finalMessages.push({
+                role: "user",
+                content: `User question: ${latestUserMessage}\n\nNote: No specific guides found for this topic. Please provide general guidance and suggest the user check for more specific guides or consult professionals if needed.`
+            });
+        }
 
-        // Get enhanced AI response
+        // Get enhanced AI response with better parameters
         const completion = await openai.chat.completions.create({
-            model: "gpt-4o-mini", // Using GPT-4 for better reasoning
+            model: "gpt-4o-mini", 
             messages: finalMessages,
-            temperature: 0.1, // Low temperature for consistent, factual responses
+            temperature: 0.2, // Slightly higher for more natural responses
             max_tokens: 1200,
-            presence_penalty: 0.1,
-            frequency_penalty: 0.1,
-            top_p: 0.9
+            presence_penalty: 0.2, // Encourage new topics
+            frequency_penalty: 0.3, // Reduce repetition
+            top_p: 0.9,
+            // Add a unique seed based on current question to avoid caching issues
+            seed: Math.floor(Date.now() / 1000) % 1000000
         });
 
         const aiResponse = completion.choices[0].message.content;
