@@ -10,20 +10,22 @@ const cosineSimilarity = (vecA, vecB) => {
     return dot / (magA * magB);
 };
 
-const embedBatch = async (texts) => {
-    const response = await openai.embeddings.create({
-        model: "text-embedding-ada-002",
-        input: texts,
-    });
-    return response.data.map(obj => obj.embedding);
-};
-
 const embedText = async (text) => {
     const response = await openai.embeddings.create({
-        model: "text-embedding-ada-002",
+        model: "text-embedding-3-small",
         input: text,
+        encoding_format: "float",
     });
     return response.data[0].embedding;
+};
+
+const embedBatch = async (texts) => {
+    const response = await openai.embeddings.create({
+        model: "text-embedding-3-small",
+        input: texts,
+        encoding_format: "float",
+    });
+    return response.data.map(obj => obj.embedding);
 };
 
 // --- Main Upload Function (with batching) ---
