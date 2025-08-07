@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import fileUpload from 'express-fileupload';
 import { connectDB } from './config/db.js';
 
 import authAdminRouter from './routes/auth.admin.route.js';
@@ -24,6 +25,7 @@ import bookmarkUserRouter from './routes/bookmark.route.js';
 dotenv.config();
 
 const app = express();
+app.use(fileUpload());
 
 app.use(cors({
     origin: (origin, callback) => {
