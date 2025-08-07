@@ -2,6 +2,11 @@ import Guide from "../models/guide.model.js";
 import EmbeddedChunk from "../models/embeddedchunks.model.js";
 import openai from "../utils/openaiClient.js";
 
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
+import fetch from 'node-fetch';
+
 // --- Enhanced Utility Functions ---
 const cosineSimilarity = (vecA, vecB) => {
     const dot = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
@@ -522,4 +527,31 @@ export const askChatbot = async (req, res) => {
             error: error.message 
         });
     }
+};
+
+export const transcribeAudio = async (req, res) => {
+  try {
+    const file = req.files?.file;
+    if (!file) {
+      return res.status(400).json({ success: false, message: 'No file passed' });
+    }
+
+    // Save the uploaded file temporarily
+    const tempPath = path.join(os.tmpdir(), file.name);
+    fs.writeFileSync(tempPath, file.data);
+
+    // Transcribe using OpenAI SDK
+    const response = await openai.audio.transcriptions.create({
+      file: fs.createReadStream(tempPath),
+      model: 'whisper-1',
+    });
+
+    // Cleanup temp file
+    fs.unlinkSync(tempPath);
+
+    return res.status(200).json({ success: true, data: response.text });
+  } catch (err) {
+    console.error('Transcription error:', err);
+    return res.status(500).json({ success: false, message: 'Transcription failed' });
+  }
 };
