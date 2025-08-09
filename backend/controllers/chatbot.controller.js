@@ -1,6 +1,7 @@
 import Guide from "../models/guide.model.js";
 import EmbeddedChunk from "../models/embeddedchunks.model.js";
 import openai from "../utils/openaiClient.js";
+import { v2 as cloudinary } from "cloudinary";
 
 import fs from 'fs';
 import path from 'path';
@@ -41,11 +42,11 @@ const semanticChunk = (text, maxChunkSize = 800) => {
     const sentences = text.match(/[^\.!?]+[\.!?]+/g) || [text];
     const chunks = [];
     let currentChunk = '';
-    
+
     for (const sentence of sentences) {
         const cleanSentence = sentence.trim();
         if (!cleanSentence) continue;
-        
+
         // If adding this sentence would exceed limit and we have content
         if ((currentChunk + ' ' + cleanSentence).length > maxChunkSize && currentChunk) {
             chunks.push(currentChunk.trim());
@@ -54,12 +55,12 @@ const semanticChunk = (text, maxChunkSize = 800) => {
             currentChunk += (currentChunk ? ' ' : '') + cleanSentence;
         }
     }
-    
+
     // Add the last chunk if it exists
     if (currentChunk.trim()) {
         chunks.push(currentChunk.trim());
     }
-    
+
     return chunks.length > 0 ? chunks : [text];
 };
 
@@ -75,7 +76,7 @@ const enhanceQuery = async (userQuery) => {
             max_tokens: 100,
             temperature: 0.3
         });
-        
+
         const expandedQuery = enhancement.choices[0].message.content.trim();
         return `${userQuery} ${expandedQuery}`;
     } catch (error) {
@@ -112,7 +113,7 @@ const formatContext = (topMatches) => {
                 .slice(0, 3) // Limit chunks per guide
                 .map(chunk => chunk.text)
                 .join('\n\n');
-            
+
             return `GUIDE: "${guide.title}" by ${guide.author}\nRELEVANCE: ${(guide.maxScore * 100).toFixed(1)}%\n\n${relevantChunks}`;
         })
         .join('\n\n--- NEXT GUIDE ---\n\n');
@@ -121,14 +122,14 @@ const formatContext = (topMatches) => {
 // --- Conversation History Management ---
 const summarizeHistory = async (messages) => {
     if (messages.length <= 8) return null;
-    
+
     try {
         // Get the middle part of conversation (skip recent messages)
         const historyToSummarize = messages.slice(2, -3);
         const historyText = historyToSummarize
             .map(m => `${m.role}: ${m.content}`)
             .join('\n');
-        
+
         const summary = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [{
@@ -138,7 +139,7 @@ const summarizeHistory = async (messages) => {
             max_tokens: 150,
             temperature: 0.1
         });
-        
+
         return summary.choices[0].message.content;
     } catch (error) {
         console.warn("History summarization failed:", error.message);
@@ -156,18 +157,18 @@ const evaluateResponse = (matches, query) => {
             qualityScore: 0
         };
     }
-    
+
     const avgScore = matches.reduce((sum, m) => sum + m.score, 0) / matches.length;
     const maxScore = Math.max(...matches.map(m => m.score));
-    
+
     let confidence;
     if (avgScore > 0.8) confidence = "high";
     else if (avgScore > 0.65) confidence = "medium";
     else if (avgScore > 0.5) confidence = "low";
     else confidence = "very_low";
-    
+
     const qualityScore = (avgScore * 0.6) + (maxScore * 0.3) + (Math.min(matches.length, 3) * 0.1);
-    
+
     return {
         confidence,
         sourceCount: matches.length,
@@ -211,9 +212,9 @@ export const uploadGuidesToChatbot = async (req, res) => {
         });
 
         if (!acceptedGuides.length) {
-            return res.status(404).json({ 
-                success: false, 
-                message: "No accepted guides found." 
+            return res.status(404).json({
+                success: false,
+                message: "No accepted guides found."
             });
         }
 
@@ -222,7 +223,7 @@ export const uploadGuidesToChatbot = async (req, res) => {
         // 1. Process and chunk all guide texts with better structure
         let allChunks = [];
         let totalGuides = acceptedGuides.length;
-        
+
         acceptedGuides.forEach((guide, index) => {
             const steps = guide.stepTitles.map((title, stepIndex) => ({
                 stepTitle: title,
@@ -277,7 +278,7 @@ ${guide.tools ? `Tools required: ${typeof guide.tools === 'string' ? guide.tools
         for (let i = 0; i < allChunks.length; i += batchSize) {
             const batch = allChunks.slice(i, i + batchSize);
             const texts = batch.map(chunk => chunk.text);
-            
+
             try {
                 const embeddings = await embedBatch(texts);
 
@@ -294,14 +295,14 @@ ${guide.tools ? `Tools required: ${typeof guide.tools === 'string' ? guide.tools
                     });
                 }
 
-                console.log(`Embedded batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(allChunks.length/batchSize)}`);
-                
+                console.log(`Embedded batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(allChunks.length / batchSize)}`);
+
                 // Small delay to avoid rate limiting
                 await new Promise(resolve => setTimeout(resolve, 100));
-                
+
             } catch (embedError) {
                 console.error(`Error embedding batch starting at ${i}:`, embedError);
-                throw new Error(`Embedding failed at batch ${Math.floor(i/batchSize) + 1}`);
+                throw new Error(`Embedding failed at batch ${Math.floor(i / batchSize) + 1}`);
             }
         }
 
@@ -327,10 +328,10 @@ ${guide.tools ? `Tools required: ${typeof guide.tools === 'string' ? guide.tools
 
     } catch (error) {
         console.error("Error uploading guides:", error);
-        return res.status(500).json({ 
-            success: false, 
-            message: "Failed to upload guide data.", 
-            error: error.message 
+        return res.status(500).json({
+            success: false,
+            message: "Failed to upload guide data.",
+            error: error.message
         });
     }
 };
@@ -340,17 +341,17 @@ export const askChatbot = async (req, res) => {
     const { messages } = req.body;
 
     if (!messages || !Array.isArray(messages)) {
-        return res.status(400).json({ 
-            success: false, 
-            message: "Messages array is required." 
+        return res.status(400).json({
+            success: false,
+            message: "Messages array is required."
         });
     }
 
     const latestUserMessage = messages[messages.length - 1]?.content;
     if (!latestUserMessage) {
-        return res.status(400).json({ 
-            success: false, 
-            message: "User's latest question is missing." 
+        return res.status(400).json({
+            success: false,
+            message: "User's latest question is missing."
         });
     }
 
@@ -406,7 +407,7 @@ export const askChatbot = async (req, res) => {
         // Diversify results to avoid too similar chunks
         const diverseChunks = [];
         const usedGuides = new Set();
-        
+
         for (const chunk of relevantChunks) {
             // Prioritize diversity across different guides
             if (diverseChunks.length < 5) {
@@ -479,7 +480,7 @@ export const askChatbot = async (req, res) => {
 
         // Get enhanced AI response with better parameters
         const completion = await openai.chat.completions.create({
-            model: "gpt-4o-mini", 
+            model: "gpt-4o-mini",
             messages: finalMessages,
             temperature: 0.2, // Slightly higher for more natural responses
             max_tokens: 1200,
@@ -516,80 +517,91 @@ export const askChatbot = async (req, res) => {
         }
 
         console.log(`Response generated successfully with ${topMatches.length} sources`);
-        
+
         return res.status(200).json(response);
 
     } catch (error) {
         console.error("Error answering chatbot question:", error);
-        return res.status(500).json({ 
-            success: false, 
-            message: "Error generating response.", 
-            error: error.message 
+        return res.status(500).json({
+            success: false,
+            message: "Error generating response.",
+            error: error.message
         });
     }
 };
 
 export const transcribeAudio = async (req, res) => {
-  try {
-    const file = req.files?.file;
-    if (!file) {
-      return res.status(400).json({ success: false, message: 'No file passed' });
+    try {
+        const file = req.files?.file;
+        if (!file) {
+            return res.status(400).json({ success: false, message: 'No file passed' });
+        }
+
+        // Save the uploaded file temporarily
+        const tempPath = path.join(os.tmpdir(), file.name);
+        fs.writeFileSync(tempPath, file.data);
+
+        // Transcribe using OpenAI SDK
+        const response = await openai.audio.transcriptions.create({
+            file: fs.createReadStream(tempPath),
+            model: 'whisper-1',
+        });
+
+        // Cleanup temp file
+        fs.unlinkSync(tempPath);
+
+        return res.status(200).json({ success: true, data: response.text });
+    } catch (err) {
+        console.error('Transcription error:', err);
+        return res.status(500).json({ success: false, message: 'Transcription failed' });
     }
-
-    // Save the uploaded file temporarily
-    const tempPath = path.join(os.tmpdir(), file.name);
-    fs.writeFileSync(tempPath, file.data);
-
-    // Transcribe using OpenAI SDK
-    const response = await openai.audio.transcriptions.create({
-      file: fs.createReadStream(tempPath),
-      model: 'whisper-1',
-    });
-
-    // Cleanup temp file
-    fs.unlinkSync(tempPath);
-
-    return res.status(200).json({ success: true, data: response.text });
-  } catch (err) {
-    console.error('Transcription error:', err);
-    return res.status(500).json({ success: false, message: 'Transcription failed' });
-  }
 };
 
 export const textToSpeech = async (req, res) => {
-  try {
-    const { text } = req.body;
+    try {
+        const { text } = req.body;
 
-    if (!text || text.trim() === "") {
-      return res.status(400).json({success: false, message: "Text is required for text-to-speech conversion.", data: null});
+        if (!text || text.trim() === "") {
+            return res.status(400).json({ success: false, message: "Text is required for text-to-speech conversion.", data: null });
+        }
+
+        //configure coudinary
+        cloudinary.config({
+            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY,
+            api_secret: process.env.CLOUDINARY_SECRET_KEY,
+        });
+
+
+        // Call OpenAI's TTS endpoint
+        const response = await openai.audio.speech.create({
+            model: "gpt-4o-mini-tts", // or gpt-4o-tts for higher quality
+            voice: "alloy", // available: alloy, verse, shimmer, etc.
+            input: text,
+        });
+
+        // Convert ArrayBuffer to base64 so it can be sent in JSON
+        const buffer = Buffer.from(await response.arrayBuffer());
+        const base64Audio = `data:audio/mp3;base64,${buffer.toString("base64")}`;
+
+        const uploadResponse = await cloudinary.uploader.upload(base64Audio, {
+            folder: "ttsAudio",
+            resource_type: "video", // use video for audio uploads
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Text-to-speech conversion successful.",
+            data: uploadResponse.secure_url,
+        });
+        
+    } catch (error) {
+        console.error("Text-to-Speech Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to convert text to speech.",
+            data: null,
+        });
     }
-
-    // Call OpenAI's TTS endpoint
-    const response = await openai.audio.speech.create({
-      model: "gpt-4o-mini-tts", // or gpt-4o-tts for higher quality
-      voice: "alloy", // available: alloy, verse, shimmer, etc.
-      input: text,
-    });
-
-    // Convert ArrayBuffer to base64 so it can be sent in JSON
-    const buffer = Buffer.from(await response.arrayBuffer());
-    const base64Audio = buffer.toString("base64");
-
-    return res.status(200).json({
-      success: true,
-      message: "Text-to-speech conversion successful.",
-      data: {
-        audioBase64: base64Audio, 
-        format: "mp3",
-      },
-    });
-  } catch (error) {
-    console.error("Text-to-Speech Error:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Failed to convert text to speech.",
-      data: null,
-    });
-  }
 };
