@@ -555,3 +555,41 @@ export const transcribeAudio = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Transcription failed' });
   }
 };
+
+export const textToSpeech = async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    if (!text || text.trim() === "") {
+      return res.status(400).json({success: false, message: "Text is required for text-to-speech conversion.", data: null});
+    }
+
+    // Call OpenAI's TTS endpoint
+    const response = await openai.audio.speech.create({
+      model: "gpt-4o-mini-tts", // or gpt-4o-tts for higher quality
+      voice: "alloy", // available: alloy, verse, shimmer, etc.
+      input: text,
+    });
+
+    // Convert ArrayBuffer to base64 so it can be sent in JSON
+    const buffer = Buffer.from(await response.arrayBuffer());
+    const base64Audio = buffer.toString("base64");
+
+    return res.status(200).json({
+      success: true,
+      message: "Text-to-speech conversion successful.",
+      data: {
+        audioBase64: base64Audio, 
+        format: "mp3",
+      },
+    });
+  } catch (error) {
+    console.error("Text-to-Speech Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to convert text to speech.",
+      data: null,
+    });
+  }
+};
