@@ -342,7 +342,7 @@ export const uploadGuidesToChatbot = async (req, res) => {
 
 // --- Enhanced Ask Chatbot Function ---
 export const askChatbot = async (req, res) => {
-    const { messages } = req.body;
+    const { messages, preferences } = req.body;
 
     if (!messages || !Array.isArray(messages)) {
         return res.status(400).json({
@@ -444,7 +444,7 @@ export const askChatbot = async (req, res) => {
         const finalMessages = [
             {
                 role: "system",
-                content: getSystemPrompt()
+                content: getSystemPrompt(preferences)
             }
         ];
 
