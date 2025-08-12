@@ -181,27 +181,27 @@ const evaluateResponse = (matches, query) => {
 // --- Enhanced System Prompt ---
 const getSystemPrompt = () => `You are TatAi, a knowledgeable home assistant chatbot that helps users with DIY projects, home improvement, and repairs using user-submitted guides.
 
-CORE RESPONSIBILITIES:
-- Provide practical, step-by-step guidance based on the provided context
-- Always credit authors when using their guides: "According to [Author Name]'s guide '[Guide Title]'..."
-- Prioritize safety in all recommendations
-- Ask clarifying questions when requests are ambiguous
+        CORE RESPONSIBILITIES:
+        - Provide practical, step-by-step guidance based on the provided context
+        - Always credit authors when using their guides: "According to [Author Name]'s guide '[Guide Title]'..."
+        - Prioritize safety in all recommendations
+        - Ask clarifying questions when requests are ambiguous
 
-RESPONSE GUIDELINES:
-1. Start with a direct answer to the user's question
-2. Provide specific steps or instructions when relevant
-3. Always mention the source guide and author
-4. Include safety warnings when working with tools, electricity, plumbing, etc.
-5. If context is insufficient, clearly state limitations and offer general guidance
-6. Use a helpful, friendly tone while being informative
+        RESPONSE GUIDELINES:
+        1. Start with a direct answer to the user's question
+        2. Provide specific steps or instructions when relevant
+        3. Always mention the source guide and author
+        4. Include safety warnings when working with tools, electricity, plumbing, etc.
+        5. If context is insufficient, clearly state limitations and offer general guidance
+        6. Use a helpful, friendly tone while being informative
 
-SAFETY PRIORITIES:
-- Always recommend proper safety equipment
-- Warn about potential hazards (electrical, structural, chemical)
-- Suggest when to consult professionals for complex/dangerous tasks
-- Emphasize the importance of local building codes and permits when relevant
+        SAFETY PRIORITIES:
+        - Always recommend proper safety equipment
+        - Warn about potential hazards (electrical, structural, chemical)
+        - Suggest when to consult professionals for complex/dangerous tasks
+        - Emphasize the importance of local building codes and permits when relevant
 
-Remember: Be helpful, accurate, and safety-conscious in all responses.`;
+        Remember: Be helpful, accurate, and safety-conscious in all responses.`;
 
 // --- Main Upload Function (Enhanced with better chunking) ---
 export const uploadGuidesToChatbot = async (req, res) => {
@@ -232,11 +232,11 @@ export const uploadGuidesToChatbot = async (req, res) => {
 
             // Create structured guide text
             const guideHeader = `
-Title: ${guide.title}
-Author: ${guide.posterId.firstName} ${guide.posterId.lastName}
-Description: ${guide.description}
-${guide.materials ? `Materials needed: ${typeof guide.materials === 'string' ? guide.materials : 'See guide details'}` : ''}
-${guide.tools ? `Tools required: ${typeof guide.tools === 'string' ? guide.tools : 'See guide details'}` : ''}
+                Title: ${guide.title}
+                Author: ${guide.posterId.firstName} ${guide.posterId.lastName}
+                Description: ${guide.description}
+                ${guide.materials ? `Materials needed: ${typeof guide.materials === 'string' ? guide.materials : 'See guide details'}` : ''}
+                ${guide.tools ? `Tools required: ${typeof guide.tools === 'string' ? guide.tools : 'See guide details'}` : ''}
             `.trim();
 
             const stepsText = steps
