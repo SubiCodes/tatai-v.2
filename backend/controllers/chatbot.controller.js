@@ -65,19 +65,38 @@ const semanticChunk = (text, maxChunkSize = 800) => {
 };
 
 // --- Query Enhancement ---
-const enhanceQuery = async (userQuery) => {
+const enhanceQuery = async (userQuery, conversationMessages = []) => {
+    // Don't enhance follow-up questions - they need their conversational context
+    const followUpPatterns = /\b(what about|how about|that|this|it|also|and|but|however|can i|should i|do i need)\b/i;
+    const isShort = userQuery.split(' ').length < 6;
+
+    if (conversationMessages.length > 1 && (followUpPatterns.test(userQuery) || isShort)) {
+        console.log("Skipping enhancement for follow-up question");
+        return userQuery; // Return original for follow-ups
+    }
+
     try {
+        let contextString = "";
+        if (conversationMessages.length > 1) {
+            // Get last 2 exchanges for context
+            const recentContext = conversationMessages.slice(-4).map(msg =>
+                `${msg.role}: ${msg.content.substring(0, 100)}`
+            ).join('\n');
+            contextString = `\n\nConversation context:\n${recentContext}`;
+        }
+
         const enhancement = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [{
                 role: "user",
-                content: `Expand this DIY/home improvement query with related terms, synonyms, and common variations. Keep it concise (max 50 words): "${userQuery}"`
+                content: `Expand this DIY/home improvement query with related terms, synonyms, and common variations. Keep it concise (max 50 words): "${userQuery}"${contextString}`
             }],
             max_tokens: 100,
             temperature: 0.3
         });
 
         const expandedQuery = enhancement.choices[0].message.content.trim();
+        console.log("Enhanced query successfully");
         return `${userQuery} ${expandedQuery}`;
     } catch (error) {
         console.warn("Query enhancement failed, using original query:", error.message);
@@ -192,12 +211,10 @@ const getSystemPrompt = (preferences) => `You are TatAi, a knowledgeable home as
         2. Provide specific steps or instructions when relevant
         3. Always mention the source guide and author
         4. Include safety warnings when working with tools, electricity, plumbing, etc.
-        5. If context is insufficient, clearly state limitations and offer general guidance
-        6. Use a helpful, friendly tone while being informative
-        7. Call the user ${preferences.preferredName}
-        8. Use a ${preferences.preferredTone} tone.
-        9. Respond like your talking to someone with ${preferences.skilLevel} skill level.
-        10. Respond like your talking to someone with ${preferences.toolFamiliarity} tool knowledge level.
+        5. Call the user ${preferences.preferredName}
+        6. Use a ${preferences.preferredTone} tone.
+        7. Respond like your talking to someone with ${preferences.skilLevel} skill level.
+        8. Respond like your talking to someone with ${preferences.toolFamiliarity} tool knowledge level.
 
         SAFETY PRIORITIES:
         - Always recommend proper safety equipment
@@ -598,7 +615,7 @@ export const textToSpeech = async (req, res) => {
             message: "Text-to-speech conversion successful.",
             data: uploadResponse.secure_url,
         });
-        
+
     } catch (error) {
         console.error("Text-to-Speech Error:", error);
 
