@@ -421,7 +421,7 @@ export const askChatbot = async (req, res) => {
         if (relevantChunks.length === 0) {
             relevantChunks = scoredChunks
                 .filter(m => m.score > 0.4)
-                .sort((a, b) => b.score - a.sort)
+                .sort((a, b) => b.score - a.score)
                 .slice(0, 3);
         }
 
