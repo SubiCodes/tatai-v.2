@@ -389,7 +389,7 @@ export const askChatbot = async (req, res) => {
         console.log(`Searching through ${totalChunks} embedded chunks...`);
 
         // Enhance the user's query for better matching
-        const enhancedQuery = await enhanceQuery(latestUserMessage);
+        const enhancedQuery = await enhanceQuery(latestUserMessage, messages);
         console.log(`Enhanced query: "${enhancedQuery}"`);
 
         // Get query embedding
