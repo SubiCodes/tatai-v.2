@@ -580,7 +580,7 @@ export const textToSpeech = async (req, res) => {
         // Call OpenAI's TTS endpoint
         const response = await openai.audio.speech.create({
             model: "gpt-4o-mini-tts", // or gpt-4o-tts for higher quality
-            voice: "alloy", // available: alloy, verse, shimmer, etc.
+            voice: "onyx", // available: alloy, verse, shimmer, etc.
             input: text,
         });
 
