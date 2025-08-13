@@ -477,7 +477,7 @@ export const askChatbot = async (req, res) => {
             }
 
             // Add recent conversation messages (exclude the latest user message as we'll add it with context)
-            const recentMessages = messages.slice(-6, -1); // Get last 5 messages before current
+            const recentMessages = messages.slice(-12, -1); // Get last 5 messages before current
             recentMessages.forEach(msg => {
                 finalMessages.push({
                     role: msg.role,
