@@ -614,7 +614,10 @@ export const textToSpeech = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Text-to-speech conversion successful.",
-            data: uploadResponse.secure_url,
+            data: {
+                publicId: uploadResponse.public_id,
+                url: uploadResponse.secure_url
+            }
         });
 
     } catch (error) {
