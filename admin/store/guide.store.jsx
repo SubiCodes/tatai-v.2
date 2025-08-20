@@ -174,7 +174,7 @@ const useGuideStore = create((set, get) => ({
     fetchGuide: async (id) => {
         set({ fetchingGuide: true });
         try {
-            const res = await axios.get(`${URI}/api/v1/guideAdmin/guide/${id}`);
+            const res = await axios.get(`${URI}/api/v1/guideAdmin/guide/${id}`);    
             set({ guide: res.data.data });
         } catch (error) {
             console.log("Error fetching guide:", error);

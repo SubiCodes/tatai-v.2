@@ -31,6 +31,8 @@ import lgbt_3 from '../../assets/images/profile-icons/lgbt_3.png'
 import lgbt_4 from '../../assets/images/profile-icons/lgbt_4.png'
 import { useNavigate } from 'react-router-dom';
 import useReportStore from '../../../store/report.store.jsx';
+import FeedbackCard from '../cards/FeedbackCard.jsx';
+import CommentCard from '../cards/CommentCard.jsx';
 
 const profileIcons = {
     'empty_profile': empty_profile,
@@ -55,11 +57,21 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
     const { reportedGuide, updateGuideStatusFromReport } = useReportStore();
     const { admin } = useAdminStore();
 
-    const latestGuide = fromReports
+    const [localGuide, setLocalGuide] = useState(null);
+
+    // Get guide from store
+    const storeGuide = fromReports
         ? reportedGuide
         : fromViewUser
             ? getGuideByIdFromViewUser(guide?._id)
             : getGuideById(guide?._id);
+
+    // Initialize local state when store guide changes
+    useEffect(() => {
+        if (storeGuide) {
+            setLocalGuide(storeGuide);
+        }
+    }, [storeGuide]);
 
     const updateStatus = async (id, status) => {
         if (fromViewUser) {
@@ -70,6 +82,25 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
             await updateGuideStatus(id, status)
         }
     }
+
+    // Function to update feedback status in local state
+    const latestGuide = localGuide;
+
+    const updateFeedbackStatus = (userId, guideId, hidden) => {
+        setLocalGuide(prevGuide => {
+            if (!prevGuide || !prevGuide.feedbacks) return prevGuide;
+
+            return {
+                ...prevGuide,
+                feedbacks: prevGuide.feedbacks.map(feedback =>
+                    feedback.userId._id === userId && feedback.guideId === guideId
+                        ? { ...feedback, hidden }
+                        : feedback
+                )
+            };
+        });
+    };
+
 
     const navigate = useNavigate();
 
@@ -320,6 +351,18 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
                                 return part;
                             })}
                         </p>
+                    </div>
+                    {/* Feedbacks */}
+                    <div className='w-full flex flex-col flex-wrap gap-2'>
+                        {latestGuide?.feedbacks && latestGuide.feedbacks.length > 0 ? (
+                            latestGuide.feedbacks.map((feedback) => (
+                                <div className='w-full flex flex-col flex-wrap mb-2 border-b pb-2 border-gray-300'>
+                                    <CommentCard feedback={feedback} fromViewGuide={true} updateFeedbackStatus={updateFeedbackStatus}/>
+                                </div>
+                            ))
+                        ) : (
+                            <span>No Feedbacks yet...</span>
+                        )}
                     </div>
                 </div>
             </div>

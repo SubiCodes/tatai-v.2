@@ -43,12 +43,15 @@ const profileIcons = {
     'lgbt_4': lgbt_4
 };
 
-function CommentCard({ feedback, fromLatestFeedback = false }) {
+function CommentCard({ feedback, fromLatestFeedback = false, fromViewGuide = false, updateFeedbackStatus }) {
 
     const { editFeedback } = useFeedbackStore();
 
     const handleEditFeedback = async (hidden) => {
         await editFeedback(feedback?.userId?._id, feedback?.guideId, hidden, fromLatestFeedback);
+        if (updateFeedbackStatus) {
+            updateFeedbackStatus(feedback?.userId?._id, feedback?.guideId, hidden);
+        }
     }
 
     return (
@@ -66,27 +69,38 @@ function CommentCard({ feedback, fromLatestFeedback = false }) {
                     <p className='text-gray-400 text-md'>{feedback?.userId?.email}</p>
                 </div>
                 {/* Actions */}
-                <div className='h-full flex items-center justify-center'>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger>
-                            <span className='text-gray-600 cursor-pointer'>
-                                <Ellipsis />
-                            </span>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className='bg-white border border-gray-400'>
-                            <DropdownMenuLabel>Hide Comment</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>
-                                {!feedback?.hidden ? (
-                                    <span className='text-red-400 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(true)}><EyeOff /> Hide</span>
-                                ) : (
-                                    <span className='text-gray-600 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(false)}><Eye /> Show</span>
-                                )}
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                {!fromViewGuide ? (
+                    <div className='h-full flex items-center justify-center'>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <span className='text-gray-600 cursor-pointer'>
+                                    <Ellipsis />
+                                </span>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className='bg-white border border-gray-400'>
+                                <DropdownMenuLabel>Hide Comment</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>
+                                    {!feedback?.hidden ? (
+                                        <span className='text-red-400 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(true)}><EyeOff /> Hide</span>
+                                    ) : (
+                                        <span className='text-gray-600 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(false)}><Eye /> Show</span>
+                                    )}
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
 
-                </div>
+                    </div>
+                ) : (
+                    <div className='h-full flex items-center justify-center'>
+                        {!feedback?.hidden ? (
+                            <span className='text-red-400 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(true)}><EyeOff /> Hide</span>
+                        ) : (
+                            <span className='text-gray-600 flex flex-row items-center justify-center gap-2 cursor-pointer' onClick={() => handleEditFeedback(false)}><Eye /> Show</span>
+                        )}
+                    </div>
+                )}
+
             </div>
 
             {/* Comment */}
