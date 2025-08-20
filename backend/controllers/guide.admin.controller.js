@@ -205,10 +205,20 @@ export const getGuide = async (req, res) => {
         message: `Guide no longer exists.`,
       });
     }
+
+    const feedback = await Feedback.find({
+      guideId: id,
+      hidden: false
+    }).populate({
+      path: 'userId',
+      select: "firstName lastName profileIcon"
+    }).sort({ createdAt: -1 });
+
     return res.status(200).json({
       success: true,
       message: "Guide fetched successfully.",
       data: guide,
+      feedbacks: feedback
     });
   } catch (error) {
     console.error("Error fetching guides: ", error);
