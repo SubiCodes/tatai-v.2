@@ -35,11 +35,11 @@ const useViewUserStore = create((set, get) => ({
     getGuideByIdFromViewUser: (id) => {
         return get().guides.find((g) => g._id === id);
     },
-    updateGuideStatusFromViewUser: async (id, status) => {
+    updateGuideStatusFromViewUser: async (id, status, reason) => {
         const toastId = toast.custom((t) => (
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Updating Guide Status"} message="This might take a while..." />));
         try {
-            const result = await axios.put(`${import.meta.env.VITE_URI}/api/v1/guideAdmin/guide/status/${id}`, { status: status });
+            const result = await axios.put(`${import.meta.env.VITE_URI}/api/v1/guideAdmin/guide/status/${id}`, { status: status, reason: reason });
             set((state) => ({ guides: state.guides.map((guide) => guide._id === id ? { ...guide, status } : guide) }));
             toast.custom((t) => (
                 <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Updating guide status Successful"} message={result.data.message} />
