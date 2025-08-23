@@ -1,4 +1,4 @@
-import User from "../models/user.model";
+import User from "../models/user.model.js";
 import Guide from "../models/guide.model.js";
 import Report from "../models/report.model.js";
 
