@@ -1,18 +1,18 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-    secure:true,
-    host: 'smtp.gmail.com',
-    port:465,
-    auth: {
-        user:'tataihomeassistant@gmail.com',
-        pass:'rrfycxyyltkinjbi'
-    }
+  secure: true,
+  host: 'smtp.gmail.com',
+  port: 465,
+  auth: {
+    user: 'tataihomeassistant@gmail.com',
+    pass: 'rrfycxyyltkinjbi'
+  }
 })
 
 
-export const sendVerificationToken = (to, otp) =>  {
-    const htmlTemplate = `
+export const sendVerificationToken = (to, otp) => {
+  const htmlTemplate = `
         <div style="font-family: Arial, sans-serif; background-color: #f0f8ff; padding: 20px; text-align: center;">
             <div style="max-width: 500px; margin: auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
                 <h2 style="color: #007bff;">Your One-Time Password (OTP)</h2>
@@ -25,18 +25,18 @@ export const sendVerificationToken = (to, otp) =>  {
         </div>
     `;
 
-    transporter.sendMail({
-        from: 'tataihomeassistant@gmail.com',
-        to: to,
-        subject: "Verify your account",
-        html: htmlTemplate
-    }, (err, info) => {
-        if (err) {
-            console.error('Error sending email:', err);
-        } else {
-            console.log('Email sent:', info.response);
-        }
-    });
+  transporter.sendMail({
+    from: 'tataihomeassistant@gmail.com',
+    to: to,
+    subject: "Verify your account",
+    html: htmlTemplate
+  }, (err, info) => {
+    if (err) {
+      console.error('Error sending email:', err);
+    } else {
+      console.log('Email sent:', info.response);
+    }
+  });
 }
 
 export const sendConcern = (from, message) => {
@@ -90,13 +90,12 @@ export const sendReportEmail = ({ from, type, guideTitle, comment, posterName })
         <div style="margin-top: 20px;">
           <p style="margin: 8px 0;"><strong>Reporter:</strong> ${from}</p>
           <p style="margin: 8px 0;"><strong>Type:</strong>Reported ${type}</p>
-          ${
-            type === "Guide"
-              ? `<p style="margin: 8px 0;"><strong>Guide Title:</strong> ${guideTitle}</p>
+          ${type === "Guide"
+      ? `<p style="margin: 8px 0;"><strong>Guide Title:</strong> ${guideTitle}</p>
                  <p style="margin: 8px 0;"><strong>Posted By:</strong> ${posterName}</p>`
-              : `<p style="margin: 8px 0;"><strong>Comment:</strong> ${comment}</p>
+      : `<p style="margin: 8px 0;"><strong>Comment:</strong> ${comment}</p>
                  <p style="margin: 8px 0;"><strong>Commented By:</strong> ${posterName}</p>`
-          }
+    }
         </div>
 
         <p style="margin-top: 30px; font-size: 14px; color: #888;">Please review this report in the admin dashboard.</p>
@@ -121,13 +120,22 @@ export const sendReportEmail = ({ from, type, guideTitle, comment, posterName })
   );
 };
 
-export const sendGuideStatusUpdate = (guideTitle, status, recipientEmail) => {
+export const sendGuideStatusUpdate = (guideTitle, status, recipientEmail, reason = "") => {
   const statusCapitalized = status.charAt(0).toUpperCase() + status.slice(1);
-  
-  const extraMessage = (status === 'pending' || status === 'rejected') 
+
+  const extraMessage = (status === 'pending' || status === 'rejected')
     ? `<p style="margin-top: 20px; font-size: 14px; color: #888;">
          For more information, contact <a href="mailto:tataihomeassistant@gmail.com">tataihomeassistant@gmail.com</a>.
        </p>`
+    : '';
+
+  const reasonMessage = reason
+    ? `<div style="margin-top: 20px;">
+         <p><strong>Reason:</strong></p>
+         <p style="font-size: 14px; color: #555; background: #f9f9f9; padding: 10px; border-radius: 6px; border: 1px solid #eee;">
+           ${reason}
+         </p>
+       </div>`
     : '';
 
   const htmlTemplate = `
@@ -141,6 +149,7 @@ export const sendGuideStatusUpdate = (guideTitle, status, recipientEmail) => {
           <p><strong>New Status:</strong> <span style="color: ${status === 'accepted' ? '#28a745' : status === 'pending' ? '#ffc107' : '#dc3545'};">${statusCapitalized}</span></p>
         </div>
 
+        ${reasonMessage}
         ${extraMessage}
 
         <p style="margin-top: 30px; font-size: 14px; color: #aaa;">Thank you for contributing to TatAi.</p>
@@ -207,8 +216,8 @@ export const sendPasswordResetEmail = (to, resetLink) => {
 };
 
 //Send Reset Password token mobile side.
-export const sendResetToken = (to, otp) =>  {
-    const htmlTemplate = `
+export const sendResetToken = (to, otp) => {
+  const htmlTemplate = `
         <div style="font-family: Arial, sans-serif; background-color: #f0f8ff; padding: 20px; text-align: center;">
             <div style="max-width: 500px; margin: auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
                 <h2 style="color: #007bff;">Your Reset Password Token</h2>
@@ -220,16 +229,16 @@ export const sendResetToken = (to, otp) =>  {
         </div>
     `;
 
-    transporter.sendMail({
-        from: 'tataihomeassistant@gmail.com',
-        to: to,
-        subject: "Reset Password Token",
-        html: htmlTemplate
-    }, (err, info) => {
-        if (err) {
-            console.error('Error sending email:', err);
-        } else {
-            console.log('Email sent:', info.response);
-        }
-    });
+  transporter.sendMail({
+    from: 'tataihomeassistant@gmail.com',
+    to: to,
+    subject: "Reset Password Token",
+    html: htmlTemplate
+  }, (err, info) => {
+    if (err) {
+      console.error('Error sending email:', err);
+    } else {
+      console.log('Email sent:', info.response);
+    }
+  });
 }
