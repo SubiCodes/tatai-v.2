@@ -102,8 +102,8 @@ function Dashboard() {
           </div>
 
           {/* Charts */}
-          <div className='w-full grid grid-cols-1 lg:grid-cols-2 gap-4'>
-            <div className='w-full rounded-lg h-80 lg:h-110 shadow-lg flex flex-col gap-4 items-center justify-center p-6 bg-white'>
+          <div className='w-full grid grid-cols-1 lg:grid-cols-3 gap-4'>
+            <div className='w-full rounded-lg h-80 lg:h-110 shadow-lg flex flex-col col-span-2 gap-4 items-center justify-center p-6 bg-white'>
               <div className='w-full flex items-center justify-between'>
                 <h1 className='text-gray-700 text-2xl font-bold'>Total Reports</h1>
                 <select
