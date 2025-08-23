@@ -268,7 +268,7 @@ export const getGuide = async (req, res) => {
 };
 
 export const updateStatus = async (req, res) => {
-  const { status } = req.body;
+  const { status, reason } = req.body;
   const { id } = req.params;
   try {
     const guide = await Guide.findById(id);
