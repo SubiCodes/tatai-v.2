@@ -7,6 +7,7 @@ export const getAdminDashboard = async (req, res) => {
         const totalUsers = await User.countDocuments();
         const totalGuides = await Guide.countDocuments();
         const totalPendingGudies = await Guide.countDocuments( {status: "pending" } );
+        const totalAcceptedGuides = await Guide.countDocuments( {status: "accepted" } );
         const totalUnreviewedReports = await Report.countDocuments( {reviewed: false } );
 
         const totalAcceptedRepairGudies = await Guide.countDocuments( {status: "accepted", category: "repair" } );
@@ -19,6 +20,7 @@ export const getAdminDashboard = async (req, res) => {
             totalUsers: totalUsers,
             totalGuides: totalGuides,
             totalPendingGudies: totalPendingGudies,
+            totalAcceptedGuides: totalAcceptedGuides,
             totalUnreviewedReports: totalUnreviewedReports,
             reportsPerMonthPerYear: reportsPerMonthPerYear,
             liveGuidesByCategory: {

@@ -9,6 +9,7 @@ import ViewGuide from '../dialogs/ViewGuide.jsx';
 import useGuideStore from '../../../store/guide.store.jsx';
 import useFeedbackStore from '../../../store/feedback.store.jsx';
 import { Link, useNavigate } from 'react-router-dom';
+import useDashboardStore from '../../../store/dashboard.store.jsx';
 
 const areaData = [
   { month: "January", reports: 186 },
@@ -18,14 +19,6 @@ const areaData = [
   { month: "May", reports: 209 },
   { month: "June", reports: 214 },
 ]
-
-const pieData = [
-  { type: "repair", total: 275, fill: "#4B9CD3" },
-  { type: "tool", total: 200, fill: "#007FFF" },
-  { type: "diy", total: 187, fill: "#1877F2" },
-]
-
-const totalGuides = pieData.reduce((sum, item) => sum + item.guides, 0)
 
 function Dashboard() {
 
@@ -38,6 +31,8 @@ function Dashboard() {
 
   const { latestFeedback, fetchingLatesFeedback, fetchLatestFeedback } = useFeedbackStore();
 
+  const { fetchingDashboardData, dashboardData, fetchDashboardData } = useDashboardStore();
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [guideToOpen, setGuideToOpen] = useState(null);
 
@@ -47,7 +42,14 @@ function Dashboard() {
   };
   const closeDialog = () => setIsDialogOpen(false);
 
+  const pieData = [
+    { type: "repair", total: dashboardData?.liveGuidesByCategory?.repair, fill: "#4B9CD3" },
+    { type: "tool", total: dashboardData?.liveGuidesByCategory?.tool, fill: "#007FFF" },
+    { type: "diy", total: dashboardData?.liveGuidesByCategory?.diy, fill: "#1877F2" },
+  ]
+
   useEffect(() => {
+    fetchDashboardData();
     fetchGuides();
     fetchLatestFeedback();
   }, []);
@@ -55,7 +57,7 @@ function Dashboard() {
   return (
     <div className='w-full h-full flex flex-col gap-8 p-6 md:-p-12 overflow-auto'>
 
-      {fetchingGuides ? (
+      {fetchingGuides || fetchingDashboardData ? (
         <div className='w-full h-full flex flex-col gap-4 items-center justify-center'>
           <DotLoader size={32} />
           <h1>Loading...</h1>
@@ -69,7 +71,7 @@ function Dashboard() {
               <h1 className="text-white text-xl font-semibold">Total Users</h1>
               <div className="flex flex-1 items-center justify-center flex-row gap-4">
                 <SquareUser size={42} className="text-white" />
-                <h1 className="text-white text-5xl font-bold">24</h1>
+                <h1 className="text-white text-5xl font-bold">{dashboardData?.totalUsers}</h1>
               </div>
             </div>
 
@@ -78,7 +80,7 @@ function Dashboard() {
               <h1 className="text-white text-xl font-semibold">All Guides</h1>
               <div className="flex flex-1 items-center justify-center flex-row gap-4">
                 <BookText size={42} className="text-white" />
-                <h1 className="text-white text-5xl font-bold">16</h1>
+                <h1 className="text-white text-5xl font-bold">{dashboardData?.totalGuides}</h1>
               </div>
             </div>
 
@@ -87,7 +89,7 @@ function Dashboard() {
               <h1 className="text-white text-xl font-semibold">Pending Guides</h1>
               <div className="flex flex-1 items-center justify-center flex-row gap-4">
                 <FolderClock size={42} className="text-white" />
-                <h1 className="text-white text-5xl font-bold">8</h1>
+                <h1 className="text-white text-5xl font-bold">{dashboardData?.totalPendingGuides}</h1>
               </div>
             </div>
 
@@ -96,7 +98,7 @@ function Dashboard() {
               <h1 className="text-white text-xl font-semibold">Unreviewed Reports</h1>
               <div className="flex flex-1 items-center justify-center flex-row gap-4">
                 <AlertTriangle size={42} className="text-white" />
-                <h1 className="text-white text-5xl font-bold">5</h1>
+                <h1 className="text-white text-5xl font-bold">{dashboardData?.totalUnreviewedReports}</h1>
               </div>
             </div>
           </div>
@@ -124,7 +126,7 @@ function Dashboard() {
 
             <div className='w-full rounded-lg h-80 lg:h-110 shadow-lg flex flex-col gap-4 items-center justify-center p-6 bg-white'>
               <h1 className='text-gray-700 text-2xl font-bold'>Live Guides</h1>
-              <PieChartLegend data={pieData} totalGuides={totalGuides} />
+              <PieChartLegend data={pieData} totalGuides={dashboardData?.totalGuides} />
             </div>
           </div>
 
