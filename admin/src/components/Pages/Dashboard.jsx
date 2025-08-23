@@ -11,15 +11,6 @@ import useFeedbackStore from '../../../store/feedback.store.jsx';
 import { Link, useNavigate } from 'react-router-dom';
 import useDashboardStore from '../../../store/dashboard.store.jsx';
 
-const areaData = [
-  { month: "January", reports: 186 },
-  { month: "February", reports: 305 },
-  { month: "March", reports: 237 },
-  { month: "April", reports: 73 },
-  { month: "May", reports: 209 },
-  { month: "June", reports: 214 },
-]
-
 function Dashboard() {
 
   const navigate = useNavigate();
@@ -47,6 +38,24 @@ function Dashboard() {
     { type: "tool", total: dashboardData?.liveGuidesByCategory?.tool, fill: "#007FFF" },
     { type: "diy", total: dashboardData?.liveGuidesByCategory?.diy, fill: "#1877F2" },
   ]
+
+  // Add these state variables to your component
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+  // Handle year selection change
+  const handleYearChange = (e) => {
+    const year = parseInt(e.target.value);
+    setSelectedYear(year);
+    console.log('Selected year:', year);
+  };
+
+  // Get available years from the data
+  const availableYears = dashboardData
+    ? Object.keys(dashboardData.reportsPerMonthPerYear).map(year => parseInt(year))
+    : [];
+
+  // Get chart data for selected year
+  const areaData = dashboardData?.reportsPerMonthPerYear?.[selectedYear] || [];
 
   useEffect(() => {
     fetchDashboardData();
@@ -110,13 +119,10 @@ function Dashboard() {
                 <h1 className='text-gray-700 text-2xl font-bold'>Total Reports</h1>
                 <select
                   className='px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                  defaultValue={new Date().getFullYear()}
-                  onChange={(e) => {
-                    // Handle year selection here
-                    console.log('Selected year:', e.target.value);
-                  }}
+                  value={selectedYear}
+                  onChange={handleYearChange}
                 >
-                  {Array.from({ length: new Date().getFullYear() - 2024 }, (_, i) => 2025 + i).map(year => (
+                  {availableYears.map(year => (
                     <option key={year} value={year}>{year}</option>
                   ))}
                 </select>
@@ -126,7 +132,7 @@ function Dashboard() {
 
             <div className='w-full rounded-lg h-80 lg:h-110 shadow-lg flex flex-col gap-4 items-center justify-center p-6 bg-white'>
               <h1 className='text-gray-700 text-2xl font-bold'>Live Guides</h1>
-              <PieChartLegend data={pieData} totalGuides={dashboardData?.totalGuides} />
+              <PieChartLegend data={pieData} totalGuides={dashboardData?.totalAcceptedGuides} />
             </div>
           </div>
 
