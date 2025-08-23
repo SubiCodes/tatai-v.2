@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { SquareUser, FolderClock, BookText } from 'lucide-react'
+import { SquareUser, FolderClock, BookText, AlertTriangle } from 'lucide-react'
 import { DotLoader } from 'react-spinners'
 import AreaChartCurved from '../charts/AreaChartCurved.jsx';
 import PieChartLegend from '../charts/PieChartLegend.jsx';
@@ -59,26 +59,40 @@ function Dashboard() {
       ) : (
         <>
           {/* Three Box Header */}
-          <div className='w-full grid grid-cols-1 lg:grid-cols-3 gap-4'>
-            <div className='w-full rounded-lg bg-secondary h-48 lg:h-60 flex flex-col p-6 shadow-lg'>
-              <h1 className='text-white text-2xl font-bold'>Total Users:</h1>
-              <div className='flex flex-1 items-center justify-center flex-row gap-4'>
-                <h1 className='text-white text-4xl font-bold'><SquareUser size={32} /></h1>
-                <h1 className='text-white text-4xl font-bold'>24</h1>
+          <div className="w-full grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Total Users */}
+            <div className="w-full rounded-2xl bg-gradient-to-r from-[#006FFD] to-[#3399FF] h-48 lg:h-56 flex flex-col p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
+              <h1 className="text-white text-xl font-semibold">Total Users</h1>
+              <div className="flex flex-1 items-center justify-center flex-row gap-4">
+                <SquareUser size={42} className="text-white" />
+                <h1 className="text-white text-5xl font-bold">24</h1>
               </div>
             </div>
-            <div className='w-full rounded-lg bg-secondary h-48 lg:h-60 flex flex-col p-6 shadow-lg'>
-              <h1 className='text-white text-2xl font-bold'>All Guides:</h1>
-              <div className='flex flex-1 items-center justify-center flex-row gap-4'>
-                <h1 className='text-white text-4xl font-bold'><BookText size={32} /></h1>
-                <h1 className='text-white text-4xl font-bold'>16</h1>
+
+            {/* All Guides */}
+            <div className="w-full rounded-2xl bg-gradient-to-r from-[#006FFD] to-[#4DA6FF] h-48 lg:h-56 flex flex-col p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
+              <h1 className="text-white text-xl font-semibold">All Guides</h1>
+              <div className="flex flex-1 items-center justify-center flex-row gap-4">
+                <BookText size={42} className="text-white" />
+                <h1 className="text-white text-5xl font-bold">16</h1>
               </div>
             </div>
-            <div className='w-full rounded-lg bg-secondary h-48 lg:h-60 flex flex-col p-6 shadow-lg'>
-              <h1 className='text-white text-2xl font-bold'>Pending Guides:</h1>
-              <div className='flex flex-1 items-center justify-center flex-row gap-4'>
-                <h1 className='text-white text-4xl font-bold'><FolderClock size={32} /></h1>
-                <h1 className='text-white text-4xl font-bold'>8</h1>
+
+            {/* Pending Guides */}
+            <div className="w-full rounded-2xl bg-gradient-to-r from-[#006FFD] to-[#66B2FF] h-48 lg:h-56 flex flex-col p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
+              <h1 className="text-white text-xl font-semibold">Pending Guides</h1>
+              <div className="flex flex-1 items-center justify-center flex-row gap-4">
+                <FolderClock size={42} className="text-white" />
+                <h1 className="text-white text-5xl font-bold">8</h1>
+              </div>
+            </div>
+
+            {/* Unreviewed Reports */}
+            <div className="w-full rounded-2xl bg-gradient-to-r from-[#006FFD] to-[#80BFFF] h-48 lg:h-56 flex flex-col p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
+              <h1 className="text-white text-xl font-semibold">Unreviewed Reports</h1>
+              <div className="flex flex-1 items-center justify-center flex-row gap-4">
+                <AlertTriangle size={42} className="text-white" />
+                <h1 className="text-white text-5xl font-bold">5</h1>
               </div>
             </div>
           </div>
@@ -103,7 +117,7 @@ function Dashboard() {
               <h1 className='text-gray-700 text-2xl font-bold'>Recent Comment</h1>
               {fetchingLatesFeedback ? ('Fetching latest feedback...') : (
                 <div className='flex flex-1'>
-                  <CommentCard feedback={latestFeedback} fromLatestFeedback={true}/>
+                  <CommentCard feedback={latestFeedback} fromLatestFeedback={true} />
                 </div>
               )}
               <div className='w-full flex items-center justify-center border-t border-gray-400 h-10'>
