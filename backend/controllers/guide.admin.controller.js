@@ -2,6 +2,7 @@ import Feedback from "../models/feedback.model.js";
 import Guide from "../models/guide.model.js";
 import User from "../models/user.model.js";
 import { v2 as cloudinary } from "cloudinary";
+import { sendGuideStatusUpdate } from "../nodemailer/email.js";
 
 export const uploadMedia = async (req, res) => {
   try {
@@ -271,7 +272,7 @@ export const updateStatus = async (req, res) => {
   const { status, reason } = req.body;
   const { id } = req.params;
   try {
-    const guide = await Guide.findById(id);
+    const guide = await Guide.findById(id).populate({ path: 'posterId', select: "firstName lastName email" });
     if (!guide) {
       return res
         .status(400)
@@ -284,6 +285,7 @@ export const updateStatus = async (req, res) => {
     }
     guide.status = status.trim();
     await guide.save();
+    await sendGuideStatusUpdate(guide.title, status, guide.posterId.email, reason);
     return res.status(200).json({
       success: true,
       message: `Successfully changed guide status to ${status}.`,
