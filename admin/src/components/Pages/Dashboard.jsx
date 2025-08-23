@@ -8,7 +8,7 @@ import GuideCard from '../cards/GuideCard.jsx';
 import ViewGuide from '../dialogs/ViewGuide.jsx';
 import useGuideStore from '../../../store/guide.store.jsx';
 import useFeedbackStore from '../../../store/feedback.store.jsx';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const areaData = [
   { month: "January", reports: 186 },
@@ -28,6 +28,8 @@ const pieData = [
 const totalGuides = pieData.reduce((sum, item) => sum + item.guides, 0)
 
 function Dashboard() {
+
+  const navigate = useNavigate();
 
   const { fetchingGuides, fetchGuides, guides } = useGuideStore()
   const firstThreeGuides = guides
@@ -63,7 +65,7 @@ function Dashboard() {
           {/* Three Box Header */}
           <div className="w-full grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Total Users */}
-            <div className="w-full rounded-2xl bg-gradient-to-r from-[#006FFD] to-[#3399FF] h-48 lg:h-56 flex flex-col p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
+            <div className="w-full rounded-2xl bg-gradient-to-r from-[#006FFD] to-[#3399FF] h-48 lg:h-56 flex flex-col p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1"  onClick={() => navigate("/users")}>
               <h1 className="text-white text-xl font-semibold">Total Users</h1>
               <div className="flex flex-1 items-center justify-center flex-row gap-4">
                 <SquareUser size={42} className="text-white" />
@@ -72,7 +74,7 @@ function Dashboard() {
             </div>
 
             {/* All Guides */}
-            <div className="w-full rounded-2xl bg-gradient-to-r from-[#006FFD] to-[#4DA6FF] h-48 lg:h-56 flex flex-col p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
+            <div className="w-full rounded-2xl bg-gradient-to-r from-[#006FFD] to-[#4DA6FF] h-48 lg:h-56 flex flex-col p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1" onClick={() => navigate("/guides")}>
               <h1 className="text-white text-xl font-semibold">All Guides</h1>
               <div className="flex flex-1 items-center justify-center flex-row gap-4">
                 <BookText size={42} className="text-white" />
@@ -81,7 +83,7 @@ function Dashboard() {
             </div>
 
             {/* Pending Guides */}
-            <div className="w-full rounded-2xl bg-gradient-to-r from-[#006FFD] to-[#66B2FF] h-48 lg:h-56 flex flex-col p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
+            <div className="w-full rounded-2xl bg-gradient-to-r from-[#006FFD] to-[#66B2FF] h-48 lg:h-56 flex flex-col p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1" onClick={() => navigate("/guides")}>
               <h1 className="text-white text-xl font-semibold">Pending Guides</h1>
               <div className="flex flex-1 items-center justify-center flex-row gap-4">
                 <FolderClock size={42} className="text-white" />
@@ -90,7 +92,7 @@ function Dashboard() {
             </div>
 
             {/* Unreviewed Reports */}
-            <div className="w-full rounded-2xl bg-gradient-to-r from-[#006FFD] to-[#80BFFF] h-48 lg:h-56 flex flex-col p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1">
+            <div className="w-full rounded-2xl bg-gradient-to-r from-[#006FFD] to-[#80BFFF] h-48 lg:h-56 flex flex-col p-6 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-1" onClick={() => navigate("/reports")}>
               <h1 className="text-white text-xl font-semibold">Unreviewed Reports</h1>
               <div className="flex flex-1 items-center justify-center flex-row gap-4">
                 <AlertTriangle size={42} className="text-white" />
