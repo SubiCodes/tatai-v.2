@@ -95,12 +95,12 @@ const useReportStore = create((set) => ({
             toast.dismiss(toastId);
         }
     },
-    updateGuideStatusFromReport: async (id, status) => {
+    updateGuideStatusFromReport: async (id, status, reason) => {
         set({ updatingStatus: true });
         const toastId = toast.custom((t) => (
             <ToastPending dismiss={() => toast.dismiss(t)} title={"Updating Guide Status"} message="This might take a while..." />));
         try {
-            const result = await axios.put(`${URI}/api/v1/guideAdmin/guide/status/${id}`, { status: status });
+            const result = await axios.put(`${URI}/api/v1/guideAdmin/guide/status/${id}`, { status: status, reason: reason });
             set((state) => ({
                 reportedGuide: state.reportedGuide && state.reportedGuide._id === id
                     ? { ...state.reportedGuide, status }
