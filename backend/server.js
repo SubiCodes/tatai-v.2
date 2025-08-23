@@ -21,6 +21,7 @@ import emailUserRouter from './routes/email.user.route.js';
 import guideUserRouter from './routes/guide.user.route.js';
 import searchUserRouter from './routes/search.user.route.js';
 import bookmarkUserRouter from './routes/bookmark.route.js';
+import dashboardRouter from './routes/dashboard.admin.route.js';
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use('/api/v1/userAdmin', userAdminRouter);
 app.use('/api/v1/viewUserAdmin', viewUserAdminRouter);
 app.use('/api/v1/profileAdmin', profileAdminRouter);
 app.use('/api/v1/guideAdmin', guideAdminRouter);
+app.use('/api/v1/dashboardAdmin', dashboardRouter);
 
 //Both Users
 app.use('/api/v1/feedback', feedbackRouter);
