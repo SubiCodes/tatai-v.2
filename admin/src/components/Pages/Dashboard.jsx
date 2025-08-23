@@ -47,15 +47,6 @@ function Dashboard() {
   };
   const closeDialog = () => setIsDialogOpen(false);
 
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-
-  // Generate years from 2025 to current year
-  const currentYear = new Date().getFullYear();
-  const years = [];
-  for (let y = 2025; y <= currentYear; y++) {
-    years.push(y);
-  }
-
   useEffect(() => {
     fetchGuides();
     fetchLatestFeedback();
@@ -112,25 +103,25 @@ function Dashboard() {
 
           {/* Charts */}
           <div className='w-full grid grid-cols-1 lg:grid-cols-2 gap-4'>
-            {/* Total Reports with Year Dropdown */}
-            <div className='w-full rounded-lg h-80 lg:h-110 shadow-lg flex flex-col gap-4 p-6 bg-white'>
-              <div className="flex w-full items-center justify-between">
+            <div className='w-full rounded-lg h-80 lg:h-110 shadow-lg flex flex-col gap-4 items-center justify-center p-6 bg-white'>
+              <div className='w-full flex items-center justify-between'>
                 <h1 className='text-gray-700 text-2xl font-bold'>Total Reports</h1>
                 <select
-                  className="border border-gray-300 rounded-md px-2 py-1 text-gray-700"
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(e.target.value)}
+                  className='px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+                  defaultValue={new Date().getFullYear()}
+                  onChange={(e) => {
+                    // Handle year selection here
+                    console.log('Selected year:', e.target.value);
+                  }}
                 >
-                  {years.map((year) => (
+                  {Array.from({ length: new Date().getFullYear() - 2024 }, (_, i) => 2025 + i).map(year => (
                     <option key={year} value={year}>{year}</option>
                   ))}
                 </select>
               </div>
-
-              <div className="flex-1 flex items-center justify-center w-full">
-                <AreaChartCurved data={areaData} year={selectedYear} />
-              </div>
+              <AreaChartCurved data={areaData} />
             </div>
+
             <div className='w-full rounded-lg h-80 lg:h-110 shadow-lg flex flex-col gap-4 items-center justify-center p-6 bg-white'>
               <h1 className='text-gray-700 text-2xl font-bold'>Live Guides</h1>
               <PieChartLegend data={pieData} totalGuides={totalGuides} />
