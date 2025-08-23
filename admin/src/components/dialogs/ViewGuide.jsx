@@ -9,6 +9,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { Textarea } from '@/components/ui/Textarea'
 
 import { ChevronDown } from 'lucide-react'
 
@@ -59,6 +60,10 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
 
     const [localGuide, setLocalGuide] = useState(null);
 
+    const [changeStatusDialogOpen, setChangeStatusDialogOpen] = useState(false);
+    const [currentStatus, setCurrentStatus] = useState(guide?.status || 'pending');
+    const [reason, setReason] = useState('');
+
     // Get guide from store
     const storeGuide = fromReports
         ? reportedGuide
@@ -73,13 +78,19 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
         }
     }, [storeGuide]);
 
-    const updateStatus = async (id, status) => {
+    const updateStatus = async (status) => {
+        setCurrentStatus(status);
+        setReason('');
+        setChangeStatusDialogOpen(true);
+    }
+
+    const handleUpdateStatus = async (id, status, reason) => {
         if (fromViewUser) {
-            await updateGuideStatusFromViewUser(id, status);
+            await updateGuideStatusFromViewUser(id, status, reason);
         } else if (fromReports) {
-            await updateGuideStatusFromReport(id, status)
+            await updateGuideStatusFromReport(id, status, reason)
         } else {
-            await updateGuideStatus(id, status)
+            await updateGuideStatus(id, status, reason)
         }
     }
 
@@ -146,6 +157,11 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
         }
     }, [isOpen])
 
+    useEffect(() => {
+        setCurrentStatus(latestGuide?.status);
+        setReason('');
+    }, [latestGuide?.status, latestGuide]);
+
     if (!isOpen) return null
 
     if (!latestGuide || !latestGuide.posterId) {
@@ -201,11 +217,11 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
                                             <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                                             <DropdownMenuSeparator className='bg-gray-200' />
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'accepted' && "bg-green-100 text-green-700"}`}
-                                                onClick={() => updateStatus(latestGuide._id, 'accepted')}>Accepted</DropdownMenuItem>
+                                                onClick={() => updateStatus('accepted')}>Accepted</DropdownMenuItem>
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'rejected' && "bg-red-100 text-red-700"}`}
-                                                onClick={() => updateStatus(latestGuide._id, 'rejected')}>Rejected</DropdownMenuItem>
+                                                onClick={() => updateStatus('rejected')}>Rejected</DropdownMenuItem>
                                             <DropdownMenuItem className={`cursor-pointer ${latestGuide.status === 'pending' && "bg-yellow-100 text-yellow-700"}`}
-                                                onClick={() => updateStatus(latestGuide._id, 'pending')}>Pending</DropdownMenuItem>
+                                                onClick={() => updateStatus('pending')}>Pending</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </span>
@@ -357,7 +373,7 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
                         {latestGuide?.feedbacks && latestGuide.feedbacks.length > 0 ? (
                             latestGuide.feedbacks.map((feedback) => (
                                 <div className='w-full flex flex-col flex-wrap mb-2 border-b pb-2 border-gray-300'>
-                                    <CommentCard feedback={feedback} fromViewGuide={true} updateFeedbackStatus={updateFeedbackStatus}/>
+                                    <CommentCard feedback={feedback} fromViewGuide={true} updateFeedbackStatus={updateFeedbackStatus} />
                                 </div>
                             ))
                         ) : (
@@ -384,6 +400,33 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
                             </Button>
                             <Button className={`bg-red-400 text-white hover:bg-red-400/80 ${deletingGuide ? "cursor-not-allowed" : "cursor-pointer"}`} disabled={deletingGuide} onClick={handleDelete}>
                                 Delete
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {changeStatusDialogOpen && (
+                <div
+                    className="fixed inset-0 z-60 flex items-center justify-center bg-black/50"
+                    onClick={(e) => {
+                        if (e.target === e.currentTarget) setIsDeleteConfirmOpen(false);
+                    }}
+                >
+                    <div className="bg-white rounded-lg p-6 shadow-md w-xl flex flex-col gap-4">
+                        <h3 className='text-xl font-semibold mb-4'>Change Guide Status</h3>
+                        <span className='mr-4'>New Status:  <span className={`${currentStatus === 'accepted' && 'text-green-500'} ${currentStatus === 'pending' && 'text-yellow-500'} ${currentStatus === 'rejected' && 'text-red-500'} font-bold`}>{currentStatus.toUpperCase()}</span></span>
+
+                        <div className='w-full flex flex-col gap-2'>
+                            <h4>Reason:</h4>
+                            <Textarea className='h-40' value={reason} onChange={(e) => setReason(e.target.value)} />
+                        </div>
+
+                        <div className='w-full flex flex-row justify-end gap-2'>
+                            <Button className='bg-gray-200 text-black hover:bg-gray-400/80 cursor-pointer' onClick={() => setChangeStatusDialogOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button className={`bg-primary text-white ${deletingGuide ? "cursor-not-allowed" : "cursor-pointer"}`} disabled={!reason.trim()} onClick={() => handleUpdateStatus(latestGuide._id, currentStatus, reason)}>
+                                Update
                             </Button>
                         </div>
                     </div>
