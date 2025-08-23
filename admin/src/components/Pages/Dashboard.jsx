@@ -8,6 +8,7 @@ import GuideCard from '../cards/GuideCard.jsx';
 import ViewGuide from '../dialogs/ViewGuide.jsx';
 import useGuideStore from '../../../store/guide.store.jsx';
 import useFeedbackStore from '../../../store/feedback.store.jsx';
+import { Link } from 'react-router-dom';
 
 const areaData = [
   { month: "January", users: 186 },
@@ -27,6 +28,7 @@ const pieData = [
 const totalGuides = pieData.reduce((sum, item) => sum + item.guides, 0)
 
 function Dashboard() {
+
   const { fetchingGuides, fetchGuides, guides } = useGuideStore()
   const firstThreeGuides = guides
     .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
@@ -121,7 +123,9 @@ function Dashboard() {
                 </div>
               )}
               <div className='w-full flex items-center justify-center border-t border-gray-400 h-10'>
-                <h1 className='hover:underline hover:text-blue-600 cursor-pointer'>View All</h1>
+                <Link className='hover:underline hover:text-blue-600 cursor-pointer' to='/feedbacks'>
+                  View All
+                </Link>
               </div>
             </div>
             {/* Guides */}
@@ -139,7 +143,9 @@ function Dashboard() {
                 ))}
               </div>
               <div className='w-full flex items-center justify-center border-t border-gray-400 h-10'>
-                <h1 className='hover:underline hover:text-blue-600 cursor-pointer'>View All</h1>
+                <Link className='hover:underline hover:text-blue-600 cursor-pointer' to='/guides'>
+                  View All
+                </Link>
               </div>
             </div>
           </div>
