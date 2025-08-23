@@ -92,6 +92,7 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
         } else {
             await updateGuideStatus(id, status, reason)
         }
+        setChangeStatusDialogOpen(false);
     }
 
     // Function to update feedback status in local state
