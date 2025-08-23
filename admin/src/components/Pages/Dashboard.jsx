@@ -11,12 +11,12 @@ import useFeedbackStore from '../../../store/feedback.store.jsx';
 import { Link } from 'react-router-dom';
 
 const areaData = [
-  { month: "January", users: 186 },
-  { month: "February", users: 305 },
-  { month: "March", users: 237 },
-  { month: "April", users: 73 },
-  { month: "May", users: 209 },
-  { month: "June", users: 214 },
+  { month: "January", reports: 186 },
+  { month: "February", reports: 305 },
+  { month: "March", reports: 237 },
+  { month: "April", reports: 73 },
+  { month: "May", reports: 209 },
+  { month: "June", reports: 214 },
 ]
 
 const pieData = [
@@ -102,7 +102,7 @@ function Dashboard() {
           {/* Charts */}
           <div className='w-full grid grid-cols-1 lg:grid-cols-2 gap-4'>
             <div className='w-full rounded-lg h-80 lg:h-110 shadow-lg flex flex-col gap-4 items-center justify-center p-6 bg-white'>
-              <h1 className='text-gray-700 text-2xl font-bold'>User Registrations</h1>
+              <h1 className='text-gray-700 text-2xl font-bold'>Total Reports</h1>
               <AreaChartCurved data={areaData} />
             </div>
 

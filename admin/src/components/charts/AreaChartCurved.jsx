@@ -4,8 +4,8 @@ import { Area, AreaChart, CartesianGrid, XAxis, Tooltip, ResponsiveContainer } f
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
 const chartConfig = {
-  users: {
-    label: "Users",
+  reports: {
+    label: "Reports",
     color: "#006FFD",
   },
 }
@@ -54,7 +54,7 @@ export function AreaChartCurved({ data }) {
         </defs>
 
         <Area
-          dataKey="users"
+          dataKey="reports"
           type="monotone"
           stroke="#006FFD"
           strokeWidth={3}
