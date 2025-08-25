@@ -19,7 +19,13 @@ import AddData from './components/Pages/AddData.jsx';
 import Feedbacks from './components/Pages/Feedbacks.jsx';
 import Reports from './components/Pages/Reports.jsx';
 
+import axios from 'axios';
+
 function App() {
+
+  // Set global defaults
+  axios.defaults.withCredentials = true;
+  axios.defaults.baseURL = 'https://tatai-v2-production-63ac.up.railway.app';
 
   const [position, setPosition] = useState("top-right");
 
