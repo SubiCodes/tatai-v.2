@@ -58,12 +58,13 @@ export const deleteCookie = async (req, res) => {
     try {
         res.clearCookie('token', {
             httpOnly: true,
-            secure: false,
-            sameSite: 'Strict'
-          });
-          res.status(200).json({ success: true, message: "Successfully Logged Out" });
+            secure: process.env.NODE_ENV === 'production', // ✅ Same as creation
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // ✅ Same as creation
+            path: '/' // ✅ Add path to be explicit
+        });
+        res.status(200).json({ success: true, message: "Successfully Logged Out" });
     } catch (error) {
-        return res.status(401).json({ success: false, message: error.message });
+        return res.status(500).json({ success: false, message: error.message });
     }
 };
 
