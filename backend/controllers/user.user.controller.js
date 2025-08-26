@@ -73,6 +73,9 @@ export const updateUserProfile = async (req, res) => {
         if (data.profileIcon && data.profileIcon.trim() !== '') {
             user.profileIcon = data.profileIcon;
         }
+        if ("newUser" in data) {
+            user.newUser = data.newUser;
+        }
         await user.save();
         return res.status(200).json({ success: true, message: "Profile updated successfully.", data: user });
     } catch (error) {
@@ -147,7 +150,7 @@ export const updatePreferences = async (req, res) => {
                 }
             }
             if (data.removeSearch && data.removeSearch.trim() !== '') {
-                const toRemove = data.removeSearch; 
+                const toRemove = data.removeSearch;
                 const newSearches = preference.previousSearches.filter(t => t !== toRemove);
                 preference.previousSearches = newSearches;
             }
