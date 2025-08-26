@@ -48,6 +48,11 @@ const userSchema = new mongoose.Schema({
         default: "Unverified",
         enum: ["Unverified", "Verified", "Restricted", "Banned"],
     },
+    newUser: {
+        type: Boolean,
+        default: true,
+        required: true
+    },
     role: {
         type: String,
         default: "user",
