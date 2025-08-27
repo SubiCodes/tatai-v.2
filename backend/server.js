@@ -22,6 +22,11 @@ import guideUserRouter from './routes/guide.user.route.js';
 import searchUserRouter from './routes/search.user.route.js';
 import bookmarkUserRouter from './routes/bookmark.route.js';
 import dashboardRouter from './routes/dashboard.admin.route.js';
+import { File } from "node:buffer";
+
+if (!globalThis.File) {
+  globalThis.File = File;
+}
 
 dotenv.config();
 

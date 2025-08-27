@@ -579,14 +579,10 @@ export const transcribeAudio = async (req, res) => {
         const bufferStream = new stream.PassThrough();
         bufferStream.end(file.data);
 
+        const audioFile = new File([file.data], file.name, { type: file.mimetype });
+
         const response = await openai.audio.transcriptions.create({
-            file: {
-                name: file.name || "audio.m4a", // fallback name
-                type: file.mimetype || "audio/m4a",
-                [Symbol.asyncIterator]: async function* () {
-                    yield file.data;
-                },
-            },
+            file: audioFile,
             model: "whisper-1",
         });
 
