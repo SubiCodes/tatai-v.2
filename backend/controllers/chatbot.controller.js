@@ -596,7 +596,7 @@ export const transcribeAudio = async (req, res) => {
 
 export const textToSpeech = async (req, res) => {
     try {
-        const { text } = req.body;
+        const { text, tone } = req.body;
 
         if (!text || text.trim() === "") {
             return res.status(400).json({ success: false, message: "Text is required for text-to-speech conversion.", data: null });
@@ -615,6 +615,7 @@ export const textToSpeech = async (req, res) => {
             model: "gpt-4o-mini-tts", // or gpt-4o-tts for higher quality
             voice: "onyx", // available: alloy, verse, shimmer, etc.
             input: text,
+            instructions: `Speak in a ${tone} tone.`
         });
 
         // Convert ArrayBuffer to base64 so it can be sent in JSON
