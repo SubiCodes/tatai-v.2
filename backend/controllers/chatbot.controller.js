@@ -7,7 +7,6 @@ import stream from "stream";
 
 import fs from 'fs';
 import path from 'path';
-import ffmpeg from "fluent-ffmpeg";
 import os from 'os';
 import fetch from 'node-fetch';
 
@@ -557,34 +556,6 @@ export const askChatbot = async (req, res) => {
     }
 };
 
-const convertToM4A = async (inputBuffer, inputName) => {
-    return new Promise((resolve, reject) => {
-        const inputPath = path.join("/tmp", "input_" + Date.now() + "_" + inputName);
-        const outputPath = inputPath.replace(/\.[^/.]+$/, ".m4a");
-
-        // write buffer to a temp file in /tmp
-        fs.writeFileSync(inputPath, inputBuffer);
-
-        ffmpeg(inputPath)
-            .toFormat("m4a")
-            .on("end", () => {
-                const outputBuffer = fs.readFileSync(outputPath);
-
-                // cleanup temp files
-                fs.unlinkSync(inputPath);
-                fs.unlinkSync(outputPath);
-
-                resolve(outputBuffer);
-            })
-            .on("error", (err) => {
-                if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
-                if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
-                reject(err);
-            })
-            .save(outputPath);
-    });
-};
-
 export const transcribeAudio = async (req, res) => {
     try {
         const file = req.files?.file;
@@ -604,9 +575,11 @@ export const transcribeAudio = async (req, res) => {
             return res.status(400).json({ success: false, message: "Empty file uploaded" });
         }
 
-        const convertedBuffer = await convertToM4A(file.data, file.name);
+        // Wrap the buffer in a readable stream so OpenAI accepts it
+        const bufferStream = new stream.PassThrough();
+        bufferStream.end(file.data);
 
-        const audioFile = new File([convertedBuffer], "converted.m4a", { type: "audio/m4a" });
+        const audioFile = new File([file.data], file.name, { type: file.mimetype });
 
         const response = await openai.audio.transcriptions.create({
             file: audioFile,
