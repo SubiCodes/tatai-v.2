@@ -3,6 +3,8 @@ import EmbeddedChunk from "../models/embeddedchunks.model.js";
 import openai from "../utils/openaiClient.js";
 import { v2 as cloudinary } from "cloudinary";
 
+import stream from "stream";
+
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
@@ -557,27 +559,41 @@ export const askChatbot = async (req, res) => {
 export const transcribeAudio = async (req, res) => {
     try {
         const file = req.files?.file;
+
         if (!file) {
-            return res.status(400).json({ success: false, message: 'No file passed' });
+            console.error("No file uploaded. req.files:", req.files);
+            return res.status(400).json({ success: false, message: "No file passed" });
         }
 
-        // Save the uploaded file temporarily
-        const tempPath = path.join(os.tmpdir(), file.name);
-        fs.writeFileSync(tempPath, file.data);
+        console.log("File upload received:");
+        console.log(" - name:", file.name);
+        console.log(" - mimetype:", file.mimetype);
+        console.log(" - size:", file.size);
 
-        // Transcribe using OpenAI SDK
+        if (!file.data || file.size === 0) {
+            console.error("File is empty!");
+            return res.status(400).json({ success: false, message: "Empty file uploaded" });
+        }
+
+        // Wrap the buffer in a readable stream so OpenAI accepts it
+        const bufferStream = new stream.PassThrough();
+        bufferStream.end(file.data);
+
         const response = await openai.audio.transcriptions.create({
-            file: fs.createReadStream(tempPath),
-            model: 'whisper-1',
+            file: {
+                name: file.name || "audio.m4a", // fallback name
+                type: file.mimetype || "audio/m4a",
+                [Symbol.asyncIterator]: async function* () {
+                    yield file.data;
+                },
+            },
+            model: "whisper-1",
         });
-
-        // Cleanup temp file
-        fs.unlinkSync(tempPath);
 
         return res.status(200).json({ success: true, data: response.text });
     } catch (err) {
-        console.error('Transcription error:', err);
-        return res.status(500).json({ success: false, message: 'Transcription failed' });
+        console.error("Transcription error:", err.response?.data || err.message || err);
+        return res.status(500).json({ success: false, message: "Transcription failed" });
     }
 };
 
