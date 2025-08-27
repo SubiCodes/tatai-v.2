@@ -584,6 +584,7 @@ export const transcribeAudio = async (req, res) => {
         const response = await openai.audio.transcriptions.create({
             file: audioFile,
             model: "whisper-1",
+            language: "en",
         });
 
         return res.status(200).json({ success: true, data: response.text });
