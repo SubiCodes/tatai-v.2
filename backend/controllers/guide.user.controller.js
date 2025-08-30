@@ -85,6 +85,11 @@ export const createGuide = async (req, res) => {
     if (poster.role !== "user") {
       newGuide.status = "accepted";
     }
+    if (poster.status !== "Verified") {
+      return res
+        .status(400)
+        .json({ success: false, message: `User permission is limited.` });
+    }
     await newGuide.save();
     return res
       .status(201)
