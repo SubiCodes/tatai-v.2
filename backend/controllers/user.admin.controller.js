@@ -67,6 +67,10 @@ export const updateStatus = async (req, res) => {
 export const updateRole = async (req, res) => {
   const { id } = req.params;
   const { role } = req.body;
+
+  if (role === "super admin") {
+    return res.status(403).json({success: false, message: "Cannot assign super admin role."});
+  }
   try {
     const user = await User.findOne({_id: id});
     if (!user) {
