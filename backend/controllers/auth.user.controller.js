@@ -166,7 +166,7 @@ export const validateUserAccess = async (req, res) => {
             return res.status(400).json({ success: false, message: "This user is currently banned. Please contact tataihomeassistant@gmail.com for questions.", errorType: 'banned', user: { _id: user._id, email: user.email } });
         }
         if (user.status === 'Restricted') {
-            return res.status(400).json({ success: false, message: "This user is currently restricted. Please contact tataihomeassistant@gmail.com for questions.", errorType: 'restrcited', user: { _id: user._id, email: user.email } });
+            return res.status(400).json({ success: false, message: "This user is currently restricted. Please contact tataihomeassistant@gmail.com for questions.", errorType: 'restricted', user: { _id: user._id, email: user.email } });
         }
         if (user.status !== 'Verified') {
             return res.status(400).json({ success: false, message: "User not yet verified. Please verify your account.", errorType: 'unverified', user: { _id: user._id, email: user.email } });
