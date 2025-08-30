@@ -49,6 +49,7 @@ import { SyncLoader } from "react-spinners";
 
 import useUserStore from '../../../store/user.store.jsx'
 import { useNavigate } from 'react-router-dom'
+import useAdminStore from '../../../store/admin.store'
 
 const profileIcons = {
     'empty_profile': empty_profile,
@@ -71,6 +72,7 @@ function UserTable() {
     const navigate = useNavigate();
 
     const { users, fetchUsers, fetchingUsers, updateUserStatus } = useUserStore();
+    const { admin } = useAdminStore();
 
     const [searchQuery, setSearchQuery] = useState('');
     const [shownUserRole, setShownUserRole] = useState('all'); // 'all', 'admin', 'user', 'super admin'
@@ -179,7 +181,7 @@ function UserTable() {
                 setRowPerPage(3);
             } else if (width < 1400) {
                 setRowPerPage(4);
-            }else if (width < 1800) {
+            } else if (width < 1800) {
                 setRowPerPage(5);
             } else {
                 setRowPerPage(7);
@@ -351,7 +353,7 @@ function UserTable() {
                                             <Button className="bg-clear hover:bg-clear cursor-pointer"><Ellipsis /></Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent className="w-auto bg-white">
-                                            {user?.role !== 'user' ? null : (
+                                            {((user?.role !== 'user') && admin?.role !== 'super admin') ? null : (
                                                 <>
                                                     <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                                                     <DropdownMenuSeparator />
@@ -361,6 +363,20 @@ function UserTable() {
                                                         <DropdownMenuRadioItem value="Restricted">Restricted</DropdownMenuRadioItem>
                                                         <DropdownMenuRadioItem value="Banned">Banned</DropdownMenuRadioItem>
                                                     </DropdownMenuRadioGroup>
+                                                    {admin?.role === 'super admin' && (
+                                                        <>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuLabel>Promote / Demote</DropdownMenuLabel>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem>
+                                                                {user?.role !== 'admin' ? (
+                                                                    "Promote to Admin"
+                                                                ) : (
+                                                                    "Demote to User"
+                                                                )}
+                                                            </DropdownMenuItem>
+                                                        </>
+                                                    )}
                                                 </>
                                             )}
 
