@@ -358,21 +358,44 @@ function UserTable() {
                                                     <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                                                     <DropdownMenuSeparator />
                                                     <DropdownMenuRadioGroup value={user?.status} onValueChange={(value) => updateUserStatus(user?._id, value, users)}>
-                                                        <DropdownMenuRadioItem value="Unverified">Unverified</DropdownMenuRadioItem>
-                                                        <DropdownMenuRadioItem value="Verified">Verified</DropdownMenuRadioItem>
-                                                        <DropdownMenuRadioItem value="Restricted">Restricted</DropdownMenuRadioItem>
-                                                        <DropdownMenuRadioItem value="Banned">Banned</DropdownMenuRadioItem>
+                                                        <DropdownMenuRadioItem
+                                                            value="Unverified"
+                                                            className={user?.status === 'Unverified' ? 'bg-orange-100' : ''}
+                                                        >
+                                                            Unverified
+                                                        </DropdownMenuRadioItem>
+                                                        <DropdownMenuRadioItem
+                                                            value="Verified"
+                                                            className={user?.status === 'Verified' ? 'bg-green-100' : ''}
+                                                        >
+                                                            Verified
+                                                        </DropdownMenuRadioItem>
+                                                        <DropdownMenuRadioItem
+                                                            value="Restricted"
+                                                            className={user?.status === 'Restricted' ? 'bg-yellow-100' : ''}
+                                                        >
+                                                            Restricted
+                                                        </DropdownMenuRadioItem>
+                                                        <DropdownMenuRadioItem
+                                                            value="Banned"
+                                                            className={user?.status === 'Banned' ? 'bg-red-100' : ''}
+                                                        >
+                                                            Banned
+                                                        </DropdownMenuRadioItem>
                                                     </DropdownMenuRadioGroup>
                                                     {admin?.role === 'super admin' && (
                                                         <>
                                                             <DropdownMenuSeparator />
                                                             <DropdownMenuLabel>Promote / Demote</DropdownMenuLabel>
-                                                            <DropdownMenuSeparator />
                                                             <DropdownMenuItem>
                                                                 {user?.role !== 'admin' ? (
-                                                                    "Promote to Admin"
+                                                                    <Button className='bg-secondary text-white cursor-pointer'>
+                                                                        Promote to Admin
+                                                                    </Button>
                                                                 ) : (
-                                                                    "Demote to User"
+                                                                    <Button className='bg-red-400 text-white hover:bg-red-500 cursor-pointer'>
+                                                                        Demote to User
+                                                                    </Button>
                                                                 )}
                                                             </DropdownMenuItem>
                                                         </>
