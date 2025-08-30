@@ -356,33 +356,15 @@ function UserTable() {
                                             {((user?.role !== 'user') && admin?.role !== 'super admin') ? null : (
                                                 <>
                                                     <DropdownMenuLabel>Change Status</DropdownMenuLabel>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuRadioGroup value={user?.status} onValueChange={(value) => updateUserStatus(user?._id, value, users)}>
-                                                        <DropdownMenuRadioItem
-                                                            value="Unverified"
-                                                            className={user?.status === 'Unverified' ? 'bg-orange-100' : ''}
-                                                        >
-                                                            Unverified
-                                                        </DropdownMenuRadioItem>
-                                                        <DropdownMenuRadioItem
-                                                            value="Verified"
-                                                            className={user?.status === 'Verified' ? 'bg-green-100' : ''}
-                                                        >
-                                                            Verified
-                                                        </DropdownMenuRadioItem>
-                                                        <DropdownMenuRadioItem
-                                                            value="Restricted"
-                                                            className={user?.status === 'Restricted' ? 'bg-yellow-100' : ''}
-                                                        >
-                                                            Restricted
-                                                        </DropdownMenuRadioItem>
-                                                        <DropdownMenuRadioItem
-                                                            value="Banned"
-                                                            className={user?.status === 'Banned' ? 'bg-red-100' : ''}
-                                                        >
-                                                            Banned
-                                                        </DropdownMenuRadioItem>
-                                                    </DropdownMenuRadioGroup>
+                                                    <DropdownMenuSeparator className='bg-gray-200' />
+                                                    <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Unverified' && "bg-orange-100 text-orange-700"}`}
+                                                        onClick={() => updateUserStatus(user?._id, 'Unverified', users)}>Unverified</DropdownMenuItem>
+                                                    <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Verified' && "bg-green-100 text-green-700"}`}
+                                                        onClick={() => updateUserStatus(user?._id, 'Verified', users)}>Verified</DropdownMenuItem>
+                                                    <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Restricted' && "bg-yellow-100 text-yellow-700"}`}
+                                                        onClick={() => updateUserStatus(user?._id, 'Restricted', users)}>Restricted</DropdownMenuItem>
+                                                    <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Banned' && "bg-red-100 text-red-700"}`}
+                                                        onClick={() => updateUserStatus(user?._id, 'Banned', users)}>Banned</DropdownMenuItem>
                                                     {admin?.role === 'super admin' && (
                                                         <>
                                                             <DropdownMenuSeparator />
