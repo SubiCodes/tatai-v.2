@@ -60,6 +60,9 @@ export const createFeedback = async (req, res) => {
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         };
+        if (user.status !== "Verified" && user.role === "user") {
+            return res.status(400).json({ success: false, message: 'User permission is limited.' });
+        };
         const existingFeedback = await Feedback.findOne({ userId: userId, guideId: guideId });
         if (existingFeedback) {
             return res.status(404).json({ success: false, message: 'A feedback from user in this guide already exists.' });
@@ -86,6 +89,9 @@ export const editFeedback = async (req, res) => {
         const user = await User.findById(userId)
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
+        };
+        if (user.status !== "Verified" && user.role === "user") {
+            return res.status(400).json({ success: false, message: 'User permission is limited.' });
         };
         const feedback = await Feedback.findOne({ userId: userId, guideId: guideId }).populate({ path: "userId", select: "firstName lastName email profileIcon" });
         if (!feedback) {
