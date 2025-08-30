@@ -71,7 +71,7 @@ function UserTable() {
 
     const navigate = useNavigate();
 
-    const { users, fetchUsers, fetchingUsers, updateUserStatus } = useUserStore();
+    const { users, fetchUsers, fetchingUsers, updateUserStatus, updateUserRole } = useUserStore();
     const { admin } = useAdminStore();
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -389,11 +389,11 @@ function UserTable() {
                                                             <DropdownMenuLabel>Promote / Demote</DropdownMenuLabel>
                                                             <DropdownMenuItem>
                                                                 {user?.role !== 'admin' ? (
-                                                                    <Button className='bg-secondary text-white cursor-pointer'>
+                                                                    <Button className='bg-secondary text-white cursor-pointer' onClick={() => updateUserRole(user?._id, 'admin', users)}>
                                                                         Promote to Admin
                                                                     </Button>
                                                                 ) : (
-                                                                    <Button className='bg-red-400 text-white hover:bg-red-500 cursor-pointer'>
+                                                                    <Button className='bg-red-400 text-white hover:bg-red-500 cursor-pointer' onClick={() => updateUserRole(user?._id, 'user', users)}>
                                                                         Demote to User
                                                                     </Button>
                                                                 )}
