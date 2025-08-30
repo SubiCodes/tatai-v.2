@@ -140,6 +140,43 @@ const useUserStore = create((set) => ({
     } finally {
       toast.dismiss(toastId); // ✅ Force close pending toast
     }
+  },
+  updateUserRole: async (id, role, oldUsers) => {
+    const toastId = toast.custom((t) => (
+      <ToastPending
+        dismiss={() => toast.dismiss(t)}
+        title={"Updating role"}
+        message="This might take a while..."
+      />
+    ));
+
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_URI}/api/v1/userAdmin/role/${id}`, { role });
+      const updatedUser = res.data.data;
+      const updatedUsers = oldUsers.map((user) =>
+        user._id === updatedUser._id ? updatedUser : user
+      );
+      set({ users: updatedUsers });
+
+      toast.custom((t) => (
+        <ToastSuccessful
+          dismiss={() => toast.dismiss(t)}
+          title={"Role Updated"}
+          message={`User ${updatedUser?.email} role updated successfully.`}
+        />
+      ));
+    } catch (error) {
+      console.error("Error changing status:", error);
+      toast.custom((t) => (
+        <ToastUnsuccessful
+          dismiss={() => toast.dismiss(t)}
+          title={"Cannot change role"}
+          message={error.response?.data?.message || error.message}
+        />
+      ));
+    } finally {
+      toast.dismiss(toastId); // ✅ Force close pending toast
+    }
   }
 }));
 
