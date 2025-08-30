@@ -63,3 +63,20 @@ export const updateStatus = async (req, res) => {
     res.status(500).json({success: false, message: "Cannot change user status.", error: error.message});    
   }
 }
+
+export const updateRole = async (req, res) => {
+  const { id } = req.params;
+  const { role } = req.body;
+  try {
+    const user = await User.findOne({_id: id});
+    if (!user) {
+      return res.status(404).json({success: false, message: "User does not exist."});
+    }
+    user.role = role;
+    await user.save();
+    res.status(202).json({success: true, message: "Role updated successfully.", data: user});
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({success: false, message: "Cannot change user role.", error: error.message});    
+  }
+}
