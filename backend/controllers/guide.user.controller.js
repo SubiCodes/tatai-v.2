@@ -289,7 +289,8 @@ export const getBookmarkedGuides = async (req, res) => {
 
     const guides = await Promise.all(
       bookmarks.map(async (bookmark) => {
-        const guide = await Guide.findById(bookmark.guideId).sort({ createdAt: -1 })
+        const guide = await Guide.findOne({ _id: bookmark.guideId, status: 'accepted' })
+          .sort({ createdAt: -1 })
           .populate({
             path: 'posterId',
             select: 'firstName lastName email profileIcon createdAt role',
