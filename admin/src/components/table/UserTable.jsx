@@ -354,35 +354,40 @@ function UserTable() {
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent className="w-auto bg-white">
                                             {((user?.role !== 'user') && admin?.role !== 'super admin') ? null : (
-                                                <>
-                                                    <DropdownMenuLabel>Change Status</DropdownMenuLabel>
-                                                    <DropdownMenuSeparator className='bg-gray-200' />
-                                                    <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Unverified' && "bg-orange-100 text-orange-700"}`}
-                                                        onClick={() => updateUserStatus(user?._id, 'Unverified', users)}>Unverified</DropdownMenuItem>
-                                                    <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Verified' && "bg-green-100 text-green-700"}`}
-                                                        onClick={() => updateUserStatus(user?._id, 'Verified', users)}>Verified</DropdownMenuItem>
-                                                    <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Restricted' && "bg-yellow-100 text-yellow-700"}`}
-                                                        onClick={() => updateUserStatus(user?._id, 'Restricted', users)}>Restricted</DropdownMenuItem>
-                                                    <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Banned' && "bg-red-100 text-red-700"}`}
-                                                        onClick={() => updateUserStatus(user?._id, 'Banned', users)}>Banned</DropdownMenuItem>
-                                                    {admin?.role === 'super admin' && (
-                                                        <>
-                                                            <DropdownMenuSeparator />
-                                                            <DropdownMenuLabel>Promote / Demote</DropdownMenuLabel>
-                                                            <DropdownMenuItem>
-                                                                {user?.role !== 'admin' ? (
-                                                                    <Button className='bg-secondary text-white cursor-pointer' onClick={() => updateUserRole(user?._id, 'admin', users)}>
-                                                                        Promote to Admin
-                                                                    </Button>
-                                                                ) : (
-                                                                    <Button className='bg-red-400 text-white hover:bg-red-500 cursor-pointer' onClick={() => updateUserRole(user?._id, 'user', users)}>
-                                                                        Demote to User
-                                                                    </Button>
-                                                                )}
-                                                            </DropdownMenuItem>
-                                                        </>
-                                                    )}
-                                                </>
+                                                user?.role === 'super admin' ? null :
+                                                    <>
+                                                        {(user?.role === 'user' && admin?.role !== 'super admin') &&
+                                                            <>
+                                                                <DropdownMenuLabel>Change Status</DropdownMenuLabel>
+                                                                <DropdownMenuSeparator className='bg-gray-200' />
+                                                                <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Unverified' && "bg-orange-100 text-orange-700"}`}
+                                                                    onClick={() => updateUserStatus(user?._id, 'Unverified', users)}>Unverified</DropdownMenuItem>
+                                                                <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Verified' && "bg-green-100 text-green-700"}`}
+                                                                    onClick={() => updateUserStatus(user?._id, 'Verified', users)}>Verified</DropdownMenuItem>
+                                                                <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Restricted' && "bg-yellow-100 text-yellow-700"}`}
+                                                                    onClick={() => updateUserStatus(user?._id, 'Restricted', users)}>Restricted</DropdownMenuItem>
+                                                                <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Banned' && "bg-red-100 text-red-700"}`}
+                                                                    onClick={() => updateUserStatus(user?._id, 'Banned', users)}>Banned</DropdownMenuItem>
+                                                            </>
+                                                        }
+                                                        {(admin?.role === 'super admin' && user?.role !== 'super admin') && (
+                                                            <>
+                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuLabel>Promote / Demote</DropdownMenuLabel>
+                                                                <DropdownMenuItem>
+                                                                    {user?.role !== 'admin' ? (
+                                                                        <Button className='bg-secondary text-white cursor-pointer' onClick={() => updateUserRole(user?._id, 'admin', users)}>
+                                                                            Promote to Admin
+                                                                        </Button>
+                                                                    ) : (
+                                                                        <Button className='bg-red-400 text-white hover:bg-red-500 cursor-pointer' onClick={() => updateUserRole(user?._id, 'user', users)}>
+                                                                            Demote to User
+                                                                        </Button>
+                                                                    )}
+                                                                </DropdownMenuItem>
+                                                            </>
+                                                        )}
+                                                    </>
                                             )}
 
                                             <DropdownMenuLabel>Other</DropdownMenuLabel>
