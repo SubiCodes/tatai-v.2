@@ -25,7 +25,7 @@ export const createReport = async (req, res) => {
             guideId: guideId || null,
         });
 
-        if (existingReport) {
+        if (existingReport && !existingReport.reviewed) {
             return res.status(200).json({
                 success: true,
                 message: 'You have already submitted a report for this instance.',
