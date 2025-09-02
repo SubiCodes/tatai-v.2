@@ -76,6 +76,9 @@ export const updateUserProfile = async (req, res) => {
         if ("newUser" in data) {
             user.newUser = data.newUser;
         }
+        if ("defaultPreference" in data) {
+            user.defaultPreference = data.defaultPreference;
+        }
         await user.save();
         return res.status(200).json({ success: true, message: "Profile updated successfully.", data: user });
     } catch (error) {

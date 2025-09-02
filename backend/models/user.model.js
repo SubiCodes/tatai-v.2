@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
             message: "Birthday must be a date in the past."
         }
     },
-    profileIcon:{
+    profileIcon: {
         type: String,
         default: "empty_profile",
         enum: ['empty_profile', 'boy_1', 'boy_2', 'boy_3', 'boy_4', 'girl_1', 'girl_2', 'girl_3', 'girl_4', 'lgbt_1', 'lgbt_2', 'lgbt_3', 'lgbt_4'],
@@ -43,12 +43,17 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: undefined
     },
-    status:{
+    status: {
         type: String,
         default: "Unverified",
         enum: ["Unverified", "Verified", "Restricted", "Banned"],
     },
     newUser: {
+        type: Boolean,
+        default: true,
+        required: true
+    },
+    defaultPreference: {
         type: Boolean,
         default: true,
         required: true
