@@ -356,7 +356,7 @@ function UserTable() {
                                             {((user?.role !== 'user') && admin?.role !== 'super admin') ? null : (
                                                 user?.role === 'super admin' ? null :
                                                     <>
-                                                        {(user?.role === 'user' && admin?.role !== 'super admin') &&
+                                                        {(user?.role === 'user' && admin?.role !== 'user') &&
                                                             <>
                                                                 <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                                                                 <DropdownMenuSeparator className='bg-gray-200' />
