@@ -196,21 +196,21 @@ export const sendUserStatusUpdate = async (userName, status, recipientEmail) => 
 
   // Static reason messages based on status
   const reasonMessage =
-    status === "unverified"
+    status === "Unverified"
       ? `<div style="margin-top: 20px;">
            <p><strong>Note:</strong></p>
            <p style="font-size: 14px; color: #555; background: #f9f9f9; padding: 10px; border-radius: 6px; border: 1px solid #eee;">
              You need to verify your account to be able to log in again.
            </p>
          </div>`
-      : status === "verified"
+      : status === "Verified"
         ? `<div style="margin-top: 20px;">
            <p><strong>Note:</strong></p>
            <p style="font-size: 14px; color: #555; background: #f9f9f9; padding: 10px; border-radius: 6px; border: 1px solid #eee;">
              Your account is verified and ready to go. You have full access to all features.
            </p>
          </div>`
-        : status === "restricted"
+        : status === "Restricted"
           ? `<div style="margin-top: 20px;">
            <p><strong>Note:</strong></p>
            <p style="font-size: 14px; color: #555; background: #f9f9f9; padding: 10px; border-radius: 6px; border: 1px solid #eee;">

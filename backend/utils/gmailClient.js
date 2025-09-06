@@ -6,19 +6,22 @@ let gmailClient;
 export function getGmail() {
   if (gmailClient) return gmailClient;
 
-  const credentials = JSON.parse(process.env.GMAIL_CREDENTIALS);
+  // Parse the token.json contents from your environment
   const token = JSON.parse(process.env.GMAIL_TOKEN);
 
-  const src = credentials.installed || credentials.web;
+  // Create OAuth2 client
   const oAuth2Client = new google.auth.OAuth2(
-    src.client_id,
-    src.client_secret,
-    src.redirect_uris?.[0]
+    token.client_id,
+    token.client_secret,
+    token.redirect_uris?.[0] || "http://localhost" // optional
   );
 
-  oAuth2Client.setCredentials(token); // auto refresh works
-  gmailClient = google.gmail({ version: "v1", auth: oAuth2Client });
+  // Only set the refresh_token (Google will use it to fetch access tokens automatically)
+  oAuth2Client.setCredentials({
+    refresh_token: token.refresh_token,
+  });
 
+  gmailClient = google.gmail({ version: "v1", auth: oAuth2Client });
   return gmailClient;
 }
 
