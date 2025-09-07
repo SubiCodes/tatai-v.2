@@ -311,14 +311,32 @@ export const sendUserRoleUpdate = async (userName, newRole, recipientEmail) => {
 export const sendReportReviewed = async (to) => {
   const htmlTemplate = `
   <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
-    <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);">
-      <h2 style="color: #333333; text-align: center;">Report Reviewed</h2>
-      <p style="font-size: 16px; color: #555;">
-        Your report regarding has been reviewed by our team.
+    <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);">
+      
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div style="display: inline-block; background-color: #0818A8; color: #ffffff; padding: 10px 20px; border-radius: 8px; font-size: 18px; font-weight: bold;">
+          TatAi Notification
+        </div>
+      </div>
+      
+      <h2 style="color: #0818A8; text-align: center; margin-bottom: 16px;">Report Reviewed</h2>
+      
+      <p style="font-size: 16px; color: #444; line-height: 1.6;">
+        One of our admins has reviewed your submitted report. 
       </p>
 
-      <p style="margin-top: 20px; font-size: 15px; color: #555;">
-        Thank you for helping us keep TatAi safe and reliable.
+      <p style="font-size: 15px; color: #555; line-height: 1.6; margin-top: 12px;">
+        We appreciate your effort in helping us maintain a safe and reliable community here at <strong style="color: #0818A8;">TatAi</strong>.
+      </p>
+
+      <div style="margin-top: 30px; text-align: center;">
+        <a href="#" style="background-color: #0818A8; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 15px; font-weight: bold; display: inline-block;">
+          View Report
+        </a>
+      </div>
+
+      <p style="margin-top: 30px; font-size: 13px; color: #888; text-align: center;">
+        This is an automated message. Please do not reply directly to this email.
       </p>
     </div>
   </div>
