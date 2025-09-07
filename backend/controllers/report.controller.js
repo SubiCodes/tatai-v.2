@@ -1,4 +1,5 @@
 import Report from "../models/report.model.js";
+import { sendReportReviewed } from "../nodemailer/email.js";
 
 export const createReport = async (req, res) => {
     const { userId, reportedUserId, feedbackId, guideId, type, description } = req.body;
@@ -58,9 +59,15 @@ export const changeReviewedStatus = async (req, res) => {
     }
 
     try {
-        const report = await Report.findById(id);
+        const report = await Report.findById(id).populate({
+            path: 'userId',
+            select: 'firstName lastName email profileIcon',
+        });;
         report.reviewed = reviewed;
         await report.save();
+        if (reviewed === true) {
+            sendReportReviewed(report.userId.email);
+        }
         return res.status(200).json({ success: true, message: 'Report reviewed status changed successfully.', data: report });
     } catch (error) {
         console.error('Error details on markAsReviewed:', error);

@@ -308,3 +308,28 @@ export const sendUserRoleUpdate = async (userName, newRole, recipientEmail) => {
   });
 };
 
+export const sendReportReviewed = async (to) => {
+  const htmlTemplate = `
+  <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);">
+      <h2 style="color: #333333; text-align: center;">Report Reviewed</h2>
+      <p style="font-size: 16px; color: #555;">
+        Your report regarding has been reviewed by our team.
+      </p>
+
+      <p style="margin-top: 20px; font-size: 15px; color: #555;">
+        Thank you for helping us keep TatAi safe and reliable.
+      </p>
+    </div>
+  </div>
+`;
+
+  await sendEmail({
+    fromName: "TatAI",
+    fromEmail: "tataihomeassistant@gmail.com",
+    to,
+    subject: "Report Reviewed",
+    html: htmlTemplate,
+  });
+};
+
