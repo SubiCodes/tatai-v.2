@@ -2,6 +2,7 @@ import User from '../models/user.model.js';
 import { sendVerificationToken, sendUserStatusUpdate, sendUserRoleUpdate } from '../nodemailer/email.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { createNotification } from './notification.controller.js';
 
 export const createUser = async (req, res) => {
   const { firstName, lastName, gender, birthday, email, password, role } = req.body;
