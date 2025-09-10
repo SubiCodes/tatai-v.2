@@ -1,5 +1,6 @@
 import Report from "../models/report.model.js";
 import { sendReportReviewed } from "../nodemailer/email.js";
+import { createNotification } from "./notification.controller.js";
 
 export const createReport = async (req, res) => {
     const { userId, reportedUserId, feedbackId, guideId, type, description } = req.body;
@@ -67,6 +68,7 @@ export const changeReviewedStatus = async (req, res) => {
         await report.save();
         if (reviewed === true) {
             sendReportReviewed(report.userId.email);
+            await createNotification(report.userId._id, 'report', 'info', `Your report has been reviewed.`, `Your report regarding a ${report.type} has been reviewed by an admin. TatAI is proud of you for keeping our community safe.`);
         }
         return res.status(200).json({ success: true, message: 'Report reviewed status changed successfully.', data: report });
     } catch (error) {
