@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { deleteNotification, viewNotification } from "../controllers/notification.controller.js";
+import { deleteNotification, getNotifications, viewNotification } from "../controllers/notification.controller.js";
 
 
 const notificationRouter = Router();
 
+notificationRouter.get('/:userId', getNotifications);
 notificationRouter.patch('/:notificationId', viewNotification);
 notificationRouter.delete('/:notificationId', deleteNotification);
 
