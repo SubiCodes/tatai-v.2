@@ -83,6 +83,7 @@ export const updateRole = async (req, res) => {
     user.role = role;
     await user.save();
     sendUserRoleUpdate(user.firstName + user.lastName, role, user.email);
+    await createNotification(user._id, 'role', 'info', 'User role has been updated by an Admin', `Your role has been updated to '${role}'. If you think this is a mistake please contact us at tataihomeassistant.gmail.com`);
     res.status(202).json({ success: true, message: "Role updated successfully.", data: user });
   } catch (error) {
     console.log(error);
