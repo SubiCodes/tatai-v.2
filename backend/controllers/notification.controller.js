@@ -11,5 +11,5 @@ export const createNotification = async (userId, type, display, title, message) 
     } catch (error) {
         console.error("Error creating notification:", error);
         throw error;
-    }
+    } 
 } 
