@@ -58,6 +58,8 @@ export const updateStatus = async (req, res) => {
     user.status = status;
     sendUserStatusUpdate(user.firstName + user.lastName, status, user.email);
     await user.save();
+    const notificationDisplay = (status === 'Unverified' ? 'info' : status === 'Verified' ? 'success' : 'danger');
+    await createNotification(user._id, 'status', notificationDisplay, 'User status has been updated by an Admin', `Your status has been updated to '${status}'.`);
     res.status(202).json({ success: true, message: "Status updated successfully.", data: user });
   } catch (error) {
     console.log(error);
