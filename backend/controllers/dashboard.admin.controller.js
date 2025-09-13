@@ -20,7 +20,7 @@ export const getAdminDashboard = async (req, res) => {
         return res.status(200).json({
             totalUsers: totalUsers,
             totalGuides: totalGuides,
-            totalPendingGudies: totalPendingGudies,
+            totalPendingGuides: totalPendingGudies,
             totalAcceptedGuides: totalAcceptedGuides,
             totalUnreviewedReports: totalUnreviewedReports,
             reportsPerMonthPerYear: reportsChartData,
