@@ -23,6 +23,8 @@ import guideUserRouter from './routes/guide.user.route.js';
 import searchUserRouter from './routes/search.user.route.js';
 import bookmarkUserRouter from './routes/bookmark.route.js';
 import dashboardRouter from './routes/dashboard.admin.route.js';
+import mobileVersionRouter from './routes/mobile_version.route.js';
+
 import { File } from "node:buffer";
 
 if (!globalThis.File) {
@@ -71,6 +73,7 @@ app.use('/api/v1/emailUser', emailUserRouter);
 app.use('/api/v1/guideUser', guideUserRouter);
 app.use('/api/v1/searchUser', searchUserRouter);
 app.use('/api/v1/bookmarkUser', bookmarkUserRouter);
+app.use('/api/v1/mobileVersion', mobileVersionRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello, World!!!');
