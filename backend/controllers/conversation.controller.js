@@ -15,7 +15,8 @@ export const createConversation = async (req, res) => {
 };
 
 export const updateConversation = async (req, res) => {
-    const { id, message } = req.body;
+    const { id } = req.params;
+    const { message } = req.body;
     try {
         const conversation = await Conversation.findById(id);
         if (!conversation) {
