@@ -29,3 +29,14 @@ export const updateConversation = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
+
+export const deleteConversation = async (req, res) => {
+    const { id } = req.params;
+    try {
+        await Conversation.deleteOne({_id: id});
+        return res.status(200).json({ success: true, message: "Successfully deleted the conversation."});
+    } catch (error) {
+        console.log("Someting went wrong while deleting conversation", error.message);
+        return res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};
