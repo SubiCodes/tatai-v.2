@@ -19,38 +19,28 @@ export const createConversation = async (req, res) => {
 };
 
 export const updateConversation = async (req, res) => {
-    const { id } = req.params;
-    const { message, userId } = req.body;
-    try {
-        if (!id) {
-            const title = await generateTitle(message);
-            const newConversation = await Conversation.create({
-                userId: userId,
-                title: title,
-                messages: [message]
-            });
-            await newConversation.save();
-            return res.status(200).json({ success: true, message: "Successfully created a new conversation.", data: newConversation });
-        };
-        const conversation = await Conversation.findById(id);
-        if (!conversation) {
-            const title = await generateTitle(message);
-            const newConversation = await Conversation.create({
-                userId: userId,
-                title: title,
-                messages: [message]
-            });
-            await newConversation.save();
-            return res.status(200).json({ success: true, message: "Successfully created a new conversation.", data: newConversation });
-        };
-        conversation.messages.push(message);
-        const updatedConversation = await conversation.save();
-        return res.status(200).json({ success: true, message: "Successfully updated the conversation.", data: updatedConversation })
-    } catch (error) {
-        console.log("Someting went wrong while updating conversation", error.message);
-        return res.status(500).json({ success: false, message: 'Server Error' });
+  const { id } = req.params;
+  const { messages } = req.body; // <-- expect an array now
+  try {
+    const conversation = await Conversation.findById(id);
+    if (!conversation) {
+      return res.status(404).json({ success: false, message: 'No conversation found.' });
     }
+
+    conversation.messages.push(...messages); // append multiple messages
+    const updatedConversation = await conversation.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Successfully updated the conversation.",
+      data: updatedConversation
+    });
+  } catch (error) {
+    console.log("Something went wrong while updating conversation", error.message);
+    return res.status(500).json({ success: false, message: 'Server Error' });
+  }
 };
+
 
 export const deleteConversation = async (req, res) => {
     const { id } = req.params;
