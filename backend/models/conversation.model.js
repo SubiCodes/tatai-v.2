@@ -16,7 +16,7 @@ const conversationSchema = new mongoose.Schema({
         default: []
     }
 }, {
-    collection: "bookmark",
+    collection: "conversation",
     timestamps: true
 });
 
