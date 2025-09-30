@@ -12,7 +12,8 @@ const conversationSchema = new mongoose.Schema({
     },
     messages: {
         type: [{role: "user" | "model", message: String}],
-        required: true
+        required: true,
+        default: []
     }
 }, {
     collection: "bookmark",
@@ -21,4 +22,4 @@ const conversationSchema = new mongoose.Schema({
 
 const Conversation = mongoose.model("Conversation", conversationSchema);
 
-export default Bookmark;
+export default Conversation;
