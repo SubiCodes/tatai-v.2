@@ -1,14 +1,17 @@
 import Conversation from "../models/conversation.model.js";
+import openai from "../utils/openaiClient.js";
 
 export const createConversation = async (req, res) => {
-    const { userId, title } = req.body;
+    const { userId, message } = req.body;
     try {
+        const title = await generateTitle(message.message);
         const newConversation = await Conversation.create({
             userId: userId,
-            title: title
+            title: title,
+            messages: [message]
         });
-        newConversation.save();
-        return res.status(200).json({ success: true, message: "Successfully created a conversation.", data: newConversation })
+        await newConversation.save();
+        return res.status(200).json({ success: true, message: "Successfully created a new conversation.", data: newConversation });
     } catch (error) {
         console.log("Someting went wrong while creating conversation", error.message);
         return res.status(500).json({ success: false, message: 'Server Error' });
@@ -19,14 +22,26 @@ export const updateConversation = async (req, res) => {
     const { id } = req.params;
     const { message, userId } = req.body;
     try {
-        const conversation = await Conversation.findById(id);
-        if (!conversation) {
+        if (!id) {
+            const title = await generateTitle(message);
             const newConversation = await Conversation.create({
                 userId: userId,
-                title: title
+                title: title,
+                messages: [message]
             });
             await newConversation.save();
-            
+            return res.status(200).json({ success: true, message: "Successfully created a new conversation.", data: newConversation });
+        };
+        const conversation = await Conversation.findById(id);
+        if (!conversation) {
+            const title = await generateTitle(message);
+            const newConversation = await Conversation.create({
+                userId: userId,
+                title: title,
+                messages: [message]
+            });
+            await newConversation.save();
+            return res.status(200).json({ success: true, message: "Successfully created a new conversation.", data: newConversation });
         };
         conversation.messages.push(message);
         const updatedConversation = await conversation.save();
@@ -57,4 +72,24 @@ export const getConversations = async (req, res) => {
         console.log("Someting went wrong while fetching conversations", error.message);
         return res.status(500).json({ success: false, message: 'Server Error' });
     }
+};
+
+const generateTitle = async (message) => {
+    const response = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+            {
+                role: "user",
+                content: `Create a title for a conversation that was started with this message: "${message}". 
+                Requirements:
+                - Maximum 5 words
+                - Only use plain letters and numbers
+                - Do not include punctuation, quotation marks, or symbols`
+            }
+        ],
+        max_tokens: 20,
+        temperature: 0.1
+    });
+
+    return response.choices[0].message.content.trim();
 };
