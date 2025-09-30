@@ -7,6 +7,7 @@ export const createConversation = async (req, res) => {
             userId: userId,
             title: title
         });
+        newConversation.save();
         return res.status(200).json({ success: true, message: "Successfully created a conversation.", data: newConversation })
     } catch (error) {
         console.log("Someting went wrong while creating conversation", error.message);
@@ -16,11 +17,16 @@ export const createConversation = async (req, res) => {
 
 export const updateConversation = async (req, res) => {
     const { id } = req.params;
-    const { message } = req.body;
+    const { message, userId } = req.body;
     try {
         const conversation = await Conversation.findById(id);
         if (!conversation) {
-            return res.status(404).json({ success: false, message: 'No conversation found.' });
+            const newConversation = await Conversation.create({
+                userId: userId,
+                title: title
+            });
+            await newConversation.save();
+            
         };
         conversation.messages.push(message);
         const updatedConversation = await conversation.save();
@@ -45,7 +51,7 @@ export const deleteConversation = async (req, res) => {
 export const getConversations = async (req, res) => {
     const { userId } = req.params;
     try {
-        const conversations = await Conversation.find({userId: userId});
+        const conversations = await Conversation.find({ userId: userId });
         return res.status(200).json({ success: true, message: "Successfully fetched conversations.", data: conversations });
     } catch (error) {
         console.log("Someting went wrong while fetching conversations", error.message);
