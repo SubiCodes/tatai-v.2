@@ -18,16 +18,23 @@ export const createConversation = async (req, res) => {
     }
 };
 
+
 export const updateConversation = async (req, res) => {
   const { id } = req.params;
-  const { messages } = req.body; // <-- expect an array now
+  const { message } = req.body; // { role: 'user' | 'assistant', message: string }
+
+  if (!message || !message.role || !message.message) {
+    return res.status(400).json({ success: false, message: 'Message must include role and message text.' });
+  }
+
   try {
     const conversation = await Conversation.findById(id);
     if (!conversation) {
       return res.status(404).json({ success: false, message: 'No conversation found.' });
     }
 
-    conversation.messages.push(...messages); // append multiple messages
+    // Append the new message
+    conversation.messages.push({ role: message.role, message: message.message });
     const updatedConversation = await conversation.save();
 
     return res.status(200).json({
@@ -36,7 +43,7 @@ export const updateConversation = async (req, res) => {
       data: updatedConversation
     });
   } catch (error) {
-    console.log("Something went wrong while updating conversation", error.message);
+    console.error("Something went wrong while updating conversation", error.message);
     return res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
