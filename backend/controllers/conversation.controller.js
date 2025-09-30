@@ -9,7 +9,23 @@ export const createConversation = async (req, res) => {
         });
         return res.status(200).json({ success: true, message: "Successfully created a conversation.", data: newConversation })
     } catch (error) {
-         console.log("Someting went wrong while creating conversation", error.message);
+        console.log("Someting went wrong while creating conversation", error.message);
+        return res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};
+
+export const updateConversation = async (req, res) => {
+    const { id, message } = req.body;
+    try {
+        const conversation = await Conversation.findById(id);
+        if (!conversation) {
+            return res.status(404).json({ success: false, message: 'No conversation found.' });
+        };
+        conversation.messages.push(message);
+        const updatedConversation = await conversation.save();
+        return res.status(200).json({ success: true, message: "Successfully updated the conversation.", data: updatedConversation })
+    } catch (error) {
+        console.log("Someting went wrong while updating conversation", error.message);
         return res.status(500).json({ success: false, message: 'Server Error' });
     }
 };

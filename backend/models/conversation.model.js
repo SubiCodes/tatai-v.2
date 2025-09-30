@@ -11,7 +11,7 @@ const conversationSchema = new mongoose.Schema({
         required: true
     },
     messages: {
-        type: [{role: "user" | "model", message: String}],
+        type: [{role: String, message: String}],
         required: true,
         default: []
     }
