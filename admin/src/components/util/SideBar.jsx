@@ -35,11 +35,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             link: '/feedbacks'
         },
         {
-            title: 'Chatbot',
-            icon: Brain,
-            link: '/chatbot'
-        },
-        {
             title: 'Reports',
             icon: CloudAlert,
             link: '/reports'
