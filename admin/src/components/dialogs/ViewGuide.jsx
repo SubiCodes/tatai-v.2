@@ -64,6 +64,8 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
     const [currentStatus, setCurrentStatus] = useState(guide?.status || 'pending');
     const [reason, setReason] = useState('');
 
+    const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+
     // Get guide from store
     const storeGuide = fromReports
         ? reportedGuide
@@ -85,14 +87,22 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
     }
 
     const handleUpdateStatus = async (id, status, reason) => {
-        if (fromViewUser) {
-            await updateGuideStatusFromViewUser(id, status, reason);
-        } else if (fromReports) {
-            await updateGuideStatusFromReport(id, status, reason)
-        } else {
-            await updateGuideStatus(id, status, reason)
+        setIsUpdatingStatus(true);
+        try {
+            if (fromViewUser) {
+                await updateGuideStatusFromViewUser(id, status, reason);
+            } else if (fromReports) {
+                await updateGuideStatusFromReport(id, status, reason)
+            } else {
+                await updateGuideStatus(id, status, reason)
+            }
+            setChangeStatusDialogOpen(false);
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setIsUpdatingStatus(false);
         }
-        setChangeStatusDialogOpen(false);
+
     }
 
     // Function to update feedback status in local state
@@ -426,7 +436,7 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
                             <Button className='bg-gray-200 text-black hover:bg-gray-400/80 cursor-pointer' onClick={() => setChangeStatusDialogOpen(false)}>
                                 Cancel
                             </Button>
-                            <Button className={`bg-primary text-white ${deletingGuide ? "cursor-not-allowed" : "cursor-pointer"}`} disabled={!reason.trim()} onClick={() => handleUpdateStatus(latestGuide._id, currentStatus, reason)}>
+                            <Button className={`bg-primary text-white ${deletingGuide ? "cursor-not-allowed" : "cursor-pointer"}`} disabled={!reason.trim() && isUpdatingStatus} onClick={() => handleUpdateStatus(latestGuide._id, currentStatus, reason)}>
                                 Update
                             </Button>
                         </div>
