@@ -2,6 +2,7 @@ import Guide from "../models/guide.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import User from "../models/user.model.js";
 import Bookmark from "../models/bookmark.model.js";
+import { uploadGuidesToChatbot } from "./chatbot.controller.js";
 
 export const uploadMedia = async (req, res) => {
   try {
@@ -168,6 +169,7 @@ export const deleteGuide = async (req, res) => {
         .json({ success: false, message: "Unable to find guide." });
     }
     await Guide.deleteOne({ _id: id });
+    await uploadGuidesToChatbot();
     return res
       .status(200)
       .json({ success: true, message: "Guide deleted successfully." });
