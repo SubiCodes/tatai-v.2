@@ -4,6 +4,7 @@ import User from "../models/user.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import { sendGuideStatusUpdate } from "../nodemailer/email.js";
 import { createNotification } from "./notification.controller.js";
+import { uploadGuidesToChatbot } from "./chatbot.controller.js";
 
 export const uploadMedia = async (req, res) => {
   try {
@@ -290,6 +291,7 @@ export const updateStatus = async (req, res) => {
     const notificationType = 'guide';
     const notificationDisplay = (status === 'accepted' ? 'success' : status === 'pending' ? 'info' : 'danger');
     await createNotification(guide.posterId._id, notificationType, notificationDisplay, `Your guide '${guide.title}' status has been updated to '${status}'`, reason);
+    await uploadGuidesToChatbot();
     return res.status(200).json({
       success: true,
       message: `Successfully changed guide status to ${status}.`,
