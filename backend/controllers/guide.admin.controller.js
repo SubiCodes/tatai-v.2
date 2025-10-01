@@ -167,6 +167,7 @@ export const deleteGuide = async (req, res) => {
         .json({ success: false, message: "Unable to find guide." });
     }
     await Guide.deleteOne({ _id: id });
+    await uploadGuidesToChatbot();
     return res
       .status(204)
       .json({ success: true, message: "Guide deleted successfully." });
