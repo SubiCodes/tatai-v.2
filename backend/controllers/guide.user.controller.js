@@ -145,6 +145,7 @@ export const editGuide = async (req, res) => {
 
     // Save the updated guide
     const updatedGuide = await guide.save();
+    await uploadGuidesToChatbot();
 
     // Return success
     return res.status(200).json({
