@@ -64,9 +64,13 @@ function CommentCard({ feedback, fromLatestFeedback = false, fromViewGuide = fal
                     <img src={profileIcons[feedback?.userId?.profileIcon ?? 'empty_profile']} className='h-12 w-12' />
                 </div>
                 {/* Name and Email */}
-                <div className='flex flex-col flex-1'>
-                    <h1 className='text-base font-semibold'>{feedback?.userId?.firstName} {feedback?.userId?.lastName}</h1>
-                    <p className='text-gray-400 text-md'>{feedback?.userId?.email}</p>
+                <div className="flex flex-col flex-1 max-w-full">
+                    <h1 className="text-base font-semibold break-words">
+                        {feedback?.userId?.firstName} {feedback?.userId?.lastName}
+                    </h1>
+                    <p className="text-gray-400 text-md break-words">
+                        {feedback?.userId?.email}
+                    </p>
                 </div>
                 {/* Actions */}
                 {!fromViewGuide ? (
