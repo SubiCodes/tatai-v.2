@@ -205,12 +205,12 @@ const getSystemPrompt = (preferences) => `You are TatAi, a knowledgeable home as
         SCOPE LIMITATION:
         - If a question is unrelated to DIY, home repair, or tool guides, politely refuse and redirect the user back to relevant topics.
         - Do not provide answers outside of DIY/home improvement/tool contexts.
-        - Only accept english queries
+        - Only accept English queries
 
         CORE RESPONSIBILITIES:
         - Provide assistance in diagnosing and troubleshooting common issues with household appliances and fixtures, such as lights, faucets, doors, and more.
         - Provide practical, summarized step-by-step guidance based on the provided context
-        - Keep your response short and summarized then propmt the user to check the guide posted for futher details. 
+        - Keep your response short and summarized then prompt the user to check the guide posted for further details. 
         - Always credit authors when using their guides: "According to [Author Name]'s guide '[Guide Title]'..."
         - Prioritize safety in all recommendations
         - Ask clarifying questions when requests are ambiguous
@@ -220,12 +220,14 @@ const getSystemPrompt = (preferences) => `You are TatAi, a knowledgeable home as
         1. Start with a direct answer to the user's question
         2. Provide specific steps or instructions when relevant
         3. Always mention the source guide and author
-        4. Include safety warnings when working with tools, electricity, plumbing, etc.
-        5. Call the user ${preferences.preferredName}
-        6. Use a ${preferences.preferredTone} tone.
-        7. Respond like your talking to someone with ${preferences.skilLevel} skill level.
-        8. Respond like your talking to someone with ${preferences.toolFamiliarity} tool knowledge level.
-        9. End each response in a conversational manner, such as by asking what else the user would like to know or what questions they have.
+        4. If no relevant guide is found in the provided context, clearly respond: 
+           "I'm sorry, but there's no available guide in the app that matches your query."
+        5. Include safety warnings when working with tools, electricity, plumbing, etc.
+        6. Call the user ${preferences.preferredName}
+        7. Use a ${preferences.preferredTone} tone.
+        8. Respond like you're talking to someone with ${preferences.skilLevel} skill level.
+        9. Respond like you're talking to someone with ${preferences.toolFamiliarity} tool knowledge level.
+        10. End each response in a conversational manner, such as by asking what else the user would like to know or what questions they have.
 
         SAFETY PRIORITIES:
         - Always recommend proper safety equipment
@@ -236,7 +238,7 @@ const getSystemPrompt = (preferences) => `You are TatAi, a knowledgeable home as
         Remember: Be helpful, accurate, and safety-conscious in all responses.`;
 
 // --- Main Upload Function (Enhanced with better chunking) ---
-export const uploadGuidesToChatbot = async (req, res) => {
+export const uploadGuidesToChatbot = async () => {
     try {
         const acceptedGuides = await Guide.find({ status: 'accepted' }).populate({
             path: 'posterId',
@@ -244,10 +246,10 @@ export const uploadGuidesToChatbot = async (req, res) => {
         });
 
         if (!acceptedGuides.length) {
-            return res.status(404).json({
+            return {
                 success: false,
                 message: "No accepted guides found."
-            });
+            };
         }
 
         console.log(`Processing ${acceptedGuides.length} guides...`);
@@ -262,7 +264,6 @@ export const uploadGuidesToChatbot = async (req, res) => {
                 stepDescription: guide.stepDescriptions[stepIndex] || "",
             }));
 
-            // Create structured guide text
             const guideHeader = `
                 Title: ${guide.title}
                 Author: ${guide.posterId.firstName} ${guide.posterId.lastName}
@@ -277,17 +278,15 @@ export const uploadGuidesToChatbot = async (req, res) => {
 
             const fullGuideText = `${guideHeader}\n\nInstructions:\n${stepsText}`;
 
-            // Use semantic chunking instead of fixed-size chunks
             const chunks = semanticChunk(fullGuideText, 800);
 
-            // Associate each chunk with metadata
             chunks.forEach((chunk, chunkIndex) => {
                 allChunks.push({
                     text: chunk.trim(),
                     author: `${guide.posterId.firstName} ${guide.posterId.lastName}`,
                     guideTitle: guide.title,
                     guideId: guide._id,
-                    chunkIndex: chunkIndex,
+                    chunkIndex,
                     totalChunks: chunks.length,
                 });
             });
@@ -303,8 +302,8 @@ export const uploadGuidesToChatbot = async (req, res) => {
         await EmbeddedChunk.deleteMany();
         console.log("Cleared existing embeddings");
 
-        // 3. Batch embeddings for efficiency
-        const batchSize = 50; // Reduced for stability
+        // 3. Batch embeddings
+        const batchSize = 50;
         const embeddedChunks = [];
 
         for (let i = 0; i < allChunks.length; i += batchSize) {
@@ -329,16 +328,14 @@ export const uploadGuidesToChatbot = async (req, res) => {
 
                 console.log(`Embedded batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(allChunks.length / batchSize)}`);
 
-                // Small delay to avoid rate limiting
                 await new Promise(resolve => setTimeout(resolve, 100));
-
             } catch (embedError) {
                 console.error(`Error embedding batch starting at ${i}:`, embedError);
                 throw new Error(`Embedding failed at batch ${Math.floor(i / batchSize) + 1}`);
             }
         }
 
-        // 4. Save all embeddings in batches to avoid memory issues
+        // 4. Save all embeddings
         const saveBatchSize = 1000;
         for (let i = 0; i < embeddedChunks.length; i += saveBatchSize) {
             const saveChunk = embeddedChunks.slice(i, i + saveBatchSize);
@@ -348,7 +345,7 @@ export const uploadGuidesToChatbot = async (req, res) => {
 
         console.log("Upload completed successfully");
 
-        return res.status(200).json({
+        return {
             success: true,
             message: "Guides uploaded and embedded into chatbot memory with enhanced processing.",
             stats: {
@@ -356,17 +353,18 @@ export const uploadGuidesToChatbot = async (req, res) => {
                 chunksCreated: embeddedChunks.length,
                 averageChunksPerGuide: Math.round(embeddedChunks.length / acceptedGuides.length),
             }
-        });
+        };
 
     } catch (error) {
         console.error("Error uploading guides:", error);
-        return res.status(500).json({
+        return {
             success: false,
             message: "Failed to upload guide data.",
             error: error.message
-        });
+        };
     }
 };
+
 
 // --- Enhanced Ask Chatbot Function ---
 export const askChatbot = async (req, res) => {
