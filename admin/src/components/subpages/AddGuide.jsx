@@ -336,8 +336,9 @@ function AddGuide() {
                     )}
 
                 </div>
+                <h1 className='text-gray-400 mb-2'>Only accepted file types are png, jpg and jpeg</h1>
                 <div className="grid w-full  items-center gap-1.5">
-                    <Input type="file" accept="image/*" onChange={handleCoverImageChange} className={`bg-white cursor-pointer`} />
+                    <Input type="file" accept=".jpg, .jpeg, .png" onChange={handleCoverImageChange} className={`bg-white cursor-pointer`} />
                 </div>
             </div>
 
@@ -460,11 +461,12 @@ function AddGuide() {
                                 </>
                             )}
                         </div>
-
+                        
+                        <h1 className='text-gray-400 mb-2'>Only accepted file types are png, jpg, jpeg and mp4</h1>
                         <div className="grid w-full items-center gap-1.5">
                             <Input
                                 type="file"
-                                accept="image/*,video/*"
+                                accept=".jpg, .jpeg, .png, .mp4"
                                 onChange={(e) => { handleStepMediaChange(e, index) }}
                                 className="bg-white cursor-pointer"
                             />
