@@ -50,6 +50,7 @@ import { SyncLoader } from "react-spinners";
 import useUserStore from '../../../store/user.store.jsx'
 import { useNavigate } from 'react-router-dom'
 import useAdminStore from '../../../store/admin.store'
+import ConfirmChangeRole from '../dialogs/ConfirmChangeRole.jsx'
 
 const profileIcons = {
     'empty_profile': empty_profile,
@@ -82,6 +83,32 @@ function UserTable() {
     const [rowPerPage, setRowPerPage] = useState(10);
     const [startIndex, setStartIndex] = useState(0);
     const [endIndex, setEndIndex] = useState(rowPerPage);
+
+    const [isChangeRoleOpen, setIsChangeRoleOpen] = useState(false);
+    const [changeRoleBody, setChangeRoleBody] = useState("");
+    const [userToChange, setUserToChange] = useState(null);
+    const [changeTo, setChangeTo] = useState('');
+
+    const openChangeRole = async (body, user, role) => {
+        setChangeRoleBody(body);
+        setIsChangeRoleOpen(true);
+        setUserToChange(user);
+        setChangeTo(role);
+    };
+
+    const closeChangeRole = async () => {
+        setChangeRoleBody('');
+        setIsChangeRoleOpen(false);
+        setUserToChange(null)
+    };
+
+    const handleChangeUserRole = async () => {
+        if (!userToChange) return;
+        if (!changeTo.trim()) return;
+
+        setIsChangeRoleOpen(false);
+        await updateUserRole(userToChange._id, changeTo, users);
+    }
 
     const filteredAndSortedUsers = useMemo(() => {
         let filtered = users;
@@ -376,11 +403,11 @@ function UserTable() {
                                                                 <DropdownMenuLabel>Promote / Demote</DropdownMenuLabel>
                                                                 <DropdownMenuItem>
                                                                     {user?.role !== 'admin' ? (
-                                                                        <Button className='bg-secondary text-white cursor-pointer' onClick={() => updateUserRole(user?._id, 'admin', users)}>
+                                                                        <Button className='bg-secondary text-white cursor-pointer' onClick={() => openChangeRole(`Would you like to Promote user ${user.email} to an Admin?`, user, 'admin')}>
                                                                             Promote to Admin
                                                                         </Button>
                                                                     ) : (
-                                                                        <Button className='bg-red-400 text-white hover:bg-red-500 cursor-pointer' onClick={() => updateUserRole(user?._id, 'user', users)}>
+                                                                        <Button className='bg-red-400 text-white hover:bg-red-500 cursor-pointer' onClick={() => openChangeRole(`Would you like to Demote user ${user.email} to a User?`, user, 'user')}>
                                                                             Demote to User
                                                                         </Button>
                                                                     )}
@@ -431,6 +458,7 @@ function UserTable() {
                         </PaginationItem>
                     </PaginationContent>
                 </Pagination>
+                <ConfirmChangeRole isOpen={isChangeRoleOpen} onClose={() => closeChangeRole()} body={changeRoleBody} handleConfirm={handleChangeUserRole}/>
             </div>
         </>
     )
