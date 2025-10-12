@@ -90,26 +90,55 @@ function AddGuide() {
         setLinks('');
     };
 
-    //Adding Cover Image Logic
+    // Adding Cover Image Logic
     const handleCoverImageChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            setCoverImage(file);
+        if (!file) return;
+
+        const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+        if (!allowedTypes.includes(file.type)) {
+            toast.custom((t) => (
+                <ToastUnsuccessful
+                    dismiss={() => toast.dismiss(t)}
+                    title={"Invalid file type!"}
+                    message={"Only JPG and PNG images are allowed."}
+                />
+            ));
+            e.target.value = ""; // reset input
+            setCoverImage(undefined);
+            return;
         }
+
+        setCoverImage(file);
     };
 
-    //Adding Medias to procedure logic
+    // Adding Medias to procedure logic
     const handleStepMediaChange = (e, index) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Check if the file is a video
+        const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "video/mp4"];
+        if (!allowedTypes.includes(file.type)) {
+            toast.custom((t) => (
+                <ToastUnsuccessful
+                    dismiss={() => toast.dismiss(t)}
+                    title={"Invalid file type!"}
+                    message={"Only JPG, PNG, or MP4 files are allowed."}
+                />
+            ));
+            e.target.value = ""; // reset input
+            const updatedErrors = [...stepMediasError];
+            updatedErrors[index] = true;
+            setStepMediasError(updatedErrors);
+            return;
+        }
+
         if (file.type.startsWith("video/")) {
             const video = document.createElement("video");
             video.preload = "metadata";
 
             video.onloadedmetadata = () => {
-                window.URL.revokeObjectURL(video.src); // Clean up memory
+                window.URL.revokeObjectURL(video.src);
                 const duration = video.duration;
 
                 if (duration > 60) {
@@ -117,9 +146,13 @@ function AddGuide() {
                     updatedErrors[index] = true;
                     setStepMediasError(updatedErrors);
                     toast.custom((t) => (
-                        <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Input error!"} message={"The video submitted is too long."} />
+                        <ToastUnsuccessful
+                            dismiss={() => toast.dismiss(t)}
+                            title={"Input error!"}
+                            message={"The video submitted is too long (max 60 seconds)."}
+                        />
                     ));
-                    e.target.value = '';
+                    e.target.value = "";
                 } else {
                     const updatedMedia = [...stepMedias];
                     updatedMedia[index] = file;
@@ -133,7 +166,7 @@ function AddGuide() {
 
             video.src = URL.createObjectURL(file);
         } else {
-            // It's an image, no duration check needed
+            // It's a valid image
             const updatedMedia = [...stepMedias];
             updatedMedia[index] = file;
             setStepMedias(updatedMedia);
@@ -461,7 +494,7 @@ function AddGuide() {
                                 </>
                             )}
                         </div>
-                        
+
                         <h1 className='text-gray-400 mb-2'>Only accepted file types are png, jpg, jpeg and mp4</h1>
                         <div className="grid w-full items-center gap-1.5">
                             <Input
