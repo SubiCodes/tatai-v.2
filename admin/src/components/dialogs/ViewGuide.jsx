@@ -89,6 +89,7 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
     const handleUpdateStatus = async (id, status, reason) => {
         setIsUpdatingStatus(true);
         try {
+            setChangeStatusDialogOpen(false);
             if (fromViewUser) {
                 await updateGuideStatusFromViewUser(id, status, reason);
             } else if (fromReports) {
@@ -96,7 +97,6 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
             } else {
                 await updateGuideStatus(id, status, reason)
             }
-            setChangeStatusDialogOpen(false);
         } catch (error) {
             console.log(error)
         } finally {
