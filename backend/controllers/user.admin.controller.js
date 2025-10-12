@@ -60,7 +60,7 @@ export const updateStatus = async (req, res) => {
     sendUserStatusUpdate(user.firstName + user.lastName, status, user.email);
     await user.save();
     const notificationDisplay = (status === 'Unverified' ? 'info' : status === 'Verified' ? 'success' : 'danger');
-    await createNotification(user._id, 'status', notificationDisplay, 'User status has been updated by an Admin', `Your status has been updated to '${status}'. If you think this is a mistake please contact us at tataihomeassistant.gmail.com`);
+    await createNotification(user._id, 'status', notificationDisplay, 'User status has been updated by an Admin', `Your status has been updated to '${status}'. If you think this is a mistake please contact us at tataihomeassistant@gmail.com`);
     res.status(202).json({ success: true, message: "Status updated successfully.", data: user });
   } catch (error) {
     console.log(error);
@@ -83,7 +83,7 @@ export const updateRole = async (req, res) => {
     user.role = role;
     await user.save();
     sendUserRoleUpdate(user.firstName + user.lastName, role, user.email);
-    await createNotification(user._id, 'role', 'info', 'User role has been updated by an Admin', `Your role has been updated to '${role}'. If you think this is a mistake please contact us at tataihomeassistant.gmail.com`);
+    await createNotification(user._id, 'role', 'info', 'User role has been updated by an Admin', `Your role has been updated to '${role}'. If you think this is a mistake please contact us at tataihomeassistant@gmail.com`);
     res.status(202).json({ success: true, message: "Role updated successfully.", data: user });
   } catch (error) {
     console.log(error);
