@@ -76,7 +76,7 @@ function UserTable() {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [shownUserRole, setShownUserRole] = useState('all'); // 'all', 'admin', 'user', 'super admin'
-    const [sortBy, setSortBy] = useState('name'); // date latest to oldest, vice versa
+    const [sortBy, setSortBy] = useState('date-newest'); // date latest to oldest, vice versa
     const [shownStatus, setShownStatus] = useState('all'); // 'all', 'active', 'restricted', 'banned', 'unverified'
 
     const [rowPerPage, setRowPerPage] = useState(10);
