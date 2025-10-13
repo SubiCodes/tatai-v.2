@@ -51,6 +51,7 @@ import useUserStore from '../../../store/user.store.jsx'
 import { useNavigate } from 'react-router-dom'
 import useAdminStore from '../../../store/admin.store'
 import ConfirmChangeRole from '../dialogs/ConfirmChangeRole.jsx'
+import ConfirmChangeStatus from '../dialogs/ConfirmChangeStatus.jsx'
 
 const profileIcons = {
     'empty_profile': empty_profile,
@@ -105,10 +106,36 @@ function UserTable() {
     const handleChangeUserRole = async () => {
         if (!userToChange) return;
         if (!changeTo.trim()) return;
-
-        setIsChangeRoleOpen(false);
+        closeChangeRole()
         await updateUserRole(userToChange._id, changeTo, users);
-    }
+    };
+
+    const [isChangeStatusOpen, setIsChangeStatusOpen] = useState(false);
+    const [changeStatusBody, setChangeStatusBody] = useState("");
+    const [changeStatusTo, setChangeStatusTo] = useState('');
+    const [userToChangeStatus, setUserToChangeStatus] = useState(null);
+
+    const openChangeStatus = async (body, userId, status) => {
+        setChangeStatusBody(body);
+        setIsChangeStatusOpen(true);
+        setUserToChangeStatus(userId);
+        setChangeStatusTo(status);
+    };
+
+    const closeChangeStatus = async () => {
+        setChangeStatusBody('');
+        setIsChangeStatusOpen(false);
+        setChangeStatusTo(null);
+        setUserToChangeStatus(null)
+    };
+
+    const handleChangeUserStatus = async () => {
+        if (!userToChangeStatus) return;
+        if (!changeStatusTo.trim()) return;
+        closeChangeStatus()
+        await updateUserStatus(userToChangeStatus, changeStatusTo, users)
+    };
+
 
     const filteredAndSortedUsers = useMemo(() => {
         let filtered = users;
@@ -388,13 +415,13 @@ function UserTable() {
                                                                 <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                                                                 <DropdownMenuSeparator className='bg-gray-200' />
                                                                 <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Unverified' && "bg-orange-100 text-orange-700"}`}
-                                                                    onClick={() => updateUserStatus(user?._id, 'Unverified', users)}>Unverified</DropdownMenuItem>
+                                                                    onClick={() => openChangeStatus(`Would you like to change user ${user.email} role to Unverified?`, user._id, 'Unverified')}>Unverified</DropdownMenuItem>
                                                                 <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Verified' && "bg-green-100 text-green-700"}`}
-                                                                    onClick={() => updateUserStatus(user?._id, 'Verified', users)}>Verified</DropdownMenuItem>
+                                                                    onClick={() => openChangeStatus(`Would you like to change user ${user.email} role to Verified?`, user._id, 'Verified')}>Verified</DropdownMenuItem>
                                                                 <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Restricted' && "bg-yellow-100 text-yellow-700"}`}
-                                                                    onClick={() => updateUserStatus(user?._id, 'Restricted', users)}>Restricted</DropdownMenuItem>
+                                                                    onClick={() => openChangeStatus(`Would you like to change user ${user.email} role to Restricted?`, user._id, 'Restricted')}>Restricted</DropdownMenuItem>
                                                                 <DropdownMenuItem className={`cursor-pointer ${user?.status === 'Banned' && "bg-red-100 text-red-700"}`}
-                                                                    onClick={() => updateUserStatus(user?._id, 'Banned', users)}>Banned</DropdownMenuItem>
+                                                                    onClick={() => openChangeStatus(`Would you like to change user ${user.email} role to Banned?`, user._id, 'Banned')}>Banned</DropdownMenuItem>
                                                             </>
                                                         }
                                                         {(admin?.role === 'super admin' && user?.role !== 'super admin') && (
@@ -458,7 +485,8 @@ function UserTable() {
                         </PaginationItem>
                     </PaginationContent>
                 </Pagination>
-                <ConfirmChangeRole isOpen={isChangeRoleOpen} onClose={() => closeChangeRole()} body={changeRoleBody} handleConfirm={handleChangeUserRole}/>
+                <ConfirmChangeRole isOpen={isChangeRoleOpen} onClose={() => closeChangeRole()} body={changeRoleBody} handleConfirm={handleChangeUserRole} />
+                <ConfirmChangeStatus isOpen={isChangeStatusOpen} onClose={() => closeChangeStatus()} body={changeStatusBody} handleConfirm={handleChangeUserStatus} />
             </div>
         </>
     )
