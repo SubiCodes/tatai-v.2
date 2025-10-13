@@ -124,14 +124,13 @@ export const editGuide = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Guide not found." });
     }
-
-    const status = "accepted";
+    let status = "accepted";
     if (poster.role === 'user') {
       status === "pending"
     }
 
     // Update the guide fields with the new data
-    guide.status = data.status;
+    guide.status = status;
     guide.posterId = data.posterId;
     guide.category = data.category;
     guide.title = data.title;
