@@ -27,6 +27,7 @@ import mobileVersionRouter from './routes/mobile_version.route.js';
 import conversationRouter from './routes/conversation.route.js';
 
 import { File } from "node:buffer";
+import { verifyAdmin } from './middleware/verifyAdmin.middleware.js';
 
 if (!globalThis.File) {
   globalThis.File = File;
@@ -55,11 +56,11 @@ app.use(cookieParser());
 
 //admin routers
 app.use('/api/v1/authAdmin', authAdminRouter);
-app.use('/api/v1/userAdmin', userAdminRouter);
-app.use('/api/v1/viewUserAdmin', viewUserAdminRouter);
-app.use('/api/v1/profileAdmin', profileAdminRouter);
-app.use('/api/v1/guideAdmin', guideAdminRouter);
-app.use('/api/v1/dashboardAdmin', dashboardRouter);
+app.use('/api/v1/userAdmin', verifyAdmin, userAdminRouter);
+app.use('/api/v1/viewUserAdmin', verifyAdmin, viewUserAdminRouter);
+app.use('/api/v1/profileAdmin', verifyAdmin, profileAdminRouter);
+app.use('/api/v1/guideAdmin', verifyAdmin, guideAdminRouter);
+app.use('/api/v1/dashboardAdmin', verifyAdmin, dashboardRouter);
 
 //Both Users
 app.use('/api/v1/feedback', feedbackRouter);
