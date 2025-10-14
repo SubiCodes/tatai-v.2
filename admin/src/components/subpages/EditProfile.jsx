@@ -56,7 +56,7 @@ import {
     SelectGroup,
     SelectLabel,
 } from "@/components/ui/select"
-import {toast} from "sonner";
+import { toast } from "sonner";
 import ToastUnsuccessful from "../util/ToastUnsuccessful.jsx";
 
 import { Pencil } from "lucide-react";
@@ -90,20 +90,54 @@ function EditProfile() {
         setFirstNameError(false);
         setLastNameError(false);
 
+        const nameRegex = /^[A-Za-z.-]+$/;
+
         if (!firstName.trim()) {
-            toast.custom((t) => (<ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Invalid Fields"} message={"First Name cannot be empty!"} />));
+            toast.custom((t) => (
+                <ToastUnsuccessful
+                    dismiss={() => toast.dismiss(t)}
+                    title={"Invalid Fields"}
+                    message={"First Name cannot be empty!"}
+                />
+            ));
             setFirstNameError(true);
             valid = false;
-        };
+        } else if (!nameRegex.test(firstName.trim())) {
+            toast.custom((t) => (
+                <ToastUnsuccessful
+                    dismiss={() => toast.dismiss(t)}
+                    title={"Invalid Fields"}
+                    message={"First Name can only contain letters, periods, or dashes!"}
+                />
+            ));
+            setFirstNameError(true);
+            valid = false;
+        }
 
         if (!lastName.trim()) {
-            toast.custom((t) => (<ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Invalid Fields"} message={"Last Name cannot be empty!"} />));
+            toast.custom((t) => (
+                <ToastUnsuccessful
+                    dismiss={() => toast.dismiss(t)}
+                    title={"Invalid Fields"}
+                    message={"Last Name cannot be empty!"}
+                />
+            ));
             setLastNameError(true);
             valid = false;
-        };
+        } else if (!nameRegex.test(lastName.trim())) {
+            toast.custom((t) => (
+                <ToastUnsuccessful
+                    dismiss={() => toast.dismiss(t)}
+                    title={"Invalid Fields"}
+                    message={"Last Name can only contain letters, periods, or dashes!"}
+                />
+            ));
+            setLastNameError(true);
+            valid = false;
+        }
 
         if (valid) {
-            const data = {firstName: firstName, lastName: lastName, birthday: birthday, gender: gender}
+            const data = { firstName: firstName, lastName: lastName, birthday: birthday, gender: gender }
             updateProfile(data, admin._id);
         }
     }
@@ -140,11 +174,11 @@ function EditProfile() {
                 </div>
                 <div className="grid w-full max-w-sm lg:max-w-lg items-center gap-1.5">
                     <Label>First Name</Label>
-                    <Input type="text" placeholder="Enter first name" value={firstName} onChange={(e) => setFirstName(e.target.value)} className={`${firstNameError && "border-red-400"}`}/>
+                    <Input type="text" placeholder="Enter first name" value={firstName} onChange={(e) => setFirstName(e.target.value)} className={`${firstNameError && "border-red-400"}`} />
                 </div>
                 <div className="grid w-full max-w-sm lg:max-w-lg items-center gap-1.5">
                     <Label>Last Name</Label>
-                    <Input type="text" placeholder="Enter last name" value={lastName} onChange={(e) => setLastName(e.target.value)} className={`${lastNameError && "border-red-400"}`}/>
+                    <Input type="text" placeholder="Enter last name" value={lastName} onChange={(e) => setLastName(e.target.value)} className={`${lastNameError && "border-red-400"}`} />
                 </div>
                 <div className="flex flex-col md:flex-row w-full max-w-sm lg:max-w-lg gap-2 md:gap-2">
                     {/* Birthdate */}
@@ -225,7 +259,7 @@ function EditProfile() {
 
                 <div className="grid w-full max-w-sm lg:max-w-lg items-center gap-1.5 cursor-not-allowed mt-2">
                     <Button className={`text-white cursor-pointer`}
-                    onClick={handleUpdateProfile} disabled={updatingProfile}>
+                        onClick={handleUpdateProfile} disabled={updatingProfile}>
                         Save Changes
                     </Button>
                 </div>
