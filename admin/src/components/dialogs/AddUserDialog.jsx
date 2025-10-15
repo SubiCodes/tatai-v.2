@@ -152,7 +152,7 @@ function AddUserDialog({ isOpen, onClose }) {
                 />
             ));
             isValid = false;
-        } else if (!/^[A-Za-z.-]+(?: [A-Za-z.-]+)*$/.test(firstName.trim())) {
+        } else if (!/^(?=.*[A-Za-z])[A-Za-z.-]+(?: [A-Za-z.-]+)*$/.test(firstName.trim())) {
             setFirstNameError('First name can only contain letters, hyphens, and periods');
             toast.custom((t) => (
                 <ToastUnsuccessful
@@ -175,7 +175,7 @@ function AddUserDialog({ isOpen, onClose }) {
                 />
             ));
             isValid = false;
-        } else if (!/^[A-Za-z.-]+(?: [A-Za-z.-]+)*$/.test(lastName.trim())) {
+        } else if (!/^(?=.*[A-Za-z])[A-Za-z.-]+(?: [A-Za-z.-]+)*$/.test(lastName.trim())) {
             setLastNameError('Last name can only contain letters, hyphens, and periods');
             toast.custom((t) => (
                 <ToastUnsuccessful
@@ -186,6 +186,7 @@ function AddUserDialog({ isOpen, onClose }) {
             ));
             isValid = false;
         }
+
 
 
         // Birthdate
