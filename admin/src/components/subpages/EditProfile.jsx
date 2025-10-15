@@ -123,6 +123,31 @@ function EditProfile() {
             valid = false;
         }
 
+        // Birthdate
+        if (!birthday) {
+            toast.custom((t) => (
+                <ToastUnsuccessful
+                    dismiss={() => toast.dismiss(t)}
+                    title={"Validation Failed"}
+                    message={"Birthdate is required."}
+                />
+            ));
+            valid = false;
+        } else {
+            // Optional: check if under 18
+            const minAllowedDate = subYears(new Date(), 18)
+            if (birthday > minAllowedDate) {
+                toast.custom((t) => (
+                    <ToastUnsuccessful
+                        dismiss={() => toast.dismiss(t)}
+                        title={"Validation Failed"}
+                        message={"User must be at least 18 years old."}
+                    />
+                ));
+                valid = false;
+            }
+        }
+
         if (valid) {
             const data = { firstName: firstName, lastName: lastName, birthday: birthday, gender: gender }
             updateProfile(data, admin._id);
@@ -178,9 +203,20 @@ function EditProfile() {
                             value={birthday ? format(birthday, "yyyy-MM-dd") : ""}
                             max={format(subYears(new Date(), 18), "yyyy-MM-dd")}
                             onChange={(e) => {
-                                const selectedDate = new Date(e.target.value)
-                                setBirthday(selectedDate)
-                                setVisibleMonth(selectedDate)
+                                const { value } = e.target
+
+                                if (!value) {
+                                    // user cleared the input
+                                    setBirthday(null)
+                                    setVisibleMonth(new Date()) // reset calendar to current month or keep previous
+                                    return
+                                }
+
+                                const selectedDate = new Date(value)
+                                if (!isNaN(selectedDate)) {
+                                    setBirthday(selectedDate)
+                                    setVisibleMonth(selectedDate)
+                                }
                             }}
                         />
                     </div>

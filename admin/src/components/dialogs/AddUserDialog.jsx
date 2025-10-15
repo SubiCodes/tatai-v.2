@@ -357,9 +357,20 @@ function AddUserDialog({ isOpen, onClose }) {
                                         value={date ? format(date, "yyyy-MM-dd") : ""}
                                         max={format(subYears(new Date(), 18), "yyyy-MM-dd")}
                                         onChange={(e) => {
-                                            const selectedDate = new Date(e.target.value)
-                                            setDate(selectedDate)
-                                            setVisibleMonth(selectedDate)
+                                            const { value } = e.target
+
+                                            if (!value) {
+                                                // user cleared the input
+                                                setDate(null)
+                                                setVisibleMonth(new Date()) // reset calendar to current month or keep previous
+                                                return
+                                            }
+
+                                            const selectedDate = new Date(value)
+                                            if (!isNaN(selectedDate)) {
+                                                setDate(selectedDate)
+                                                setVisibleMonth(selectedDate)
+                                            }
                                         }}
                                     />
                                 </div>
