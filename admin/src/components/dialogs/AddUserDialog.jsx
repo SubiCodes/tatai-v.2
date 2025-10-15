@@ -378,7 +378,7 @@ function AddUserDialog({ isOpen, onClose }) {
                                     <Label htmlFor="lastName">Sex </Label>
                                     <Select value={gender} onValueChange={setGender}>
                                         <SelectTrigger className={`w-full cursor-pointer ${genderError.trim() ? "border-red-400" : "border-black"}`}>
-                                            <SelectValue placeholder="Select gender" />
+                                            <SelectValue placeholder="Select Sex" />
                                         </SelectTrigger>
                                         <SelectContent className={`bg-white`}>
                                             <SelectGroup>

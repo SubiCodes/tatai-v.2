@@ -226,7 +226,7 @@ function EditProfile() {
                         <Label htmlFor="gender">Sex</Label>
                         <Select value={gender} onValueChange={setGender}>
                             <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select gender" />
+                                <SelectValue placeholder="Select Sex" />
                             </SelectTrigger>
                             <SelectContent className="bg-white">
                                 <SelectGroup>
