@@ -7,12 +7,11 @@ import ToastUnsuccessful from '../util/ToastUnsuccessful.jsx';
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { format, getYear, subYears, setYear } from "date-fns";
+import { format, subYears, } from "date-fns";
 import { CalendarIcon, Info } from "lucide-react"
-
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
+import DatePicker from "react-datepicker";
 import {
     Popover,
     PopoverContent,
@@ -28,6 +27,7 @@ import {
     SelectLabel,
 } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
+import CalendarDialog from './CalendarDialog.jsx';
 
 function AddUserDialog({ isOpen, onClose }) {
 
@@ -73,15 +73,7 @@ function AddUserDialog({ isOpen, onClose }) {
         setShowConfirmPassword(false);
         setVisibleMonth(subYears(new Date(), 18));
     };
-
-
     const [visibleMonth, setVisibleMonth] = useState(subYears(new Date(), 18))
-
-    const currentYear = new Date().getFullYear()
-    const minYear = 1900
-    const maxYear = currentYear - 18
-
-    const years = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i)
 
 
     const handleBackdropClick = (e) => {
@@ -173,6 +165,31 @@ function AddUserDialog({ isOpen, onClose }) {
                 <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Validation Failed"} message={"Last name is required."} />
             ))
             isValid = false;
+        }
+
+        // Birthdate
+        if (!date) {
+            toast.custom((t) => (
+                <ToastUnsuccessful
+                    dismiss={() => toast.dismiss(t)}
+                    title={"Validation Failed"}
+                    message={"Birthdate is required."}
+                />
+            ));
+            isValid = false;
+        } else {
+            // Optional: check if under 18
+            const minAllowedDate = subYears(new Date(), 18)
+            if (date > minAllowedDate) {
+                toast.custom((t) => (
+                    <ToastUnsuccessful
+                        dismiss={() => toast.dismiss(t)}
+                        title={"Validation Failed"}
+                        message={"User must be at least 18 years old."}
+                    />
+                ));
+                isValid = false;
+            }
         }
 
         // Email
@@ -311,57 +328,18 @@ function AddUserDialog({ isOpen, onClose }) {
                             <div className="grid grid-rows-2 md:grid-rows-1 md:grid-cols-2 gap-4">
                                 <div className="grid w-full max-w-sm items-center gap-1.5">
                                     <Label htmlFor="firstName">Birthdate </Label>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                variant={"outline"}
-                                                className={cn(
-                                                    "w-full justify-start text-left font-normal",
-                                                    !date && "text-muted-foreground"
-                                                )}
-                                            >
-                                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                                {date ? format(date, "PPP") : <span>Pick a date</span>}
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent side="center" className={`flex w-auto flex-col space-y-2 p-2 bg-0 border-0 h-100`} >
-                                            <div className='flex flex-row items-center gap-4 bg-white p-2 rounded-md border'>
-                                                <h1>Select year</h1>
-                                                <Select
-                                                    value={getYear(visibleMonth).toString()}
-                                                    onValueChange={(year) => {
-                                                        const newMonth = setYear(visibleMonth, parseInt(year))
-                                                        setVisibleMonth(newMonth)
-                                                    }}
-                                                >
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select year" />
-                                                    </SelectTrigger>
-                                                    <SelectContent position="popper" className="bg-white">
-                                                        {years.map((year) => (
-                                                            <SelectItem key={year} value={year.toString()}>
-                                                                {year}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-
-                                            <div className="rounded-md border bg-white">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={date}
-                                                    onSelect={setDate}
-                                                    month={visibleMonth}         // controls visible month
-                                                    onMonthChange={setVisibleMonth} // syncs when user navigates
-                                                    disabled={(d) => d > subYears(new Date(), 18)}
-                                                    modifiersClassNames={{
-                                                        selected: "bg-secondary text-white",
-                                                    }}
-                                                />
-                                            </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                    <input
+                                        aria-label="Date"
+                                        type="date"
+                                        className="border p-1.5 rounded-lg"
+                                        value={date ? format(date, "yyyy-MM-dd") : ""}
+                                        max={format(subYears(new Date(), 18), "yyyy-MM-dd")}
+                                        onChange={(e) => {
+                                            const selectedDate = new Date(e.target.value)
+                                            setDate(selectedDate)
+                                            setVisibleMonth(selectedDate)
+                                        }}
+                                    />
                                 </div>
                                 <div className="grid w-full max-w-sm items-center gap-1.5">
                                     <Label htmlFor="lastName">Gender </Label>
