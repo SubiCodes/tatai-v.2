@@ -382,7 +382,7 @@ function AddUserDialog({ isOpen, onClose }) {
                                         </SelectTrigger>
                                         <SelectContent className={`bg-white`}>
                                             <SelectGroup>
-                                                <SelectLabel>Genders</SelectLabel>
+                                                <SelectLabel>Sex</SelectLabel>
                                                 <SelectItem value="Male" className="cursor-pointer">Male</SelectItem>
                                                 <SelectItem value="Female" className="cursor-pointer">Female</SelectItem>
                                                 <SelectItem value="Other" className="cursor-pointer">Other</SelectItem>

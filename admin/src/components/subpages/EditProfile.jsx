@@ -223,7 +223,7 @@ function EditProfile() {
 
                     {/* Gender */}
                     <div className="flex-1 grid items-center gap-1.5">
-                        <Label htmlFor="gender">Gender</Label>
+                        <Label htmlFor="gender">Sex</Label>
                         <Select value={gender} onValueChange={setGender}>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select gender" />
