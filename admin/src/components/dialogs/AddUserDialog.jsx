@@ -145,8 +145,22 @@ function AddUserDialog({ isOpen, onClose }) {
         if (!firstName.trim()) {
             setFirstNameError('First name is required');
             toast.custom((t) => (
-                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Validation Failed"} message={"First name is required."} />
-            ))
+                <ToastUnsuccessful
+                    dismiss={() => toast.dismiss(t)}
+                    title={"Validation Failed"}
+                    message={"First name is required."}
+                />
+            ));
+            isValid = false;
+        } else if (!/^[A-Za-z.-]+(?: [A-Za-z.-]+)*$/.test(firstName.trim())) {
+            setFirstNameError('First name can only contain letters, hyphens, and periods');
+            toast.custom((t) => (
+                <ToastUnsuccessful
+                    dismiss={() => toast.dismiss(t)}
+                    title={"Validation Failed"}
+                    message={"First name can only contain letters, hyphens, and periods."}
+                />
+            ));
             isValid = false;
         }
 
@@ -154,10 +168,25 @@ function AddUserDialog({ isOpen, onClose }) {
         if (!lastName.trim()) {
             setLastNameError('Last name is required');
             toast.custom((t) => (
-                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Validation Failed"} message={"Last name is required."} />
-            ))
+                <ToastUnsuccessful
+                    dismiss={() => toast.dismiss(t)}
+                    title={"Validation Failed"}
+                    message={"Last name is required."}
+                />
+            ));
+            isValid = false;
+        } else if (!/^[A-Za-z.-]+(?: [A-Za-z.-]+)*$/.test(lastName.trim())) {
+            setLastNameError('Last name can only contain letters, hyphens, and periods');
+            toast.custom((t) => (
+                <ToastUnsuccessful
+                    dismiss={() => toast.dismiss(t)}
+                    title={"Validation Failed"}
+                    message={"Last name can only contain letters, hyphens, and periods."}
+                />
+            ));
             isValid = false;
         }
+
 
         // Birthdate
         if (!date) {
@@ -334,7 +363,7 @@ function AddUserDialog({ isOpen, onClose }) {
                                     />
                                 </div>
                                 <div className="grid w-full max-w-sm items-center gap-1.5">
-                                    <Label htmlFor="lastName">Gender </Label>
+                                    <Label htmlFor="lastName">Sex </Label>
                                     <Select value={gender} onValueChange={setGender}>
                                         <SelectTrigger className={`w-full cursor-pointer ${genderError.trim() ? "border-red-400" : "border-black"}`}>
                                             <SelectValue placeholder="Select gender" />
