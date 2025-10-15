@@ -10,13 +10,6 @@ import { Label } from "@/components/ui/label"
 import { format, subYears, } from "date-fns";
 import { CalendarIcon, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import DatePicker from "react-datepicker";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
 import {
     Select,
     SelectContent,
@@ -27,7 +20,6 @@ import {
     SelectLabel,
 } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import CalendarDialog from './CalendarDialog.jsx';
 
 function AddUserDialog({ isOpen, onClose }) {
 
@@ -352,8 +344,7 @@ function AddUserDialog({ isOpen, onClose }) {
                                                 <SelectLabel>Genders</SelectLabel>
                                                 <SelectItem value="Male" className="cursor-pointer">Male</SelectItem>
                                                 <SelectItem value="Female" className="cursor-pointer">Female</SelectItem>
-                                                <SelectItem value="Non-Binary" className="cursor-pointer">Non-Binary</SelectItem>
-                                                <SelectItem value="Prefer not to say" className="cursor-pointer">Prefer not to say</SelectItem>
+                                                <SelectItem value="Other" className="cursor-pointer">Other</SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
@@ -370,9 +361,9 @@ function AddUserDialog({ isOpen, onClose }) {
                                             <SelectContent className="bg-white">
                                                 <SelectGroup>
                                                     <SelectLabel>Roles</SelectLabel>
-                                                    <SelectItem value="user">user</SelectItem>
-                                                    <SelectItem value="admin">admin</SelectItem>
-                                                    <SelectItem value="super admin">super admin</SelectItem>
+                                                    <SelectItem value="user" className="border-b border-gray-200">user</SelectItem>
+                                                    <SelectItem value="admin" className="border-b border-gray-200">admin</SelectItem>
+                                                    <SelectItem value="super admin" className="border-b border-gray-200">super admin</SelectItem>
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
