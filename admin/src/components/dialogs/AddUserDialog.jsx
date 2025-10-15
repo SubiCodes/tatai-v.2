@@ -391,9 +391,9 @@ function AddUserDialog({ isOpen, onClose }) {
                                             <SelectContent className="bg-white">
                                                 <SelectGroup>
                                                     <SelectLabel>Roles</SelectLabel>
-                                                    <SelectItem value="user" className="border-b border-gray-200">user</SelectItem>
-                                                    <SelectItem value="admin" className="border-b border-gray-200">admin</SelectItem>
-                                                    <SelectItem value="super admin" className="border-b border-gray-200">super admin</SelectItem>
+                                                    <SelectItem value="user" className="border-b border-gray-200">User</SelectItem>
+                                                    <SelectItem value="admin" className="border-b border-gray-200">Admin</SelectItem>
+                                                    <SelectItem value="super admin" className="border-b border-gray-200">Super Admin</SelectItem>
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>

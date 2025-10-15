@@ -37,16 +37,8 @@ import ChangeIcon from '../dialogs/ChangeIcon.jsx'
 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { format, getYear, subYears, setYear } from "date-fns";
-import { CalendarIcon, Info } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { format, subYears, } from "date-fns";
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
 import {
     Select,
     SelectContent,
@@ -79,11 +71,6 @@ function EditProfile() {
     const [lastNameError, setLastNameError] = useState(false);
     const [birthday, setBirthday] = useState(parsedBirthday);
     const [gender, setGender] = useState(admin?.gender);
-
-    const currentYear = getYear(new Date());
-    const years = Array.from({ length: 100 }, (_, i) => currentYear - i).filter(
-        (year) => year <= getYear(eighteenYearsAgo)
-    );
 
     const handleUpdateProfile = () => {
         let valid = true;
@@ -184,57 +171,18 @@ function EditProfile() {
                     {/* Birthdate */}
                     <div className="flex-1 grid items-center gap-1.5">
                         <Label htmlFor="birthday">Birthdate</Label>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button
-                                    variant={"outline"}
-                                    className={cn(
-                                        "w-full justify-start text-left font-normal",
-                                        !birthday && "text-muted-foreground"
-                                    )}
-                                >
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {birthday ? format(birthday, "PPP") : <span>Pick a date</span>}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent side="center" className="flex w-auto flex-col space-y-2 p-2 bg-0 border-0 h-100">
-                                <div className="flex flex-row items-center gap-4 bg-white p-2 rounded-md border">
-                                    <h1>Select year</h1>
-                                    <Select
-                                        value={getYear(visibleMonth).toString()}
-                                        onValueChange={(year) => {
-                                            const newMonth = setYear(visibleMonth, parseInt(year));
-                                            setVisibleMonth(newMonth);
-                                        }}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select year" />
-                                        </SelectTrigger>
-                                        <SelectContent position="popper" className="bg-white">
-                                            {years.map((year) => (
-                                                <SelectItem key={year} value={year.toString()}>
-                                                    {year}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <div className="rounded-md border bg-white">
-                                    <Calendar
-                                        mode="single"
-                                        selected={birthday}
-                                        onSelect={setBirthday}
-                                        month={visibleMonth}
-                                        onMonthChange={setVisibleMonth}
-                                        disabled={(date) => date > eighteenYearsAgo}
-                                        modifiersClassNames={{
-                                            selected: "bg-secondary text-white",
-                                        }}
-                                    />
-                                </div>
-                            </PopoverContent>
-                        </Popover>
+                        <Input
+                            aria-label="Date"
+                            type="date"
+                            className="border p-1.5 rounded-lg"
+                            value={birthday ? format(birthday, "yyyy-MM-dd") : ""}
+                            max={format(subYears(new Date(), 18), "yyyy-MM-dd")}
+                            onChange={(e) => {
+                                const selectedDate = new Date(e.target.value)
+                                setBirthday(selectedDate)
+                                setVisibleMonth(selectedDate)
+                            }}
+                        />
                     </div>
 
                     {/* Gender */}
