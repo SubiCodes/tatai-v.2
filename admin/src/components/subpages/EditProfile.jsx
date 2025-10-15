@@ -90,7 +90,7 @@ function EditProfile() {
         setFirstNameError(false);
         setLastNameError(false);
 
-        const nameRegex = /^[A-Za-z.-]+$/;
+        const nameRegex = /^(?=.*[A-Za-z])[A-Za-z.-]+$/;
 
         if (!firstName.trim()) {
             toast.custom((t) => (
@@ -107,7 +107,7 @@ function EditProfile() {
                 <ToastUnsuccessful
                     dismiss={() => toast.dismiss(t)}
                     title={"Invalid Fields"}
-                    message={"First Name can only contain letters, periods, or dashes!"}
+                    message={"First Name can only contain letters, periods, or dashes, and must include at least one letter!"}
                 />
             ));
             setFirstNameError(true);
@@ -129,7 +129,7 @@ function EditProfile() {
                 <ToastUnsuccessful
                     dismiss={() => toast.dismiss(t)}
                     title={"Invalid Fields"}
-                    message={"Last Name can only contain letters, periods, or dashes!"}
+                    message={"Last Name can only contain letters, periods, or dashes, and must include at least one letter!"}
                 />
             ));
             setLastNameError(true);
