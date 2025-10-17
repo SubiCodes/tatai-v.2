@@ -120,13 +120,6 @@ function Login() {
                                 Show password
                             </label>
                             <div className='flex-1'/>
-                            <label
-                                htmlFor="none"
-                                className="text-sm text-primary cursor-pointer hover:underline"
-                                onClick={openDialog}
-                            >
-                                Forgot Password
-                            </label>
                         </div>
                     </div>
 
