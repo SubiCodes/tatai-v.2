@@ -238,7 +238,7 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
                                     <span className="text-sm text-gray-600 flex flex-row gap-2">
                                         Other Actions:
                                         {/* Show Edit only if NOT superadmin */}
-                                        {admin.role !== "superadmin" && (
+                                        {admin.role !== "super admin" && (
                                             <p
                                                 className="text-blue-400 cursor-pointer hover:underline"
                                                 onClick={() => navigate(`/guides/edit-guide/${latestGuide._id}`)}
