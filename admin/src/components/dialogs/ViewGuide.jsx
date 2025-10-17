@@ -234,7 +234,7 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </span>
-                                {admin._id === latestGuide.posterId._id || admin.role === "superadmin" ? (
+                                {admin._id === latestGuide.posterId._id || admin.role === "super admin" ? (
                                     <span className="text-sm text-gray-600 flex flex-row gap-2">
                                         Other Actions:
                                         {/* Show Edit only if NOT superadmin */}
