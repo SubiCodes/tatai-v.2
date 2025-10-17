@@ -234,17 +234,28 @@ function ViewGuide({ isOpen, onClose, guide, fromViewUser = false, fromReports =
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </span>
-                                {admin._id === latestGuide.posterId._id ? (
+                                {admin._id === latestGuide.posterId._id || admin.role === "superadmin" ? (
                                     <span className="text-sm text-gray-600 flex flex-row gap-2">
                                         Other Actions:
-                                        <p className='text-blue-400 cursor-pointer hover:underline' onClick={() => navigate(`/guides/edit-guide/${latestGuide._id}`)}>
-                                            Edit Guide
-                                        </p>
-                                        <p className='text-red-400 cursor-pointer hover:underline' onClick={() => setIsDeleteConfirmOpen(true)}>
+                                        {/* Show Edit only if NOT superadmin */}
+                                        {admin.role !== "superadmin" && (
+                                            <p
+                                                className="text-blue-400 cursor-pointer hover:underline"
+                                                onClick={() => navigate(`/guides/edit-guide/${latestGuide._id}`)}
+                                            >
+                                                Edit Guide
+                                            </p>
+                                        )}
+                                        {/* Show Delete for both */}
+                                        <p
+                                            className="text-red-400 cursor-pointer hover:underline"
+                                            onClick={() => setIsDeleteConfirmOpen(true)}
+                                        >
                                             Delete Guide
                                         </p>
                                     </span>
                                 ) : null}
+
 
                             </div>
                         </div>
