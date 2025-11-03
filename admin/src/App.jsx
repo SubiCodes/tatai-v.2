@@ -1,7 +1,8 @@
 import './App.css'
 
 import { useState, useEffect } from 'react';
-import { Toaster, toast } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner"
+import { toast } from "sonner"
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import ProtectedRoute from './components/util/ProtectedRoute.jsx';
