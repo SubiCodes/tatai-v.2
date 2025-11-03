@@ -1,6 +1,6 @@
 // utils/locationHelper.js
 import geoip from 'geoip-lite';
-import UAParser from 'ua-parser-js';
+import { UAParser } from 'ua-parser-js';
 
 /**
  * Get location information from IP address
