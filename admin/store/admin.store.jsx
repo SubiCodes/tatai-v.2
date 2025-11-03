@@ -53,15 +53,22 @@ const useAdminStore = create((set) => ({
             console.error("Error during login:", error);
             const errorMessage = error.response?.data?.message || "An error occurred during login";
             const isAccountInUse = error.response?.data?.accountInUse || false;
+            const isRateLimited = error.response?.status === 429;
+            const retryAfter = error.response?.data?.retryAfter;
             
             if (!isAccountInUse) {
+                const title = isRateLimited ? "Too Many Attempts" : "Login Unsuccessful";
+                const message = isRateLimited && retryAfter 
+                    ? `${errorMessage} Please wait ${Math.ceil(retryAfter)} minutes.`
+                    : errorMessage;
+                    
                 toast.custom((t) => (
                     <ToastUnsuccessful 
                         dismiss={() => toast.dismiss(t)} 
-                        title={"Login Unsuccessful"} 
-                        message={errorMessage} 
+                        title={title} 
+                        message={message} 
                     />
-                ))
+                ), { duration: isRateLimited ? 8000 : 4000 })
             }
             
             return { success: false, accountInUse: isAccountInUse, message: errorMessage };
@@ -94,9 +101,18 @@ const useAdminStore = create((set) => ({
             return true;
         } catch (error) {
             console.error("Error sending reset password link:", error);
+            const isRateLimited = error.response?.status === 429;
+            const retryAfter = error.response?.data?.retryAfter;
+            const errorMessage = error.response?.data?.message || "An error occurred";
+            
+            const title = isRateLimited ? "Too Many Requests" : "Sending link unsuccessful";
+            const message = isRateLimited && retryAfter 
+                ? `${errorMessage} Please wait ${Math.ceil(retryAfter)} minutes.`
+                : errorMessage;
+                
             toast.custom((t) => (
-                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Sending link unsuccessful"} message={error.response.data.message} />
-            ));
+                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={title} message={message} />
+            ), { duration: isRateLimited ? 8000 : 4000 });
             return false;
         } finally {
             set({ sendingResetPasswordLink: false });
