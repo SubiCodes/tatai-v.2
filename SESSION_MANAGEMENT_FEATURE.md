@@ -59,26 +59,46 @@ activeSessionToken: {
 
 ## User Experience
 
-### Scenario: Admin logs in from two locations
+### Scenario 1: Attempting to log in when already active elsewhere
 
 1. **Admin logs in from Computer A**
    - Session Token A is generated
    - Token A is stored in database
    - Admin can access the system
 
-2. **Same Admin logs in from Computer B**
+2. **Same Admin tries to log in from Computer B**
+   - Login attempt is detected
+   - System finds active session (Token A exists)
+   - **Confirmation dialog appears**: "Account Already In Use"
+   - User has two options:
+     - **Cancel**: Stay logged out on Computer B
+     - **Force Login**: Terminate Computer A session and log in on Computer B
+
+3. **If user chooses "Force Login"**
    - Session Token B is generated (new)
    - Token B replaces Token A in database
-   - Admin on Computer B can access the system
+   - Admin on Computer B logs in successfully
+   - Computer A session is now invalid
 
-3. **Admin on Computer A tries to access any page**
+4. **Admin on Computer A tries to access any page**
    - Middleware checks: Token A ≠ Token B (current active token)
    - Returns session conflict error
    - Frontend shows notification
    - User is redirected to login page
 
-### User Notification
-When a session conflict is detected, users see:
+### User Notifications
+
+#### At Login (Computer B):
+When account is already in use:
+- **Dialog Title**: "Account Already In Use"
+- **Message**: "This account is currently logged in from another location. Do you want to log out from the other device and continue here?"
+- **Warning**: "The other session will be immediately terminated."
+- **Actions**: 
+  - Cancel button
+  - "Yes, Log Me In" button (red, indicating destructive action)
+
+#### At Session Loss (Computer A):
+When session is terminated:
 - **Title**: "Session Expired"
 - **Message**: "Your account has been logged in from another location."
 - **Action**: Automatic redirect to login page
@@ -121,6 +141,9 @@ All protected admin routes now validate session tokens through the `verifyAdmin`
 
 ### Frontend
 1. `admin/src/App.jsx` - Global session conflict handling
+2. `admin/src/components/dialogs/ForceLoginDialog.jsx` - Confirmation dialog for force login
+3. `admin/src/components/Pages/Login.jsx` - Login page with force login logic
+4. `admin/store/admin.store.jsx` - Login store with force login parameter
 
 ## Testing the Feature
 
@@ -128,13 +151,28 @@ All protected admin routes now validate session tokens through the `verifyAdmin`
 1. Log in as admin → Should work normally
 2. Access any protected route → Should work normally
 
-### Test Case 2: Multiple Login Detection
-1. Log in as Admin User on Browser 1
-2. Log in as same Admin User on Browser 2
-3. Try to access any page on Browser 1
-4. Expected: Session conflict error and redirect to login
+### Test Case 2: Multiple Login Detection - Block First
+1. Log in as Admin User on Browser 1 → Success
+2. Try to log in as same Admin User on Browser 2 → **Dialog appears**
+3. Click "Cancel" on the dialog → Login blocked
+4. Browser 1 still works normally ✅
 
-### Test Case 3: Logout
+### Test Case 3: Multiple Login Detection - Force Login
+1. Log in as Admin User on Browser 1 → Success
+2. Try to log in as same Admin User on Browser 2 → **Dialog appears**
+3. Click "Yes, Log Me In" on the dialog → Login succeeds on Browser 2
+4. Try to access any page on Browser 1 → Session conflict error and redirect to login
+
+### Test Case 4: Session Expiry Detection
+1. Log in on Browser 1
+2. Force login on Browser 2 (kicks out Browser 1)
+3. On Browser 1, try to:
+   - Navigate to any page
+   - Refresh the page
+   - Make any API call
+4. Expected: "Session Expired" notification and redirect to login
+
+### Test Case 5: Normal Logout
 1. Log in as admin
 2. Click logout
 3. Try to access protected route with old cookie

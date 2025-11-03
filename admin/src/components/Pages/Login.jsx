@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import ForgotPasswordDialog from '../dialogs/ForgotPasswordDialog.jsx'
+import ForceLoginDialog from '../dialogs/ForceLoginDialog.jsx'
 import { X } from "lucide-react"
 
 import { PulseLoader } from "react-spinners";
@@ -28,6 +29,9 @@ function Login() {
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const closeDialog = () => setIsDialogOpen(false);
+
+    const [isForceLoginDialogOpen, setIsForceLoginDialogOpen] = useState(false);
+    const closeForceLoginDialog = () => setIsForceLoginDialogOpen(false);
 
     const checkFields = () => {
         let isValid = true;
@@ -48,14 +52,24 @@ function Login() {
         }
     };
 
-    const handleLogin = async () => {
-        const res = await logIn(email, password, navigate);
+    const handleLogin = async (forceLogin = false) => {
+        const res = await logIn(email, password, navigate, forceLogin);
         console.log(res);
+        
+        // If account is in use, show force login dialog
+        if (res && res.accountInUse) {
+            setIsForceLoginDialogOpen(true);
+        }
+    };
+
+    const handleForceLogin = async () => {
+        closeForceLoginDialog();
+        await handleLogin(true);
     };
 
     const handleSubmit = () => {
         if (checkFields()) {
-            handleLogin();
+            handleLogin(false);
         } else {
             toast.custom((t) => (
                 <div
@@ -141,6 +155,12 @@ function Login() {
             <ForgotPasswordDialog
                 isOpen={isDialogOpen}
                 onClose={closeDialog}
+            />
+            <ForceLoginDialog
+                isOpen={isForceLoginDialogOpen}
+                onClose={closeForceLoginDialog}
+                onConfirm={handleForceLogin}
+                isLoading={isLoggingIn}
             />
         </div>
     )

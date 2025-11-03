@@ -6,7 +6,7 @@ import JWT from 'jsonwebtoken';
 import crypto from 'crypto';
 
 export const signInAdmin = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, forceLogin } = req.body;
     try {
         const user = await User.findOne({email});
         if(!user){
@@ -22,7 +22,16 @@ export const signInAdmin = async (req, res) => {
             return res.status(400).json({success: false, message: "Your account dont have access to this website."})
         }
 
-        // Generate a unique session token
+        // Check if there's already an active session (unless force login is requested)
+        if(user.activeSessionToken && !forceLogin){
+            return res.status(403).json({
+                success: false, 
+                message: "This account is already logged in from another location.",
+                accountInUse: true
+            });
+        }
+
+        // Generate a unique session token (this will replace any existing session)
         const sessionToken = generateSessionToken();
         
         // Store the session token in the database
@@ -34,7 +43,7 @@ export const signInAdmin = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "Logged in successfully!",
+            message: forceLogin ? "Logged in successfully! Previous session has been terminated." : "Logged in successfully!",
             user:{
                 ...user._doc,
                 password: undefined,

@@ -29,12 +29,13 @@ const useAdminStore = create((set) => ({
     sendingResetPasswordLink: false,
     checkingResetTokenValidity: true,
     resettingPassword: false,
-    logIn: async (email, password, navigate) => {
+    logIn: async (email, password, navigate, forceLogin = false) => {
         set({ isLoggingIn: true })
         try {
             const response = await axios.post(`${import.meta.env.VITE_URI}/api/v1/authAdmin/signin`, {
                 email,
-                password
+                password,
+                forceLogin
             }, {
                 withCredentials: true
             });
@@ -44,15 +45,26 @@ const useAdminStore = create((set) => ({
                 await getAdminData();
                 navigate('/dashboard');
                 toast.custom((t) => (
-                    <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Login Successful"} message={"Welcome Admin!"} />
+                    <ToastSuccessful dismiss={() => toast.dismiss(t)} title={"Login Successful"} message={response.data.message} />
                 ))
-                return true;
+                return { success: true };
             };
         } catch (error) {
             console.error("Error during login:", error);
-            toast.custom((t) => (
-                <ToastUnsuccessful dismiss={() => toast.dismiss(t)} title={"Login Unsuccessful"} message={error.response.data.message} />
-            ))
+            const errorMessage = error.response?.data?.message || "An error occurred during login";
+            const isAccountInUse = error.response?.data?.accountInUse || false;
+            
+            if (!isAccountInUse) {
+                toast.custom((t) => (
+                    <ToastUnsuccessful 
+                        dismiss={() => toast.dismiss(t)} 
+                        title={"Login Unsuccessful"} 
+                        message={errorMessage} 
+                    />
+                ))
+            }
+            
+            return { success: false, accountInUse: isAccountInUse, message: errorMessage };
         } finally {
             set({ isLoggingIn: false })
         }
