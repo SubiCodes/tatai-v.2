@@ -133,6 +133,12 @@ function Login() {
                                 Show password
                             </label>
                             <div className='flex-1'/>
+                            <button
+                                onClick={() => setIsDialogOpen(true)}
+                                className="text-sm text-primary hover:underline cursor-pointer font-medium"
+                            >
+                                Forgot password?
+                            </button>
                         </div>
                     </div>
 

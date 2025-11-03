@@ -197,6 +197,17 @@ If you need to disable this feature:
 4. Restore `admin/src/App.jsx`:
    - Remove axios interceptor for session conflicts
 
+## Integration with Other Features
+
+### Password Reset Integration
+When a user resets their password via the "Forgot Password" flow:
+- The `activeSessionToken` is automatically cleared
+- All existing sessions are immediately invalidated
+- User must log in again with the new password
+- This prevents unauthorized access if someone had the old password
+
+This provides an extra layer of security by ensuring password changes immediately terminate all active sessions.
+
 ## Future Enhancements
 
 1. **Multiple Sessions with Limit**: Allow 2-3 concurrent sessions per user

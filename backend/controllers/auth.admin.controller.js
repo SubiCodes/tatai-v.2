@@ -98,14 +98,21 @@ export const sendResetPasswordLink = async (req, res) => {
     const { email } = req.body;
     try {
         const user = await User.findOne({email: email});
-        if (user.length === 0) {
+        if (!user) {
             return res.status(400).json({ success: false, message: "User not found." });
-        };
+        }
+        
+        // Check if user is admin or super admin
+        if(user.role !== "admin" && user.role !== 'super admin'){
+            return res.status(400).json({success: false, message: "Only admin accounts can reset password through this page."})
+        }
+        
         const linkExtender = crypto.randomBytes(32).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 12);
         const resetLink = `${process.env.REACT_URI}reset-password/${linkExtender}`;
-        console.log("LINK: ", resetLink);
+        console.log("RESET PASSWORD LINK: ", resetLink);
 
-        sendPasswordResetEmail(email, resetLink);
+        // Await the email sending
+        await sendPasswordResetEmail(email, resetLink);
 
         user.passwordResetId = linkExtender;
         await user.save();
@@ -113,7 +120,7 @@ export const sendResetPasswordLink = async (req, res) => {
         res.status(200).json({ success: true, message: `Email sent successfully to "${email}"` });
     } catch (error) {
         console.error("Error sending reset password link", error);
-        return res.status(401).json({ success: false, message: error.message });
+        return res.status(500).json({ success: false, message: error.message });
     }
 };
 
@@ -140,10 +147,24 @@ export const resetPassword = async (req, res) => {
          if (!user) {
             return res.status(400).json({ success: false, message: "Invalid or expired token." });
         };
+        
+        // Hash the new password
         user.password = await bcrypt.hash(newPassword, 10);
+        
+        // Clear the password reset token
         user.passwordResetId = undefined;
+        
+        // Clear active session token to log out all active sessions
+        user.activeSessionToken = undefined;
+        
         await user.save();
-        res.status(200).json({ success: true, message: "Password reset successfully." });
+        
+        console.log(`🔐 Password reset successful for user: ${user.email} - All sessions terminated`);
+        
+        res.status(200).json({ 
+            success: true, 
+            message: "Password reset successfully. All active sessions have been logged out." 
+        });
     } catch (error) {
         console.error("Error resetting password", error);
         return res.status(500).json({ success: false, message: `Error checking resetting password: ${error}` });
