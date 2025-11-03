@@ -13,10 +13,10 @@ import {
 function ForceLoginDialog({ isOpen, onClose, onConfirm, isLoading }) {
     return (
         <AlertDialog open={isOpen} onOpenChange={onClose}>
-            <AlertDialogContent>
+            <AlertDialogContent className="bg-white">
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Account Already In Use</AlertDialogTitle>
-                    <AlertDialogDescription>
+                    <AlertDialogTitle className="text-gray-900">Account Already In Use</AlertDialogTitle>
+                    <AlertDialogDescription className="text-gray-700">
                         This account is currently logged in from another location. 
                         Do you want to log out from the other device and continue here?
                         <br /><br />
@@ -26,11 +26,11 @@ function ForceLoginDialog({ isOpen, onClose, onConfirm, isLoading }) {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel disabled={isLoading} className="bg-white text-gray-900 border-gray-300 hover:bg-gray-100">Cancel</AlertDialogCancel>
                     <AlertDialogAction 
                         onClick={onConfirm} 
                         disabled={isLoading}
-                        className="bg-red-600 hover:bg-red-700"
+                        className="bg-red-600 hover:bg-red-700 text-white"
                     >
                         {isLoading ? "Logging in..." : "Yes, Log Me In"}
                     </AlertDialogAction>
