@@ -1,6 +1,6 @@
 import User from '../models/user.model.js';
 import bcrypt from 'bcryptjs';
-import { generateTokenAndSetCookie } from '../utils/generateTokenAndSetCookie.js';
+import { generateTokenAndSetCookie, generateSessionToken } from '../utils/generateTokenAndSetCookie.js';
 import { sendPasswordResetEmail } from '../nodemailer/email.js';
 import JWT from 'jsonwebtoken';
 import crypto from 'crypto';
@@ -22,7 +22,15 @@ export const signInAdmin = async (req, res) => {
             return res.status(400).json({success: false, message: "Your account dont have access to this website."})
         }
 
-        generateTokenAndSetCookie(res, user._id);
+        // Generate a unique session token
+        const sessionToken = generateSessionToken();
+        
+        // Store the session token in the database
+        user.activeSessionToken = sessionToken;
+        await user.save();
+
+        // Generate JWT token with session token included
+        generateTokenAndSetCookie(res, user._id, sessionToken);
 
         return res.status(200).json({
             success: true,
@@ -30,6 +38,7 @@ export const signInAdmin = async (req, res) => {
             user:{
                 ...user._doc,
                 password: undefined,
+                activeSessionToken: undefined,
             },
         });
 
@@ -56,6 +65,14 @@ export const getCookie = async (req, res) => {
 
 export const deleteCookie = async (req, res) => {
     try {
+        // Get user from request (set by middleware)
+        if (req.user && req.user._id) {
+            // Clear the active session token in the database
+            await User.findByIdAndUpdate(req.user._id, {
+                activeSessionToken: undefined
+            });
+        }
+        
         res.clearCookie('token', {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production', // ✅ Same as creation

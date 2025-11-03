@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
-export const generateTokenAndSetCookie = (res, userId) => {
-    const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+export const generateTokenAndSetCookie = (res, userId, sessionToken) => {
+    const token = jwt.sign({ userId, sessionToken }, process.env.JWT_SECRET, {
         expiresIn: "7d",
     });
     
@@ -13,4 +14,8 @@ export const generateTokenAndSetCookie = (res, userId) => {
     });
 
     return token;
+};
+
+export const generateSessionToken = () => {
+    return crypto.randomBytes(32).toString('hex');
 };

@@ -42,7 +42,7 @@ app.use(cors({
     origin: [
         'http://localhost:5173', // Local development
         'http://localhost:3000', // Local development
-        'https://tatai-admin.vercel.app', // Your production frontend
+        'https://tatai-admin.vercel.app', // Production frontend
         'https://tatai-admin-i3wlbehxn-rein-subisols-projects.vercel.app' // Preview URLs
     ],
     credentials: true,

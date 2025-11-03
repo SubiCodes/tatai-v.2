@@ -1,7 +1,7 @@
 import './App.css'
 
 import { useState, useEffect } from 'react';
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster, toast } from "@/components/ui/sonner"
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import ProtectedRoute from './components/util/ProtectedRoute.jsx';
@@ -19,6 +19,7 @@ import Feedbacks from './components/Pages/Feedbacks.jsx';
 import Reports from './components/Pages/Reports.jsx';
 
 import axios from 'axios';
+import { X } from "lucide-react";
 
 function App() {
 
@@ -41,6 +42,48 @@ function App() {
     window.addEventListener("resize", updatePosition);
 
     return () => window.removeEventListener("resize", updatePosition);
+  }, []);
+
+  useEffect(() => {
+    // Setup axios interceptor to handle session conflicts
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401 && error.response?.data?.sessionConflict) {
+          // Session conflict detected
+          toast.custom((t) => (
+            <div
+              className="bg-error text-white px-4 py-3 rounded shadow-md flex justify-between items-center"
+              onClick={() => toast.dismiss(t)}
+            >
+              <div className='bg-error'>
+                <p className="font-bold">Session Expired</p>
+                <p className="text-white text-sm">
+                  {error.response.data.message || "Your account has been logged in from another location."}
+                </p>
+              </div>
+              <button
+                className="ml-6 text-gray-200 rounded cursor-pointer"
+                onClick={() => toast.dismiss(t)}
+              >
+                <X />
+              </button>
+            </div>
+          ), { duration: 5000 });
+
+          // Redirect to login page after a short delay
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 2000);
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    // Cleanup interceptor on unmount
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
   }, []);
 
 

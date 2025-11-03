@@ -79,6 +79,10 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: undefined
     },
+    activeSessionToken: {
+        type: String,
+        default: undefined
+    },
 }, {
     collection: 'users',
     timestamps: true

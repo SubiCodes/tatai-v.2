@@ -34,6 +34,18 @@ export const verifyAdmin = async (req, res, next) => {
       return handleUnauthorized(req, res, 'Admins only');
     }
 
+    // Check if the session token in JWT matches the active session in database
+    if (decoded.sessionToken && user.activeSessionToken) {
+      if (decoded.sessionToken !== user.activeSessionToken) {
+        console.log('[AUTH LOG] ⚠️ Session conflict detected - account logged in elsewhere');
+        return handleSessionConflict(req, res, 'Your account has been logged in from another location.');
+      }
+    } else if (!user.activeSessionToken) {
+      // Session was cleared (logged out)
+      console.log('[AUTH LOG] ⚠️ Session has been terminated');
+      return handleUnauthorized(req, res, 'Session has been terminated');
+    }
+
     req.user = user;
     next();
   } catch (error) {
@@ -63,6 +75,32 @@ function handleUnauthorized(req, res, message) {
   return res.status(401).json({
     success: false,
     message,
+    redirect: '/',
+  });
+}
+
+// Helper to handle session conflicts (account logged in elsewhere)
+function handleSessionConflict(req, res, message) {
+  // Clear cookie properly
+  res.clearCookie('token', cookieOptions);
+  res.cookie('token', '', { ...cookieOptions, expires: new Date(0) });
+
+  // Log session conflict
+  console.log(`[AUTH LOGOUT] 🔒 Session conflict: ${message}`);
+
+  // Detect if it's a normal browser navigation or an API call
+  const acceptsHTML = req.accepts(['html', 'json']) === 'html';
+
+  if (acceptsHTML) {
+    // For normal page navigation → redirect directly
+    return res.redirect('/');
+  }
+
+  // For API calls → send JSON with session conflict flag
+  return res.status(401).json({
+    success: false,
+    message,
+    sessionConflict: true,
     redirect: '/',
   });
 }

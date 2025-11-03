@@ -27,7 +27,6 @@ function Login() {
     const [showPassword, setShowPassword] = useState(false);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const openDialog = () => setIsDialogOpen(true);
     const closeDialog = () => setIsDialogOpen(false);
 
     const checkFields = () => {
