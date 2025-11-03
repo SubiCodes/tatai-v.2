@@ -351,3 +351,75 @@ export const sendReportReviewed = async (to) => {
   });
 };
 
+export const sendLoginNotification = async (to, userName, loginTime, location, ipAddress, userAgent) => {
+  const htmlTemplate = `
+  <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);">
+      
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div style="display: inline-block; background-color: #0818A8; color: #ffffff; padding: 10px 20px; border-radius: 8px; font-size: 18px; font-weight: bold;">
+          🔐 TatAi Security Alert
+        </div>
+      </div>
+      
+      <h2 style="color: #0818A8; text-align: center; margin-bottom: 16px;">New Login Detected</h2>
+      
+      <p style="font-size: 16px; color: #444; line-height: 1.6;">
+        Hello <strong>${userName}</strong>,
+      </p>
+
+      <p style="font-size: 15px; color: #555; line-height: 1.6; margin-top: 12px;">
+        We detected a new login to your TatAi admin account. If this was you, you can safely ignore this email.
+      </p>
+
+      <div style="background-color: #f9f9f9; border-left: 4px solid #0818A8; padding: 16px; margin: 20px 0; border-radius: 4px;">
+        <h3 style="margin: 0 0 12px 0; color: #333; font-size: 16px;">Login Details:</h3>
+        <table style="width: 100%; font-size: 14px; color: #555;">
+          <tr>
+            <td style="padding: 6px 0;"><strong>Time:</strong></td>
+            <td style="padding: 6px 0;">${loginTime}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0;"><strong>Location:</strong></td>
+            <td style="padding: 6px 0;">${location}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0;"><strong>IP Address:</strong></td>
+            <td style="padding: 6px 0;">${ipAddress}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; vertical-align: top;"><strong>Device:</strong></td>
+            <td style="padding: 6px 0;">${userAgent}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; margin: 20px 0; border-radius: 4px;">
+        <p style="margin: 0; font-size: 14px; color: #856404;">
+          <strong>⚠️ Wasn't you?</strong><br/>
+          If you didn't log in, please reset your password immediately and contact support.
+        </p>
+      </div>
+
+      <div style="margin-top: 30px; text-align: center;">
+        <a href="${process.env.REACT_URI}" style="background-color: #0818A8; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 15px; font-weight: bold; display: inline-block;">
+          Go to TatAi Admin
+        </a>
+      </div>
+
+      <p style="margin-top: 30px; font-size: 13px; color: #888; text-align: center;">
+        This is an automated security notification. Please do not reply directly to this email.
+      </p>
+    </div>
+  </div>
+`;
+
+  await sendEmail({
+    fromName: "TatAI Security",
+    fromEmail: "tataihomeassistant@gmail.com",
+    to,
+    subject: "🔐 New Login to Your TatAi Admin Account",
+    html: htmlTemplate,
+  });
+};
+

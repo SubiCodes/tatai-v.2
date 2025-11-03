@@ -1,7 +1,8 @@
 import User from '../models/user.model.js';
 import bcrypt from 'bcryptjs';
 import { generateTokenAndSetCookie, generateSessionToken } from '../utils/generateTokenAndSetCookie.js';
-import { sendPasswordResetEmail } from '../nodemailer/email.js';
+import { sendPasswordResetEmail, sendLoginNotification } from '../nodemailer/email.js';
+import { getLocationFromIP, parseUserAgent, getClientIP } from '../utils/locationHelper.js';
 import JWT from 'jsonwebtoken';
 import crypto from 'crypto';
 
@@ -23,13 +24,18 @@ export const signInAdmin = async (req, res) => {
         }
 
         // Check if there's already an active session (unless force login is requested)
+        console.log(`[LOGIN] User: ${email}, Active Session Token: ${user.activeSessionToken}, Force Login: ${forceLogin}`);
+        
         if(user.activeSessionToken && !forceLogin){
+            console.log(`[LOGIN] ❌ Blocking login - account already in use`);
             return res.status(403).json({
                 success: false, 
                 message: "This account is already logged in from another location.",
                 accountInUse: true
             });
         }
+        
+        console.log(`[LOGIN] ✅ Allowing login - generating new session token`);
 
         // Generate a unique session token (this will replace any existing session)
         const sessionToken = generateSessionToken();
@@ -40,6 +46,28 @@ export const signInAdmin = async (req, res) => {
 
         // Generate JWT token with session token included
         generateTokenAndSetCookie(res, user._id, sessionToken);
+
+        // Get login information for email notification
+        const ipAddress = getClientIP(req);
+        const location = getLocationFromIP(ipAddress);
+        const userAgent = parseUserAgent(req.headers['user-agent']);
+        const loginTime = new Date().toLocaleString('en-US', { 
+            timeZone: 'UTC',
+            dateStyle: 'full',
+            timeStyle: 'long'
+        });
+        const userName = `${user.firstName} ${user.lastName}`;
+
+        // Send login notification email (don't await to avoid blocking the response)
+        sendLoginNotification(user.email, userName, loginTime, location, ipAddress, userAgent)
+            .then(() => {
+                console.log(`📧 Login notification sent to ${user.email}`);
+            })
+            .catch((error) => {
+                console.error(`❌ Failed to send login notification to ${user.email}:`, error.message);
+            });
+
+        console.log(`[LOGIN] ✅ User ${user.email} logged in from ${location} (${ipAddress})`);
 
         return res.status(200).json({
             success: true,
@@ -76,10 +104,14 @@ export const deleteCookie = async (req, res) => {
     try {
         // Get user from request (set by middleware)
         if (req.user && req.user._id) {
+            console.log(`[LOGOUT] Clearing session for user: ${req.user.email}`);
             // Clear the active session token in the database
-            await User.findByIdAndUpdate(req.user._id, {
-                activeSessionToken: undefined
-            });
+            const result = await User.findByIdAndUpdate(
+                req.user._id, 
+                { $unset: { activeSessionToken: 1 } },
+                { new: true }
+            );
+            console.log(`[LOGOUT] ✅ Session cleared. Active token now: ${result.activeSessionToken}`);
         }
         
         res.clearCookie('token', {
@@ -90,6 +122,7 @@ export const deleteCookie = async (req, res) => {
         });
         res.status(200).json({ success: true, message: "Successfully Logged Out" });
     } catch (error) {
+        console.error('[LOGOUT] ❌ Error during logout:', error);
         return res.status(500).json({ success: false, message: error.message });
     }
 };
