@@ -1,0 +1,28 @@
+# Environment variables
+.env
+.env.*
+*.env
+backend/.env
+frontend/.env
+
+# Tokens and secrets
+token.json
+**/token.json
+credentials.json
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
